@@ -86,8 +86,12 @@ class Application extends BaseApplication implements SubscriberInterface
             $this->dispatcher->addSubscriber($subscriber);
         }
         $this->client->run();
+        return 0;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getDefaultCommands()
     {
         return array_merge(parent::getDefaultCommands(), [
@@ -107,6 +111,9 @@ class Application extends BaseApplication implements SubscriberInterface
         ];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function getDefaultInputDefinition()
     {
         $definition = parent::getDefaultInputDefinition();

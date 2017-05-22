@@ -73,6 +73,9 @@ class Application extends BaseApplication implements SubscriberInterface
         $this->server->run();
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getEvents()
     {
         return [
@@ -91,6 +94,9 @@ class Application extends BaseApplication implements SubscriberInterface
         ];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function getDefaultInputDefinition()
     {
         $definition = parent::getDefaultInputDefinition();
@@ -99,14 +105,5 @@ class Application extends BaseApplication implements SubscriberInterface
         $definition->addOption(new InputOption('address', null, InputOption::VALUE_OPTIONAL,
             'The ip address that bind to'));
         return $definition;
-    }
-
-
-    protected function createErrorResponse($status = 500, $body = '')
-    {
-        $body = $body ?: 'Did not find the proxy client, or the proxy client did not respond';
-        return new Response($status, [
-            'Content-Length' => strlen($body),
-        ], $body);
     }
 }

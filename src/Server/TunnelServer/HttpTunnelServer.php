@@ -57,6 +57,6 @@ class HttpTunnelServer extends TunnelServer
      */
     public function closeProxyConnection(ProxyConnection $proxyConnection, $message = null)
     {
-        $proxyConnection->end($this->makeErrorResponse(500, $message ?: 'Timeout'));
+        $proxyConnection->end(Psr7\str($this->makeErrorResponse(500, $message ?: 'Timeout')));
     }
 }

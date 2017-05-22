@@ -7,7 +7,7 @@ namespace Spike\Timer;
 
 use Spike\Logger\Logger;
 
-class MemoryRecord extends PeriodicTimer
+class MemoryWatcher extends PeriodicTimer
 {
     protected $logger;
 

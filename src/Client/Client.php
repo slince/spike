@@ -12,7 +12,7 @@ use React\Socket\Connector;
 use Slince\Event\Dispatcher;
 use Slince\Event\Event;
 use Spike\Logger\Logger;
-use Spike\Timer\MemoryRecord;
+use Spike\Timer\MemoryWatcher;
 use Spike\Timer\TimerInterface;
 use Spike\Timer\UseTimerTrait;
 use Spike\Tunnel\TunnelFactory;
@@ -315,7 +315,7 @@ class Client
     protected function getDefaultTimers()
     {
         return [
-            new MemoryRecord($this->logger)
+            new MemoryWatcher($this->logger)
         ];
     }
 }
