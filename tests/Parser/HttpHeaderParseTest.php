@@ -2,14 +2,13 @@
 namespace Spike\Tests\Parser;
 
 use PHPUnit\Framework\TestCase;
-use Spike\Exception\InvalidArgumentException;
-use Spike\Parser\SpikeParser;
+use Spike\Parser\HttpHeaderParser;
 
-class SpikeParserTest extends TestCase
+class HttpHeaderParseTest extends TestCase
 {
     public function testPushIncoming()
     {
-        $parser = new SpikeParser();
+        $parser = new HttpHeaderParser();
         $this->assertEquals('', $parser->getRestData());
         $parser->pushIncoming('foo');
         $this->assertEquals('foo', $parser->getRestData());
@@ -18,36 +17,24 @@ class SpikeParserTest extends TestCase
     public function testParse()
     {
         $message = <<<EOT
-Spike-Action: start_proxy\r\nContent-Length: 4\r\n\r\nbody
+GET http://www.foo.com/ HTTP/1.1\r\nHost: www.foo.com\r\n\r\n
 EOT;
 
-        $parser = new SpikeParser();
+        $parser = new HttpHeaderParser();
         $parser->pushIncoming($message);
-        $this->assertEquals($message, $parser->parseFirst());
-    }
-
-    public function testParseBadMessage()
-    {
-        $message = <<<EOT
-Spike-Action: start_proxy\r\n\r\nbody
-EOT;
-
-        $parser = new SpikeParser();
-        $parser->pushIncoming($message);
-        $this->expectException(InvalidArgumentException::class);
         $this->assertEquals($message, $parser->parseFirst());
     }
 
     public function testParseWithRest()
     {
         $message = <<<EOT
-Spike-Action: start_proxy\r\nContent-Length: 4\r\n\r\nbodyhello world
+GET http://www.foo.com/ HTTP/1.1\r\nHost: www.foo.com\r\n\r\nhello world
 EOT;
 
         $expected = <<<EOT
-Spike-Action: start_proxy\r\nContent-Length: 4\r\n\r\nbody
+GET http://www.foo.com/ HTTP/1.1\r\nHost: www.foo.com\r\n\r\n
 EOT;
-        $parser = new SpikeParser();
+        $parser = new HttpHeaderParser();
         $parser->pushIncoming($message);
         $this->assertEquals($expected, $parser->parseFirst());
         $this->assertEquals('hello world', $parser->getRestData());
@@ -56,20 +43,20 @@ EOT;
     public function testParseChunk()
     {
         $message1 = <<<EOT
-Spike-Action: start_proxy\r\nContent-Length: 4\r\n\r\n
+GET http://www.foo.com/ HTTP/1.1\r\n
 EOT;
 
         $message2 = <<<EOT
-bodySpike-Action: start_proxy\r\nContent-Length: 4\r\n\r\nbody
+Host: www.foo.com\r\n\r\nGET http://www.foo.com/ HTTP/1.1\r\nHost: www.foo.com\r\n\r\n
 EOT;
-        $parser = new SpikeParser();
+        $parser = new HttpHeaderParser();
         $parser->pushIncoming($message1);
         $this->assertEquals(null, $parser->parseFirst());
         $this->assertEquals($message1, $parser->getRestData());
         $parser->pushIncoming($message2);
 
         $expected = <<<EOT
-Spike-Action: start_proxy\r\nContent-Length: 4\r\n\r\nbody
+GET http://www.foo.com/ HTTP/1.1\r\nHost: www.foo.com\r\n\r\n
 EOT;
         $this->assertEquals($expected, $parser->parseFirst());
         $this->assertEquals($expected, $parser->getRestData());
@@ -78,9 +65,9 @@ EOT;
     public function testParseMany()
     {
         $message1 = <<<EOT
-Spike-Action: start_proxy\r\nContent-Length: 4\r\n\r\nbody
+GET http://www.foo.com/ HTTP/1.1\r\nHost: www.foo.com\r\n\r\n
 EOT;
-        $parser = new SpikeParser();
+        $parser = new HttpHeaderParser();
         $parser->pushIncoming($message1);
         $parser->pushIncoming($message1);
         $parser->pushIncoming('Spike');

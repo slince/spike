@@ -1,9 +1,9 @@
 # Spike
 
-[![Build Status](https://img.shields.io/travis/spike/spike/master.svg?style=flat-square)](https://travis-ci.org/spike/spike)
-[![Coverage Status](https://img.shields.io/codecov/c/github/spike/spike.svg?style=flat-square)](https://codecov.io/github/spike/spike)
-[![Latest Stable Version](https://img.shields.io/packagist/v/spike/spike.svg?style=flat-square&label=stable)](https://packagist.org/packages/spike/spike)
-[![Scrutinizer](https://img.shields.io/scrutinizer/g/spike/spike.svg?style=flat-square)](https://scrutinizer-ci.com/g/spike/spike/?branch=master)
+[![Build Status](https://img.shields.io/travis/since/spike/master.svg?style=flat-square)](https://travis-ci.org/since/spike)
+[![Coverage Status](https://img.shields.io/codecov/c/github/since/spike.svg?style=flat-square)](https://codecov.io/github/since/spike)
+[![Latest Stable Version](https://img.shields.io/packagist/v/since/spike.svg?style=flat-square&label=stable)](https://packagist.org/packages/since/spike)
+[![Scrutinizer](https://img.shields.io/scrutinizer/g/since/spike.svg?style=flat-square)](https://scrutinizer-ci.com/g/since/spike/?branch=master)
 
 Spike is a reverse proxy that help to expose your local server to the internet.
 

@@ -169,7 +169,7 @@ class Spike implements SpikeInterface
      * @param string $message
      * @return array
      */
-    public static function parseMessages($message)
+    protected static function parseMessages($message)
     {
         list($headerBuffer, $bodyBuffer) = explode("\r\n\r\n", $message, 2);
         $lines = preg_split('/(\\r?\\n)/', $headerBuffer, -1, PREG_SPLIT_DELIM_CAPTURE);
@@ -177,11 +177,18 @@ class Spike implements SpikeInterface
         foreach ($lines as $line) {
             $parts = explode(':', $line, 2);
             $header = trim($parts[0]);
-            $headers[$header] = isset($parts[1]) ? trim($parts[1]) : null;
+            if ($header) {
+                $headers[$header] = isset($parts[1]) ? trim($parts[1]) : null;
+            }
         }
         return [$headers, trim($bodyBuffer)];
     }
 
+    /**
+     * Sets a global header
+     * @param string $name
+     * @param string $value
+     */
     public static function setGlobalHeader($name, $value)
     {
         static::$globalHeaders[$name] = $value;

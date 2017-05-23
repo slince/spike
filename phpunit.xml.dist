@@ -7,17 +7,13 @@
 
     <testsuites>
         <testsuite name="Slince Test Suite">
-            <directory>./Tests/</directory>
+            <directory>./tests/</directory>
         </testsuite>
     </testsuites>
 
     <filter>
         <whitelist>
-            <directory>./</directory>
-            <exclude>
-                <directory>./tests</directory>
-                <directory>./vendor</directory>
-            </exclude>
+            <directory suffix=".php">./src</directory>
         </whitelist>
     </filter>
 </phpunit>

@@ -33,7 +33,7 @@ class HttpHeaderParser extends AbstractParser
         if ($pos === false) {
             return null;
         }
-        $message = substr($this->incomingData, 0, $pos);
+        $message = substr($this->incomingData, 0, $pos + 4);
         $this->incomingData  = substr($this->incomingData, strlen($message));
         return $message;
     }
