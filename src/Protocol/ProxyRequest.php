@@ -19,10 +19,10 @@ class ProxyRequest extends Request
      */
     protected $request;
 
-    public function __construct(RequestInterface $request)
+    public function __construct(RequestInterface $request, $headers = [])
     {
         $this->request = $request;
-        parent::__construct('proxy_request');
+        parent::__construct('proxy_request', $headers);
     }
 
     /**

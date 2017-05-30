@@ -40,10 +40,10 @@ abstract class Protocol implements ProtocolInterface
 
     public function toString()
     {
-        $headers = array_merge($this->headers, [
-            'Version' => static::VERSION,
-            'Action' => $this->action,
-        ]);
+        $headers = array_merge([
+            'Spike-Action' => $this->action,
+            'Spike-Version' => static::VERSION,
+        ], $this->headers);
         $buffer = '';
         foreach ($headers as $header) {
             $buffer .= ": {$header}\r\n";

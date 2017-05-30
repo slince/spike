@@ -15,7 +15,6 @@ use React\Socket\ConnectionInterface;
 use React\Socket\Server as Socket;
 use Spike\Protocol\DomainRegisterRequest;
 use Spike\Protocol\Factory;
-use Spike\Protocol\HttpRequest;
 use Spike\Protocol\ProtocolInterface;
 use Spike\Protocol\ProxyRequest;
 use Spike\Protocol\ProxyResponse;
@@ -68,15 +67,15 @@ class Server
         $this->loop->run();
     }
 
-    protected function acceptConnection(ConnectionInterface $connection, ProtocolInterface $protocol)
+    protected function acceptConnection(ConnectionInterface $connection, $protocol)
     {
         if ($protocol instanceof DomainRegisterRequest) {
             $this->handleDomainRegister($protocol, $connection);
             $this->proxyClients[] = $connection;
-        } elseif ($protocol instanceof HttpRequest) {
-            $uid = spl_object_hash($connection);
-            $this->handleProxyRequest($protocol, $connection, $uid);
-            $this->clients[$uid] = $connection;
+        } elseif ($protocol instanceof RequestInterface) {
+            $connectionId = spl_object_hash($connection);
+            $this->handleProxyRequest($protocol, $connection, $connectionId);
+            $this->clients[$connectionId] = $connection;
         } elseif ($protocol instanceof ProxyResponse) {
             $this->handleProxyResponse($protocol, $connection);
         }
@@ -89,12 +88,12 @@ class Server
         }, $protocol->getAddingDomains()));
     }
 
-    protected function handleProxyRequest(HttpRequest $protocol, ConnectionInterface $connection, $uid)
+    protected function handleProxyRequest(RequestInterface $protocol, ConnectionInterface $connection, $connectionId)
     {
-        $request = $protocol->getRequest();
-        $client = $this->findProxyClient($request->getUri()->getHost());
-        $proxyRequest = new ProxyRequest($request);
-        $proxyRequest->setHeader('connection-id', $uid);
+        $client = $this->findProxyClient($protocol->getUri()->getHost());
+        $proxyRequest = new ProxyRequest($protocol, [
+            'connection-id' => $connectionId
+        ]);
         $client->write($proxyRequest);
     }
 
