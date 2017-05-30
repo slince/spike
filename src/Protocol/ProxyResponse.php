@@ -14,10 +14,10 @@ class ProxyResponse extends Response
      */
     protected $response;
 
-    public function __construct($result, ResponseInterface $response = null)
+    public function __construct($code, ResponseInterface $response = null)
     {
         $this->response = $response;
-        parent::__construct($result, $response);
+        parent::__construct($code, 'proxy_response');
     }
 
     /**
@@ -28,8 +28,13 @@ class ProxyResponse extends Response
         return $this->response;
     }
 
-    protected function parseToString(ResponseInterface $response)
+    public function getBody()
     {
-        return serialize($response);
+        return serialize($this->response);
+    }
+
+    public function parseBody($body)
+    {
+        $this->response = unserialize($body);
     }
 }

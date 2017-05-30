@@ -9,10 +9,10 @@ class DomainRegisterRequest extends Request
 {
     protected $domains;
 
-    public function __construct(array $domains)
+    public function __construct(array $domains, $headers = [])
     {
         $this->domains = $domains;
-        parent::__construct('register_domain');
+        parent::__construct('register_domain', $headers);
     }
 
     public function getAddingDomains()

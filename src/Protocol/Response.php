@@ -5,33 +5,30 @@
  */
 namespace Spike\Protocol;
 
-class Response implements ProtocolInterface
+abstract class Response extends Protocol
 {
-    const VERSION = 1.0;
-
     protected $code;
 
-    protected $body;
-
-    protected $headers;
-
-    public function __construct($code, $body)
+    public function __construct($code, $action, $headers = [])
     {
         $this->code = $code;
-        $this->body = $body;
-    }
-
-    public function __toString()
-    {
-        return $this->toString();
+        parent::__construct($action, $headers);
     }
 
     public function toString()
     {
-        return "Version: " . static::VERSION . "\r\n"
-            . "Code: {$this->code} \r\n"
+        $headers = array_merge($this->headers, [
+            'Version' => static::VERSION,
+            'Action' => $this->action,
+            'Code' => $this->code
+        ]);
+        $buffer = '';
+        foreach ($headers as $header) {
+            $buffer .= ": {$header}\r\n";
+        }
+        return $buffer
             . "\r\n\r\n"
-            . $this->body;
+            . $this->getBody();
     }
 
     /**
@@ -49,34 +46,4 @@ class Response implements ProtocolInterface
     {
         return $this->code;
     }
-
-    /**
-     * @return mixed
-     */
-    public function getBody()
-    {
-        return $this->body;
-    }
-
-    /**
-     * @param mixed $body
-     */
-    public function setBody($body)
-    {
-        $this->body = $body;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getHeaders()
-    {
-        return $this->headers;
-    }
-
-    public function getHeader($name)
-    {
-        return isset($this->headers[$name]) ? $this->headers[$name] : null;
-    }
-
 }
