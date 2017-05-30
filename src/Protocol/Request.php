@@ -5,15 +5,31 @@
  */
 namespace Spike\Protocol;
 
-class Request
+abstract class Request implements ProtocolInterface
 {
+    /**
+     * The version of protocol
+     * @var string
+     */
     const VERSION = 1.0;
 
+    /**
+     * The action
+     * @var string
+     */
     protected $action;
 
-    protected $body;
-
+    /**
+     * Array of custom headers
+     * @var array
+     */
     protected $headers = [];
+
+    /**
+     * Protocol body
+     * @var string
+     */
+    protected $body;
 
     public function __construct($action, $body = null)
     {
@@ -22,6 +38,11 @@ class Request
     }
 
     public function __toString()
+    {
+        return $this->toString();
+    }
+
+    public function toString()
     {
         $headers = array_merge($this->headers, [
             'Version' => static::VERSION,
@@ -66,7 +87,6 @@ class Request
     {
         $this->headers[$name] = $value;
     }
-
 
     /**
      * @param mixed $body

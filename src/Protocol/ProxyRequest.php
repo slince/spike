@@ -23,12 +23,13 @@ class ProxyRequest extends Request
 
     public function __construct(RequestInterface $request)
     {
-        parent::__construct('proxy_request', $this->parseToString($request));
+        $this->request = $request;
+        parent::__construct('proxy_request');
     }
 
-    protected function parseToString(RequestInterface $request)
+    public function getBody()
     {
-        return \GuzzleHttp\json_encode($request);
+        return \GuzzleHttp\json_encode($this->request);
     }
 
     /**
@@ -37,5 +38,9 @@ class ProxyRequest extends Request
     public function getRequest()
     {
         return $this->request;
+    }
+
+    public static function fromString($string)
+    {
     }
 }
