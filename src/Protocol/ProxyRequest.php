@@ -30,4 +30,12 @@ class ProxyRequest extends Request
     {
         return \GuzzleHttp\json_encode($request);
     }
+
+    /**
+     * @return RequestInterface
+     */
+    public function getRequest()
+    {
+        return $this->request;
+    }
 }

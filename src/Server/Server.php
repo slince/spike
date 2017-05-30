@@ -9,7 +9,9 @@ use Cake\Collection\Collection;
 use GuzzleHttp\Psr7;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use React\Socket\Connection;
+use React\EventLoop\LoopInterface;
+use React\EventLoop\Factory as LoopFactory;
+use React\Socket\ConnectionInterface;
 use React\Socket\Server as Socket;
 use Spike\Protocol\DomainRegisterRequest;
 use Spike\Protocol\Factory;
@@ -21,12 +23,12 @@ use Spike\Protocol\ProxyResponse;
 class Server
 {
     /**
-     * @var Connection[]
+     * @var ConnectionInterface[]
      */
     protected $proxyClients;
 
     /**
-     * @var Connection[]
+     * @var ConnectionInterface[]
      */
     protected $clients;
 
@@ -40,10 +42,14 @@ class Server
      */
     protected $domainMap;
 
-    public function __construct(Socket $socket)
+    public function __construct($address, LoopInterface $loop = null)
     {
-        $this->socket = $socket;
-        $this->socket->on('connection', function(Connection $connection){
+        if (is_null($loop)) {
+            $loop = LoopFactory::create();
+        }
+        $this->loop = $loop;
+        $this->socket = new Socket($address, $loop);
+        $this->socket->on('connection', function(ConnectionInterface $connection){
             $connection->on('data', function($data) use ($connection){
                 $protocol = Factory::create($data);
                 if ($protocol === false) {
@@ -51,10 +57,18 @@ class Server
                 }
                 $this->acceptConnection($connection, $protocol);
             });
+            $connection->on('error', function($message){
+                var_dump($message);
+            });
         });
     }
 
-    protected function acceptConnection(Connection $connection, ProtocolInterface $protocol)
+    public function run()
+    {
+        $this->loop->run();
+    }
+
+    protected function acceptConnection(ConnectionInterface $connection, ProtocolInterface $protocol)
     {
         if ($protocol instanceof DomainRegisterRequest) {
             $this->handleDomainRegister($protocol, $connection);
@@ -66,17 +80,16 @@ class Server
         } elseif ($protocol instanceof ProxyResponse) {
             $this->handleProxyResponse($protocol, $connection);
         }
-
     }
 
-    protected function handleDomainRegister(DomainRegisterRequest $protocol, Connection $connection)
+    protected function handleDomainRegister(DomainRegisterRequest $protocol, ConnectionInterface $connection)
     {
         $this->domainMap = $this->domainMap->append(array_map(function($domain) use ($connection){
             return new DomainMapRecord($domain, $connection);
         }, $protocol->getAddingDomains()));
     }
 
-    protected function handleProxyRequest(HttpRequest $protocol, Connection $connection, $uid)
+    protected function handleProxyRequest(HttpRequest $protocol, ConnectionInterface $connection, $uid)
     {
         $request = $protocol->getRequest();
         $client = $this->findProxyClient($request->getUri()->getHost());
@@ -85,7 +98,7 @@ class Server
         $client->write($proxyRequest);
     }
 
-    protected function handleProxyResponse(ProxyResponse $protocol, Connection $connection)
+    protected function handleProxyResponse(ProxyResponse $protocol, ConnectionInterface $connection)
     {
         $connectionId = $protocol->getHeader('connection-id');
         if (!$connectionId || !isset($this->clients[$connectionId])) {
@@ -98,7 +111,7 @@ class Server
 
     /**
      * @param string $host
-     * @return Connection
+     * @return ConnectionInterface
      */
     protected function findProxyClient($host)
     {
