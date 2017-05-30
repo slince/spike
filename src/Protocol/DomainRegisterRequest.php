@@ -25,6 +25,11 @@ class DomainRegisterRequest extends Request
         return serialize($this->domains);
     }
 
+    public function parseBody($body)
+    {
+        $this->domains = unserialize($this->domains);
+    }
+
     public static function fromString($string)
     {
         $domains = unserialize($string);

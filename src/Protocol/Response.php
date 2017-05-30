@@ -5,13 +5,11 @@
  */
 namespace Spike\Protocol;
 
-class Response
+class Response implements ProtocolInterface
 {
     const VERSION = 1.0;
 
     protected $code;
-
-    protected $result;
 
     protected $body;
 
@@ -25,8 +23,13 @@ class Response
 
     public function __toString()
     {
+        return $this->toString();
+    }
+
+    public function toString()
+    {
         return "Version: " . static::VERSION . "\r\n"
-            . "Result: {$this->result} \r\n"
+            . "Code: {$this->code} \r\n"
             . "\r\n\r\n"
             . $this->body;
     }

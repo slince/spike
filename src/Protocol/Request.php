@@ -5,6 +5,9 @@
  */
 namespace Spike\Protocol;
 
+use Spike\Server\Exception\BadRequestException;
+use Spike\Server\Exception\InvalidArgumentException;
+
 abstract class Request implements ProtocolInterface
 {
     /**
@@ -25,16 +28,10 @@ abstract class Request implements ProtocolInterface
      */
     protected $headers = [];
 
-    /**
-     * Protocol body
-     * @var string
-     */
-    protected $body;
-
-    public function __construct($action, $body = null)
+    public function __construct($action, $headers = [])
     {
         $this->action = $action;
-        $this->body = $body;
+        $this->headers = $headers;
     }
 
     public function __toString()
@@ -50,11 +47,29 @@ abstract class Request implements ProtocolInterface
         ]);
         $buffer = '';
         foreach ($headers as $header) {
-            $buffer .= $header . "\r\n";
+            $buffer .= ": {$header}\r\n";
         }
         return $buffer
             . "\r\n\r\n"
             . $this->getBody();
+    }
+
+    public static function fromString($string)
+    {
+        list($headerBuffer, $bodyBuffer) = explode("\r\n", $string, 2);
+        $lines = preg_split('/(\\r?\\n)/', $headerBuffer, -1, PREG_SPLIT_DELIM_CAPTURE);
+        $headers = [];
+        foreach ($lines as $line) {
+            $parts = explode(':', $line, 2);
+            $header = trim($parts[0]);
+            $headers[$header] = isset($parts[1]) ? trim($parts[1]) : null;
+        }
+        if (!isset($headers['action'])) {
+            throw new BadRequestException('Missing value for the header "action"');
+        }
+        $protocol = new static($headers['action'], $headers);
+        $bodyBuffer && $protocol->parseBody($bodyBuffer);
+        return $protocol;
     }
 
     /**
@@ -88,19 +103,7 @@ abstract class Request implements ProtocolInterface
         $this->headers[$name] = $value;
     }
 
-    /**
-     * @param mixed $body
-     */
-    public function setBody($body)
-    {
-        $this->body = $body;
-    }
+    abstract public function getBody();
 
-    /**
-     * @return mixed
-     */
-    public function getBody()
-    {
-        return $this->body;
-    }
+    abstract function parseBody($body);
 }

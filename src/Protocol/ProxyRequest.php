@@ -10,8 +10,6 @@ use Psr\Http\Message\RequestInterface;
 /**
  * Version: 1.0
  * Action: proxy_request
- *
- *
  * raw_request_message
  */
 class ProxyRequest extends Request
@@ -27,11 +25,6 @@ class ProxyRequest extends Request
         parent::__construct('proxy_request');
     }
 
-    public function getBody()
-    {
-        return \GuzzleHttp\json_encode($this->request);
-    }
-
     /**
      * @return RequestInterface
      */
@@ -40,7 +33,13 @@ class ProxyRequest extends Request
         return $this->request;
     }
 
-    public static function fromString($string)
+    public function getBody()
     {
+        return serialize($this->request);
+    }
+
+    public function parseBody($body)
+    {
+        $this->request = unserialize($body);
     }
 }
