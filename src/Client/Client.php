@@ -5,6 +5,7 @@
  */
 namespace Spike\Client;
 
+use GuzzleHttp\Client as HttpClient;
 use React\EventLoop\LoopInterface;
 use React\EventLoop\Factory as LoopFactory;
 use React\Socket\ConnectionInterface;
@@ -13,14 +14,13 @@ use Slince\Event\Dispatcher;
 use Slince\Event\Event;
 use Spike\Client\Handler\HandlerInterface;
 use Spike\Client\Handler\ProxyRequestHandler;
+use Spike\Client\Handler\RegisterHostResponseHandler;
 use Spike\Exception\InvalidArgumentException;
 use Spike\Protocol\RegisterHostRequest;
+use Spike\Protocol\RegisterHostResponse;
 use Spike\ProtocolFactory;
 use Spike\Protocol\MessageInterface;
 use Spike\Protocol\ProxyRequest;
-use GuzzleHttp\Client as HttpClient;
-use Spike\Protocol\ProxyResponse;
-use Spike\Server\ProxyHost;
 
 class Client
 {
@@ -60,7 +60,7 @@ class Client
         $this->serverAddress = $serverAddress;
         $this->httpClient = $client ?: new HttpClient();
         $this->loop = $loop ?: LoopFactory::create();
-        $this->connector = new Connector($loop);
+        $this->connector = new Connector($this->loop);
         $this->dispatcher = $dispatcher ?: new Dispatcher();
     }
 
@@ -159,11 +159,13 @@ class Client
      */
     protected function createHandler($message, $connection)
     {
-        if ($message instanceof ProxyHost) {
+        if ($message instanceof ProxyRequest) {
             $handler = new ProxyRequestHandler($this, $connection);
+        } elseif ($message instanceof RegisterHostResponse) {
+            $handler = new RegisterHostResponseHandler($this, $connection);
         } else {
             throw new InvalidArgumentException(sprintf('Cannot find handler for message type: "%s"',
-                gettype($message)
+                get_class($message)
             ));
         }
         return $handler;

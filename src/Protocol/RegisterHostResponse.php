@@ -12,7 +12,7 @@ class RegisterHostResponse extends Response
     public function __construct($code, $body = '', $headers = [])
     {
         $this->body = $body;
-        parent::__construct($code,'domain_register_response', $headers);
+        parent::__construct($code,'register_domain_response', $headers);
     }
 
     public function getBody()

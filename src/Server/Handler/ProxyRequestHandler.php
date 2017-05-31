@@ -12,7 +12,7 @@ use Spike\Server\ProxyConnection;
 
 class ProxyRequestHandler extends Handler
 {
-    public function handle(RequestInterface $request)
+    public function handle($request)
     {
         $proxyConnection = new ProxyConnection($this->connection);
         $this->server->addProxyConnection($proxyConnection);
