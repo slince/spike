@@ -27,10 +27,10 @@ class ProtocolFactory
             $flag = trim($flag);
             switch ($flag) {
                 case 'register_domain':
-                    $protocol = Protocol\DomainRegisterRequest::fromString($buffer);
+                    $protocol = Protocol\RegisterHostRequest::fromString($buffer);
                     break;
                 case 'register_domain_response':
-                    $protocol = Protocol\DomainRegisterResponse::fromString($buffer);
+                    $protocol = Protocol\RegisterHostResponse::fromString($buffer);
                     break;
                 case 'proxy_request':
                     $protocol = Protocol\ProxyRequest::fromString($buffer);

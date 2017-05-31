@@ -13,34 +13,34 @@ use React\EventLoop\LoopInterface;
 use React\EventLoop\Factory as LoopFactory;
 use React\Socket\ConnectionInterface;
 use React\Socket\Server as Socket;
-use Spike\Protocol\DomainRegisterRequest;
+use Spike\Exception\InvalidArgumentException;
+use Spike\Protocol\RegisterHostRequest;
 use Spike\Protocol\MessageInterface;
 use Spike\Protocol\ProxyRequest;
 use Spike\Protocol\ProxyResponse;
 use Spike\ProtocolFactory;
 use Spike\Exception\RuntimeException;
+use Spike\Server\Handler\HandlerInterface;
+use Spike\Server\Handler\ProxyRequestHandler;
+use Spike\Server\Handler\ProxyResponseHandler;
+use Spike\Server\Handler\RegisterHostHandler;
 
 class Server
 {
-    /**
-     * @var ConnectionInterface[]
-     */
-    protected $proxyClients;
-
-    /**
-     * @var ConnectionInterface[]
-     */
-    protected $clients;
-
     /**
      * @var Socket
      */
     protected $socket;
 
     /**
-     * @var Collection
+     * @var ProxyConnection[]
      */
-    protected $domainMap;
+    protected $proxyConnections;
+
+    /**
+     * @var ProxyHost[]
+     */
+    protected $proxyHosts;
 
     public function __construct($address, LoopInterface $loop = null)
     {
@@ -49,83 +49,123 @@ class Server
         }
         $this->loop = $loop;
         $this->socket = new Socket($address, $loop);
-        $this->socket->on('connection', function(ConnectionInterface $connection){
-            $connection->on('data', function($data) use ($connection){
-                $protocol = ProtocolFactory::create($data);
-                if ($protocol === false) {
-                    $connection->close();
-                }
-                $this->acceptConnection($connection, $protocol);
-            });
-            $connection->on('error', function($message){
-                var_dump($message);
-            });
-        });
-        $this->domainMap = new Collection([]);
-    }
-
-    public function run()
-    {
-        echo 'server running', PHP_EOL;
-        $this->loop->run();
-    }
-
-    protected function acceptConnection(ConnectionInterface $connection, $protocol)
-    {
-        if ($protocol instanceof DomainRegisterRequest) {
-            $this->handleDomainRegister($protocol, $connection);
-            $this->proxyClients[] = $connection;
-        } elseif ($protocol instanceof RequestInterface) {
-            $connectionId = spl_object_hash($connection);
-            $this->handleProxyRequest($protocol, $connection, $connectionId);
-            $this->clients[$connectionId] = $connection;
-        } elseif ($protocol instanceof ProxyResponse) {
-            $this->handleProxyResponse($protocol, $connection);
-        }
-    }
-
-    protected function handleDomainRegister(DomainRegisterRequest $protocol, ConnectionInterface $connection)
-    {
-        $this->domainMap = $this->domainMap->append(array_map(function($domain) use ($connection){
-            return new DomainMapRecord($domain, $connection);
-        }, $protocol->getAddingDomains()));
-        print_r(count($this->domainMap->toArray()));
-    }
-
-    protected function handleProxyRequest(RequestInterface $protocol, ConnectionInterface $connection, $connectionId)
-    {
-        $host = $protocol->getUri()->getHost() .
-            ($protocol->getUri()->getPort() ? ":{$protocol->getUri()->getPort()}" : '');
-        $client = $this->findProxyClient($host);
-        $proxyRequest = new ProxyRequest($protocol, [
-            'Forwarded-Connection-Id' => $connectionId
-        ]);
-        $client->write($proxyRequest);
-    }
-
-    protected function handleProxyResponse(ProxyResponse $protocol, ConnectionInterface $connection)
-    {
-        $forwardedConnectionId = $protocol->getHeader('Forwarded-Connection-Id');
-        if (!$forwardedConnectionId || !isset($this->clients[$forwardedConnectionId])) {
-            $connection->write('Lose connection');
-            return false;
-        }
-        $client = $this->clients[$forwardedConnectionId];
-        $client->write(Psr7\str($protocol->getResponse()));
+        $this->proxyHosts = new Collection([]);
     }
 
     /**
-     * @param string $host
-     * @return ConnectionInterface
+     * Run the server
      */
-    protected function findProxyClient($host)
+    public function run()
     {
-        $record = $this->domainMap->filter(function(DomainMapRecord $record) use ($host){
-            return $record->getDomain() == $host;
-        })->first();
-        if (is_null($record)) {
-            throw new RuntimeException("Cannot find proxy client for the request");
+        $this->socket->on('connection', function(ConnectionInterface $connection){
+            $connection->on('data', function($data) use ($connection){
+                $protocol = ProtocolFactory::create($data);
+                $this->createHandler($protocol, $connection)->handle($protocol);
+            });
+            $connection->on('error', function($message){});
+        });
+        $this->loop->run();
+    }
+
+    /**
+     * Gets all proxy connections
+     * @return ProxyConnection[]
+     */
+    public function getProxyConnections()
+    {
+        return $this->proxyConnections;
+    }
+
+    /**
+     * Gets the proxy hosts
+     * @return Collection
+     */
+    public function getProxyHosts()
+    {
+        return $this->proxyHosts;
+    }
+
+    /**
+     * Sets the proxy hosts of the server
+     * @param Collection $proxyHosts
+     */
+    public function setProxyHosts($proxyHosts)
+    {
+        $this->proxyHosts = $proxyHosts;
+    }
+
+    /**
+     * Adds a proxy host record
+     * @param ProxyHost $proxyHost
+     */
+    public function addProxyHost(ProxyHost $proxyHost)
+    {
+        $this->proxyHosts[] = $proxyHost;
+    }
+
+    /**
+     * Adds some proxy hosts
+     * @param ProxyHost[] $proxyHosts
+     */
+    public function addProxyHosts($proxyHosts)
+    {
+        $this->proxyHosts += $proxyHosts;
+    }
+
+    /**
+     * Finds the proxy host for the given host
+     * @param string $host
+     * @return null|ProxyHost
+     */
+    public function findProxyHost($host)
+    {
+        foreach ($this->proxyHosts as $proxyHost) {
+            if ($proxyHost->getHost() == $host) {
+                return $proxyHost;
+            }
         }
-        return $record->getConnection();
+        return null;
+    }
+
+    public function addProxyConnection(ProxyConnection $proxyConnection)
+    {
+        $this->proxyConnections[] = $proxyConnection;
+    }
+
+    /**
+     * Finds the proxy connection by given id
+     * @param string $connectionId
+     * @return null|ProxyConnection
+     */
+    public function findProxyConnection($connectionId)
+    {
+        foreach ($this->proxyConnections as $proxyConnection) {
+            if ($proxyConnection->getId() == $connectionId) {
+                return $proxyConnection;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Creates the handler for the received message
+     * @param $protocol
+     * @param $connection
+     * @return HandlerInterface
+     */
+    protected function createHandler($protocol, $connection)
+    {
+        if ($protocol instanceof RegisterHostRequest) {
+            $handler = new RegisterHostHandler($this, $connection);
+        } elseif ($protocol instanceof RequestInterface) {
+            $handler = new ProxyRequestHandler($this, $connection);
+        } elseif ($protocol instanceof ProxyResponse) {
+            $handler = new ProxyResponseHandler($this, $connection);
+        } else {
+            throw new InvalidArgumentException(sprintf('Cannot find handler for message type: "%s"',
+                gettype($protocol)
+            ));
+        }
+        return $handler;
     }
 }

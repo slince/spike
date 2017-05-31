@@ -5,7 +5,7 @@
  */
 namespace Spike\Protocol;
 
-class DomainRegisterRequest extends Request
+class RegisterHostRequest extends Request
 {
     protected $domains;
 

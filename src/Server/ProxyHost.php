@@ -5,28 +5,30 @@
  */
 namespace Spike\Server;
 
-class DomainMapRecord
+use React\Socket\ConnectionInterface;
+
+class ProxyHost
 {
-    protected $domain;
+    protected $host;
 
     protected $connection;
 
-    public function __construct($domain, $connection)
+    public function __construct($host, $connection)
     {
-        $this->domain = $domain;
+        $this->host = $host;
         $this->connection = $connection;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getDomain()
+    public function getHost()
     {
-        return $this->domain;
+        return $this->host;
     }
 
     /**
-     * @return mixed
+     * @return ConnectionInterface
      */
     public function getConnection()
     {

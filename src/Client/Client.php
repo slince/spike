@@ -10,7 +10,7 @@ use React\EventLoop\Factory as LoopFactory;
 use React\Socket\ConnectionInterface;
 use React\Socket\Connector;
 use Spike\Exception\InvalidArgumentException;
-use Spike\Protocol\DomainRegisterRequest;
+use Spike\Protocol\RegisterHostRequest;
 use Spike\ProtocolFactory;
 use Spike\Protocol\MessageInterface;
 use Spike\Protocol\ProxyRequest;
@@ -93,6 +93,6 @@ class Client
 
     protected function uploadProxyHosts(ConnectionInterface $connection)
     {
-        $connection->write(new DomainRegisterRequest(array_keys($this->proxyHosts)));
+        $connection->write(new RegisterHostRequest(array_keys($this->proxyHosts)));
     }
 }
