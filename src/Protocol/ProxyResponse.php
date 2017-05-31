@@ -5,6 +5,7 @@
  */
 namespace Spike\Protocol;
 
+use GuzzleHttp\Psr7;
 use Psr\Http\Message\ResponseInterface as Psr7Response;
 
 class ProxyResponse extends Response
@@ -30,11 +31,11 @@ class ProxyResponse extends Response
 
     public function getBody()
     {
-        return serialize($this->response);
+        return Psr7\str($this->response);
     }
 
     public static function parseBody($body)
     {
-        return unserialize($body);
+        return Psr7\parse_response($body);
     }
 }

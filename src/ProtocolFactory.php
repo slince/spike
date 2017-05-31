@@ -24,7 +24,8 @@ class ProtocolFactory
             $protocol = Psr7\parse_request($buffer);
         } else {
             list(, $flag) = explode(':', $firstLine);
-            switch (trim($flag)) {
+            $flag = trim($flag);
+            switch ($flag) {
                 case 'register_domain':
                     $protocol = Protocol\DomainRegisterRequest::fromString($buffer);
                     break;
