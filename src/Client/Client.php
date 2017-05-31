@@ -12,6 +12,7 @@ use React\Socket\ConnectionInterface;
 use React\Socket\Connector;
 use Slince\Event\Dispatcher;
 use Slince\Event\Event;
+use Spike\ChunkBuffer;
 use Spike\Client\Handler\HandlerInterface;
 use Spike\Client\Handler\ProxyRequestHandler;
 use Spike\Client\Handler\RegisterHostResponseHandler;
@@ -73,7 +74,9 @@ class Client
             ]));
             //Reports the proxy hosts
             $this->transferProxyHosts($connection);
-            $connection->on('data', function($data) use ($connection){
+            //Gather the message and handles it
+            $chunkBuffer = new ChunkBuffer($connection);
+            $chunkBuffer->gather(function($data) use($connection){
                 $message = ProtocolFactory::create($data);
                 $this->dispatcher->dispatch(new Event(EventStore::RECEIVE_MESSAGE, $this, [
                     'message' => $message,

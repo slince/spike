@@ -15,6 +15,7 @@ use React\Socket\ConnectionInterface;
 use React\Socket\Server as Socket;
 use Slince\Event\Dispatcher;
 use Slince\Event\Event;
+use Spike\ChunkBuffer;
 use Spike\Exception\InvalidArgumentException;
 use Spike\Protocol\RegisterHostRequest;
 use Spike\Protocol\ProxyResponse;
@@ -68,7 +69,8 @@ class Server
             $this->dispatcher->dispatch(new Event(EventStore::ACCEPT_CONNECTION, $this, [
                 'connection' => $connection
             ]));
-            $connection->on('data', function($data) use ($connection){
+            $chunkBuffer = new ChunkBuffer($connection);
+            $chunkBuffer->gather(function($data) use($connection){
                 $message = ProtocolFactory::create($data);
                 $this->dispatcher->dispatch(new Event(EventStore::RECEIVE_MESSAGE, $this, [
                     'message' => $message,
