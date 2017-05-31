@@ -14,10 +14,10 @@ class ProxyResponse extends Response
      */
     protected $response;
 
-    public function __construct($code, Psr7Response $response = null)
+    public function __construct($code, Psr7Response $response, $headers = [])
     {
         $this->response = $response;
-        parent::__construct($code, 'proxy_response');
+        parent::__construct($code, 'proxy_response', $headers);
     }
 
     /**

@@ -98,19 +98,19 @@ class Server
             ($protocol->getUri()->getPort() ? ":{$protocol->getUri()->getPort()}" : '');
         $client = $this->findProxyClient($host);
         $proxyRequest = new ProxyRequest($protocol, [
-            'connection-id' => $connectionId
+            'Forwarded-Connection-Id' => $connectionId
         ]);
         $client->write($proxyRequest);
     }
 
     protected function handleProxyResponse(ProxyResponse $protocol, ConnectionInterface $connection)
     {
-        $connectionId = $protocol->getHeader('connection-id');
-        if (!$connectionId || !isset($this->clients[$connectionId])) {
+        $forwardedConnectionId = $protocol->getHeader('Forwarded-Connection-Id');
+        if (!$forwardedConnectionId || !isset($this->clients[$forwardedConnectionId])) {
             $connection->write('Lose connection');
             return false;
         }
-        $client = $this->clients[$connectionId];
+        $client = $this->clients[$forwardedConnectionId];
         $client->write(Psr7\str($protocol->getResponse()));
     }
 

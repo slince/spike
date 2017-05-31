@@ -9,6 +9,7 @@ use React\EventLoop\LoopInterface;
 use React\EventLoop\Factory as LoopFactory;
 use React\Socket\ConnectionInterface;
 use React\Socket\Connector;
+use Spike\Exception\InvalidArgumentException;
 use Spike\Protocol\DomainRegisterRequest;
 use Spike\ProtocolFactory;
 use Spike\Protocol\MessageInterface;
@@ -19,7 +20,7 @@ use Spike\Protocol\ProxyResponse;
 class Client
 {
     protected $proxyHosts = [
-        'spike.domain.com' => '127.0.0.1:8080'
+        'spike.domain.com' => 'localhost:8080'
     ];
 
     /**
@@ -72,9 +73,21 @@ class Client
     protected function acceptConnection(ConnectionInterface $connection, MessageInterface $protocol)
     {
        if ($protocol instanceof ProxyRequest) {
+            var_dump('receive request');
+            $forwardedConnectionId = $protocol->getHeader('Forwarded-Connection-Id');
             $request = $protocol->getRequest();
+            $proxyHost = $request->getUri()->getHost() .
+                ($request->getUri()->getPort() ? ":{$request->getUri()->getPort()}" : '');
+            if (!isset($this->proxyHosts[$proxyHost])) {
+                throw new InvalidArgumentException(sprintf('The host "%s" is not supported by the client', $proxyHost));
+            }
+            list($host, $port) = explode(':', $this->proxyHosts[$proxyHost]);
+            $uri = $request->getUri()->withHost($host)->withPort($port);
+            $request = $request->withUri($uri);
             $response = $this->httpClient->send($request);
-            $connection->write(new ProxyResponse($response));
+            $connection->write(new ProxyResponse(0, $response, [
+                'Forwarded-Connection-Id' => $forwardedConnectionId
+            ]));
         }
     }
 

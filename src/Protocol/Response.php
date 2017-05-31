@@ -40,8 +40,8 @@ abstract class Response extends Message implements ResponseInterface
     public function toString()
     {
         $headers = array_merge([
-            'Spike-Version' => static::VERSION,
             'Spike-Action' => $this->action,
+            'Spike-Version' => static::VERSION,
             'Code' => $this->code
         ], $this->headers);
         $buffer = '';
@@ -60,6 +60,6 @@ abstract class Response extends Message implements ResponseInterface
             throw new BadResponseException('Missing value');
         }
         $bodyBuffer = trim($bodyBuffer);
-        return new static(trim($headers['code']), static::parseBody($bodyBuffer), $headers);
+        return new static(trim($headers['Code']), static::parseBody($bodyBuffer), $headers);
     }
 }
