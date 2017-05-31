@@ -13,13 +13,12 @@ use React\EventLoop\LoopInterface;
 use React\EventLoop\Factory as LoopFactory;
 use React\Socket\ConnectionInterface;
 use React\Socket\Server as Socket;
+use Slince\Event\Dispatcher;
+use Slince\Event\Event;
 use Spike\Exception\InvalidArgumentException;
 use Spike\Protocol\RegisterHostRequest;
-use Spike\Protocol\MessageInterface;
-use Spike\Protocol\ProxyRequest;
 use Spike\Protocol\ProxyResponse;
 use Spike\ProtocolFactory;
-use Spike\Exception\RuntimeException;
 use Spike\Server\Handler\HandlerInterface;
 use Spike\Server\Handler\ProxyRequestHandler;
 use Spike\Server\Handler\ProxyResponseHandler;
@@ -28,6 +27,16 @@ use Spike\Server\Handler\RegisterHostHandler;
 class Server
 {
     /**
+     * @var LoopInterface
+     */
+    protected $loop;
+
+    /**
+     * @var Dispatcher
+     */
+    protected $dispatcher;
+
+    /**
      * @var Socket
      */
     protected $socket;
@@ -35,21 +44,18 @@ class Server
     /**
      * @var ProxyConnection[]
      */
-    protected $proxyConnections;
+    protected $proxyConnections = [];
 
     /**
      * @var ProxyHost[]
      */
-    protected $proxyHosts;
+    protected $proxyHosts = [];
 
-    public function __construct($address, LoopInterface $loop = null)
+    public function __construct($address, LoopInterface $loop = null, Dispatcher $dispatcher = null)
     {
-        if (is_null($loop)) {
-            $loop = LoopFactory::create();
-        }
-        $this->loop = $loop;
-        $this->socket = new Socket($address, $loop);
-        $this->proxyHosts = new Collection([]);
+        $this->loop = $loop ?: LoopFactory::create();
+        $this->socket = new Socket($address, $this->loop);
+        $this->dispatcher = $dispatcher ?: new Dispatcher();
     }
 
     /**
@@ -58,11 +64,23 @@ class Server
     public function run()
     {
         $this->socket->on('connection', function(ConnectionInterface $connection){
+            //Emit the event
+            $this->dispatcher->dispatch(new Event(EventStore::ACCEPT_CONNECTION, $this, [
+                'connection' => $connection
+            ]));
             $connection->on('data', function($data) use ($connection){
-                $protocol = ProtocolFactory::create($data);
-                $this->createHandler($protocol, $connection)->handle($protocol);
+                $message = ProtocolFactory::create($data);
+                $this->dispatcher->dispatch(new Event(EventStore::RECEIVE_MESSAGE, $this, [
+                    'message' => $message,
+                    'connection' => $connection
+                ]));
+                $this->createHandler($message, $connection)->handle($message);
             });
-            $connection->on('error', function($message){});
+        });
+        $this->socket->on('error', function($exception){
+            $this->dispatcher->dispatch(new Event(EventStore::SOCKET_ERROR, $this, [
+                'exception' => $exception
+            ]));
         });
         $this->loop->run();
     }
@@ -78,7 +96,7 @@ class Server
 
     /**
      * Gets the proxy hosts
-     * @return Collection
+     * @return ProxyHost[]
      */
     public function getProxyHosts()
     {
@@ -145,6 +163,22 @@ class Server
             }
         }
         return null;
+    }
+
+    /**
+     * @return Dispatcher
+     */
+    public function getDispatcher()
+    {
+        return $this->dispatcher;
+    }
+
+    /**
+     * @return LoopInterface
+     */
+    public function getLoop()
+    {
+        return $this->loop;
     }
 
     /**
