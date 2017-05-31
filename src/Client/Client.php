@@ -9,6 +9,10 @@ use React\EventLoop\LoopInterface;
 use React\EventLoop\Factory as LoopFactory;
 use React\Socket\ConnectionInterface;
 use React\Socket\Connector;
+use Slince\Event\Dispatcher;
+use Slince\Event\Event;
+use Spike\Client\Handler\HandlerInterface;
+use Spike\Client\Handler\ProxyRequestHandler;
 use Spike\Exception\InvalidArgumentException;
 use Spike\Protocol\RegisterHostRequest;
 use Spike\ProtocolFactory;
@@ -16,12 +20,19 @@ use Spike\Protocol\MessageInterface;
 use Spike\Protocol\ProxyRequest;
 use GuzzleHttp\Client as HttpClient;
 use Spike\Protocol\ProxyResponse;
+use Spike\Server\ProxyHost;
 
 class Client
 {
-    protected $proxyHosts = [
-        'spike.domain.com' => 'localhost:8080'
-    ];
+    /**
+     * @var LoopInterface
+     */
+    protected $loop;
+
+    /**
+     * @var Dispatcher
+     */
+    protected $dispatcher;
 
     /**
      * @var Connector
@@ -38,61 +49,123 @@ class Client
      */
     protected $serverAddress;
 
-    protected $loop;
+    /**
+     * Proxy host to forward host map
+     * @var array
+     */
+    protected $forwardHosts = [];
 
-    public function __construct($server, LoopInterface $loop = null, HttpClient $client = null)
+    public function __construct($serverAddress, LoopInterface $loop = null, HttpClient $client = null, Dispatcher $dispatcher = null)
     {
-        $this->serverAddress = $server;
-        if (is_null($client)) {
-            $client = new HttpClient();
-        }
-        $this->httpClient = $client;
-        if (is_null($loop)) {
-            $loop = LoopFactory::create();
-        }
-        $this->loop = $loop;
+        $this->serverAddress = $serverAddress;
+        $this->httpClient = $client ?: new HttpClient();
+        $this->loop = $loop ?: LoopFactory::create();
         $this->connector = new Connector($loop);
+        $this->dispatcher = $dispatcher ?: new Dispatcher();
     }
 
     public function run()
     {
         $this->connector->connect($this->serverAddress)->then(function(ConnectionInterface $connection){
-            $this->uploadProxyHosts($connection); //Reports the proxy hosts
+            //Emit the event
+            $this->dispatcher->dispatch(new Event(EventStore::CONNECT_TO_SERVER, $this, [
+                'connection' => $connection
+            ]));
+            //Reports the proxy hosts
+            $this->transferProxyHosts($connection);
             $connection->on('data', function($data) use ($connection){
-                $protocol = ProtocolFactory::create($data);
-                if ($protocol === false) {
-                    $connection->close();
-                }
-                $this->acceptConnection($connection, $protocol);
+                $message = ProtocolFactory::create($data);
+                $this->dispatcher->dispatch(new Event(EventStore::RECEIVE_MESSAGE, $this, [
+                    'message' => $message,
+                    'connection' => $connection
+                ]));
+                $this->createHandler($message, $connection)->handle($message);
             });
         });
-        echo 'client running', PHP_EOL;
         $this->loop->run();
     }
 
-    protected function acceptConnection(ConnectionInterface $connection, MessageInterface $protocol)
+    /**
+     * @return LoopInterface
+     */
+    public function getLoop()
     {
-       if ($protocol instanceof ProxyRequest) {
-            var_dump('receive request');
-            $forwardedConnectionId = $protocol->getHeader('Forwarded-Connection-Id');
-            $request = $protocol->getRequest();
-            $proxyHost = $request->getUri()->getHost() .
-                ($request->getUri()->getPort() ? ":{$request->getUri()->getPort()}" : '');
-            if (!isset($this->proxyHosts[$proxyHost])) {
-                throw new InvalidArgumentException(sprintf('The host "%s" is not supported by the client', $proxyHost));
-            }
-            list($host, $port) = explode(':', $this->proxyHosts[$proxyHost]);
-            $uri = $request->getUri()->withHost($host)->withPort($port);
-            $request = $request->withUri($uri);
-            $response = $this->httpClient->send($request);
-            $connection->write(new ProxyResponse(0, $response, [
-                'Forwarded-Connection-Id' => $forwardedConnectionId
-            ]));
-        }
+        return $this->loop;
     }
 
-    protected function uploadProxyHosts(ConnectionInterface $connection)
+    /**
+     * @return HttpClient
+     */
+    public function getHttpClient()
     {
-        $connection->write(new RegisterHostRequest(array_keys($this->proxyHosts)));
+        return $this->httpClient;
+    }
+
+    /**
+     * @return Dispatcher
+     */
+    public function getDispatcher()
+    {
+        return $this->dispatcher;
+    }
+
+    /**
+     * Gets all forward hosts
+     * @return array
+     */
+    public function getForwardHosts()
+    {
+        return $this->forwardHosts;
+    }
+
+    /**
+     * Adds a forward host
+     * @param string $proxyHost
+     * @param string $forwardHost
+     */
+    public function addForwardHost($proxyHost, $forwardHost)
+    {
+        $this->forwardHosts[$proxyHost] = $forwardHost;
+    }
+
+    /**
+     * Gets the forward host for the host
+     * @param string $proxyHost
+     * @return string|null
+     */
+    public function getForwardHost($proxyHost)
+    {
+        return isset($this->forwardHosts[$proxyHost]) ? $this->forwardHosts[$proxyHost] : null;
+    }
+
+    /**
+     * Reports the proxy hosts to the server
+     * @param ConnectionInterface $connection
+     */
+    protected function transferProxyHosts(ConnectionInterface $connection)
+    {
+        $proxyHosts = array_keys($this->forwardHosts);
+        $this->dispatcher->dispatch(new Event(EventStore::TRANSFER_PROXY_HOSTS, $this, [
+            'proxyHosts' => $proxyHosts
+        ]));
+        $connection->write(new RegisterHostRequest($proxyHosts));
+    }
+
+    /**
+     * Creates the handler for the received message
+     * @param MessageInterface $message
+     * @param ConnectionInterface $connection
+     * @return HandlerInterface
+     */
+    protected function createHandler($message, $connection)
+    {
+        if ($message instanceof ProxyHost) {
+            $handler = new ProxyRequestHandler($this, $connection);
+        } else {
+            throw new InvalidArgumentException(sprintf('Cannot find handler for message type: "%s"',
+                gettype($message)
+            ));
+        }
+        return $handler;
     }
 }

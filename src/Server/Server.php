@@ -82,6 +82,8 @@ class Server
                 'exception' => $exception
             ]));
         });
+        //Emit the event
+        $this->dispatcher->dispatch(EventStore::SERVER_RUN);
         $this->loop->run();
     }
 
