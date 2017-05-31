@@ -10,7 +10,7 @@ use React\EventLoop\Factory as LoopFactory;
 use React\Socket\ConnectionInterface;
 use React\Socket\Connector;
 use Spike\Protocol\DomainRegisterRequest;
-use Spike\Protocol\Factory;
+use Spike\ProtocolFactory;
 use Spike\Protocol\MessageInterface;
 use Spike\Protocol\ProxyRequest;
 use GuzzleHttp\Client as HttpClient;
@@ -19,7 +19,7 @@ use Spike\Protocol\ProxyResponse;
 class Client
 {
     protected $proxyHosts = [
-        'foo.domain.com' => '127.0.0.1:8080'
+        'spike.domain.com' => '127.0.0.1:8080'
     ];
 
     /**
@@ -58,13 +58,14 @@ class Client
         $this->connector->connect($this->serverAddress)->then(function(ConnectionInterface $connection){
             $this->uploadProxyHosts($connection); //Reports the proxy hosts
             $connection->on('data', function($data) use ($connection){
-                $protocol = Factory::create($data);
+                $protocol = ProtocolFactory::create($data);
                 if ($protocol === false) {
                     $connection->close();
                 }
                 $this->acceptConnection($connection, $protocol);
             });
         });
+        echo 'client running', PHP_EOL;
         $this->loop->run();
     }
 

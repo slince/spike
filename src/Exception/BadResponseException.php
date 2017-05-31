@@ -3,7 +3,7 @@
  * Spike library
  * @author Tao <taosikai@yeah.net>
  */
-namespace Spike\Server\Exception;
+namespace Spike\Exception;
 
 class BadResponseException extends RuntimeException
 {

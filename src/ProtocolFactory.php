@@ -3,38 +3,39 @@
  * Spike library
  * @author Tao <taosikai@yeah.net>
  */
-namespace Spike\Protocol;
+namespace Spike;
 
 use GuzzleHttp\Psr7;
-use Spike\Server\Exception\BadRequestException;
+use Spike\Exception\BadRequestException;
+use Spike\Protocol;
 
-class Factory
+class ProtocolFactory
 {
     /**
      * @param $buffer
-     * @return Psr7\Request|DomainRegisterRequest|MessageInterface
+     * @return Psr7\Request|Protocol\MessageInterface
      */
     public static function create($buffer)
     {
         $firstLine = is_resource($buffer) ?
-            fgets($buffer) : explode("\r\n", $buffer);
+            fgets($buffer) : explode("\r\n", $buffer)[0];
         $isHttpRequest = strpos($firstLine, 'HTTP') !== false;
         if ($isHttpRequest) {
             $protocol = Psr7\parse_request($buffer);
         } else {
             list(, $flag) = explode(':', $firstLine);
-            switch ($flag) {
+            switch (trim($flag)) {
                 case 'register_domain':
-                    $protocol = DomainRegisterRequest::fromString($buffer);
+                    $protocol = Protocol\DomainRegisterRequest::fromString($buffer);
                     break;
                 case 'register_domain_response':
-                    $protocol = DomainRegisterResponse::fromString($buffer);
+                    $protocol = Protocol\DomainRegisterResponse::fromString($buffer);
                     break;
                 case 'proxy_request':
-                    $protocol = ProxyRequest::fromString($buffer);
+                    $protocol = Protocol\ProxyRequest::fromString($buffer);
                     break;
                 case 'proxy_response':
-                    $protocol = ProxyResponse::fromString($buffer);
+                    $protocol = Protocol\ProxyResponse::fromString($buffer);
                     break;
                 default:
                     throw new BadRequestException('Bad request');

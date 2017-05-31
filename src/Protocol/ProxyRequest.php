@@ -5,7 +5,7 @@
  */
 namespace Spike\Protocol;
 
-use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\RequestInterface as Psr7Request;
 
 /**
  * Version: 1.0
@@ -15,18 +15,18 @@ use Psr\Http\Message\RequestInterface;
 class ProxyRequest extends Request
 {
     /**
-     * @var RequestInterface
+     * @var Psr7Request
      */
     protected $request;
 
-    public function __construct(RequestInterface $request, $headers = [])
+    public function __construct(Psr7Request $request, $headers = [])
     {
         $this->request = $request;
         parent::__construct('proxy_request', $headers);
     }
 
     /**
-     * @return RequestInterface
+     * @return Psr7Request
      */
     public function getRequest()
     {

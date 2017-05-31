@@ -5,7 +5,7 @@
  */
 namespace Spike\Protocol;
 
-use Spike\Server\Exception\BadResponseException;
+use Spike\Exception\BadResponseException;
 
 abstract class Response extends Message implements ResponseInterface
 {
@@ -39,14 +39,14 @@ abstract class Response extends Message implements ResponseInterface
 
     public function toString()
     {
-        $headers = array_merge($this->headers, [
-            'Version' => static::VERSION,
-            'Action' => $this->action,
+        $headers = array_merge([
+            'Spike-Version' => static::VERSION,
+            'Spike-Action' => $this->action,
             'Code' => $this->code
-        ]);
+        ], $this->headers);
         $buffer = '';
-        foreach ($headers as $header) {
-            $buffer .= ": {$header}\r\n";
+        foreach ($headers as $header => $value) {
+            $buffer .= "{$header}: {$value}\r\n";
         }
         return $buffer
             . "\r\n\r\n"
@@ -56,7 +56,7 @@ abstract class Response extends Message implements ResponseInterface
     public static function fromString($string)
     {
         list($headers, $bodyBuffer) = Message::parseMessages($string);
-        if (!isset($headers['Action']) || !isset($headers['Code'])) {
+        if (!isset($headers['Spike-Action']) || !isset($headers['Code'])) {
             throw new BadResponseException('Missing value');
         }
         $bodyBuffer = trim($bodyBuffer);

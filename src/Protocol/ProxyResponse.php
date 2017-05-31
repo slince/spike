@@ -5,23 +5,23 @@
  */
 namespace Spike\Protocol;
 
-use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ResponseInterface as Psr7Response;
 
 class ProxyResponse extends Response
 {
     /**
-     * @var Response
+     * @var Psr7Response
      */
     protected $response;
 
-    public function __construct($code, ResponseInterface $response = null)
+    public function __construct($code, Psr7Response $response = null)
     {
         $this->response = $response;
         parent::__construct($code, 'proxy_response');
     }
 
     /**
-     * @return ResponseInterface
+     * @return Psr7Response
      */
     public function getResponse()
     {
@@ -33,8 +33,8 @@ class ProxyResponse extends Response
         return serialize($this->response);
     }
 
-    public function parseBody($body)
+    public static function parseBody($body)
     {
-        $this->response = unserialize($body);
+        return unserialize($body);
     }
 }

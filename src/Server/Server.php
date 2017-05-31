@@ -14,10 +14,11 @@ use React\EventLoop\Factory as LoopFactory;
 use React\Socket\ConnectionInterface;
 use React\Socket\Server as Socket;
 use Spike\Protocol\DomainRegisterRequest;
-use Spike\Protocol\Factory;
 use Spike\Protocol\MessageInterface;
 use Spike\Protocol\ProxyRequest;
 use Spike\Protocol\ProxyResponse;
+use Spike\ProtocolFactory;
+use Spike\Exception\RuntimeException;
 
 class Server
 {
@@ -50,7 +51,7 @@ class Server
         $this->socket = new Socket($address, $loop);
         $this->socket->on('connection', function(ConnectionInterface $connection){
             $connection->on('data', function($data) use ($connection){
-                $protocol = Factory::create($data);
+                $protocol = ProtocolFactory::create($data);
                 if ($protocol === false) {
                     $connection->close();
                 }
@@ -60,10 +61,12 @@ class Server
                 var_dump($message);
             });
         });
+        $this->domainMap = new Collection([]);
     }
 
     public function run()
     {
+        echo 'server running', PHP_EOL;
         $this->loop->run();
     }
 
@@ -86,11 +89,14 @@ class Server
         $this->domainMap = $this->domainMap->append(array_map(function($domain) use ($connection){
             return new DomainMapRecord($domain, $connection);
         }, $protocol->getAddingDomains()));
+        print_r(count($this->domainMap->toArray()));
     }
 
     protected function handleProxyRequest(RequestInterface $protocol, ConnectionInterface $connection, $connectionId)
     {
-        $client = $this->findProxyClient($protocol->getUri()->getHost());
+        $host = $protocol->getUri()->getHost() .
+            ($protocol->getUri()->getPort() ? ":{$protocol->getUri()->getPort()}" : '');
+        $client = $this->findProxyClient($host);
         $proxyRequest = new ProxyRequest($protocol, [
             'connection-id' => $connectionId
         ]);
@@ -114,8 +120,12 @@ class Server
      */
     protected function findProxyClient($host)
     {
-        return $this->domainMap->filter(function(DomainMapRecord $record) use ($host){
-            return $record->getConnection() == $host;
-        })->first()->getConnection();
+        $record = $this->domainMap->filter(function(DomainMapRecord $record) use ($host){
+            return $record->getDomain() == $host;
+        })->first();
+        if (is_null($record)) {
+            throw new RuntimeException("Cannot find proxy client for the request");
+        }
+        return $record->getConnection();
     }
 }

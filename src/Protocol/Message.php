@@ -73,7 +73,7 @@ abstract class Message implements MessageInterface
      */
     public static function parseMessages($message)
     {
-        list($headerBuffer, $bodyBuffer) = explode("\r\n", $message, 2);
+        list($headerBuffer, $bodyBuffer) = explode("\r\n\r\n", $message, 2);
         $lines = preg_split('/(\\r?\\n)/', $headerBuffer, -1, PREG_SPLIT_DELIM_CAPTURE);
         $headers = [];
         foreach ($lines as $line) {

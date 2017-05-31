@@ -5,7 +5,7 @@
  */
 namespace Spike\Protocol;
 
-use Spike\Server\Exception\BadRequestException;
+use Spike\Exception\BadRequestException;
 
 abstract class Request extends Message implements RequestInterface
 {
@@ -16,8 +16,8 @@ abstract class Request extends Message implements RequestInterface
             'Spike-Version' => MessageInterface::VERSION,
         ], $this->headers);
         $buffer = '';
-        foreach ($headers as $header) {
-            $buffer .= ": {$header}\r\n";
+        foreach ($headers as $header => $value) {
+            $buffer .= "{$header}: {$value}\r\n";
         }
         return $buffer
             . "\r\n\r\n"
@@ -27,7 +27,7 @@ abstract class Request extends Message implements RequestInterface
     public static function fromString($string)
     {
         list($headers, $bodyBuffer) = Message::parseMessages($string);
-        if (!isset($headers['action'])) {
+        if (!isset($headers['Spike-Action'])) {
             throw new BadRequestException('Missing value for the header "action"');
         }
         $bodyBuffer = trim($bodyBuffer);

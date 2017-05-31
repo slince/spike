@@ -20,8 +20,8 @@ class DomainRegisterResponse extends Response
         return $this->body;
     }
 
-    public function parseBody($body)
+    public static function parseBody($body)
     {
-        $this->body = $body;
+        return $body;
     }
 }
