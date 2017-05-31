@@ -38,8 +38,8 @@ class ProxyRequest extends Request
         return serialize($this->request);
     }
 
-    public function parseBody($body)
+    public static function parseBody($body)
     {
-        $this->request = unserialize($body);
+        return unserialize($body);
     }
 }

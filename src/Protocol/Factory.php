@@ -12,7 +12,7 @@ class Factory
 {
     /**
      * @param $buffer
-     * @return Psr7\Request|DomainRegisterRequest|ProtocolInterface
+     * @return Psr7\Request|DomainRegisterRequest|MessageInterface
      */
     public static function create($buffer)
     {

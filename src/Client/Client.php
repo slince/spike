@@ -11,7 +11,7 @@ use React\Socket\ConnectionInterface;
 use React\Socket\Connector;
 use Spike\Protocol\DomainRegisterRequest;
 use Spike\Protocol\Factory;
-use Spike\Protocol\ProtocolInterface;
+use Spike\Protocol\MessageInterface;
 use Spike\Protocol\ProxyRequest;
 use GuzzleHttp\Client as HttpClient;
 use Spike\Protocol\ProxyResponse;
@@ -68,7 +68,7 @@ class Client
         $this->loop->run();
     }
 
-    protected function acceptConnection(ConnectionInterface $connection, ProtocolInterface $protocol)
+    protected function acceptConnection(ConnectionInterface $connection, MessageInterface $protocol)
     {
        if ($protocol instanceof ProxyRequest) {
             $request = $protocol->getRequest();

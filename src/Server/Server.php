@@ -15,7 +15,7 @@ use React\Socket\ConnectionInterface;
 use React\Socket\Server as Socket;
 use Spike\Protocol\DomainRegisterRequest;
 use Spike\Protocol\Factory;
-use Spike\Protocol\ProtocolInterface;
+use Spike\Protocol\MessageInterface;
 use Spike\Protocol\ProxyRequest;
 use Spike\Protocol\ProxyResponse;
 
