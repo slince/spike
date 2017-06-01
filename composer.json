@@ -19,7 +19,8 @@
         "slince/di": "^2.0",
         "slince/config": "^1.0",
         "zendframework/zend-diactoros": "^1.0",
-        "symfony/console": "^3.0"
+        "symfony/console": "^3.0",
+        "monolog/monolog": "^1.22"
     },
     "require-dev": {
         "phpunit/phpunit": "^5.0|^6.0"

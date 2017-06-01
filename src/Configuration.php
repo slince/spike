@@ -11,6 +11,6 @@ class Configuration  extends Config
 {
     public function getServerAddress()
     {
-        return $this->get('server.address', '127.0.0.1:8766');
+        return $this->get('server.address', '127.0.0.1:80');
     }
 }
