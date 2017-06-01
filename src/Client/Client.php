@@ -19,7 +19,7 @@ use Spike\Client\Handler\RegisterHostResponseHandler;
 use Spike\Exception\InvalidArgumentException;
 use Spike\Protocol\RegisterHostRequest;
 use Spike\Protocol\RegisterHostResponse;
-use Spike\ProtocolFactory;
+use Spike\Protocol\ProtocolFactory;
 use Spike\Protocol\MessageInterface;
 use Spike\Protocol\ProxyRequest;
 

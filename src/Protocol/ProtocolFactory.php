@@ -3,17 +3,16 @@
  * Spike library
  * @author Tao <taosikai@yeah.net>
  */
-namespace Spike;
+namespace Spike\Protocol;
 
 use GuzzleHttp\Psr7;
 use Spike\Exception\BadRequestException;
-use Spike\Protocol;
 
 class ProtocolFactory
 {
     /**
      * @param $buffer
-     * @return Psr7\Request|Protocol\MessageInterface
+     * @return Psr7\Request|MessageInterface
      */
     public static function create($buffer)
     {
@@ -27,16 +26,16 @@ class ProtocolFactory
             $flag = trim($flag);
             switch ($flag) {
                 case 'register_domain':
-                    $protocol = Protocol\RegisterHostRequest::fromString($buffer);
+                    $protocol = RegisterHostRequest::fromString($buffer);
                     break;
                 case 'register_domain_response':
-                    $protocol = Protocol\RegisterHostResponse::fromString($buffer);
+                    $protocol = RegisterHostResponse::fromString($buffer);
                     break;
                 case 'proxy_request':
-                    $protocol = Protocol\ProxyRequest::fromString($buffer);
+                    $protocol = ProxyRequest::fromString($buffer);
                     break;
                 case 'proxy_response':
-                    $protocol = Protocol\ProxyResponse::fromString($buffer);
+                    $protocol = ProxyResponse::fromString($buffer);
                     break;
                 default:
                     throw new BadRequestException('Bad request');

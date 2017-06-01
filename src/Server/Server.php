@@ -6,7 +6,6 @@
 namespace Spike\Server;
 
 use Cake\Collection\Collection;
-use GuzzleHttp\Psr7;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use React\EventLoop\LoopInterface;
@@ -19,7 +18,7 @@ use Spike\ChunkBuffer;
 use Spike\Exception\InvalidArgumentException;
 use Spike\Protocol\RegisterHostRequest;
 use Spike\Protocol\ProxyResponse;
-use Spike\ProtocolFactory;
+use Spike\Protocol\ProtocolFactory;
 use Spike\Server\Handler\HandlerInterface;
 use Spike\Server\Handler\ProxyRequestHandler;
 use Spike\Server\Handler\ProxyResponseHandler;
