@@ -25,10 +25,15 @@ class ChunkBuffer
      */
     protected $callback;
 
+    protected $contentSize;
+
     public function __construct(ConnectionInterface $connection)
     {
         $this->connection = $connection;
         $this->connection->on('data', function($data){
+            if (strpos($data, 'Content-Size') !== false) {
+
+            }
             $this->buffer = $data;
         });
         $this->connection->on('end', function(){

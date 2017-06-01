@@ -27,7 +27,8 @@ abstract class Message implements MessageInterface
 
     public function __toString()
     {
-        return $this->toString();
+        $content = $this->toString();
+        return "Content-Size: " . strlen($content) . "\r\n" . $content;
     }
 
     /**
