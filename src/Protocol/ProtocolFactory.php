@@ -5,24 +5,22 @@
  */
 namespace Spike\Protocol;
 
-use GuzzleHttp\Psr7;
+use Spike\Buffer\BufferInterface;
+use Spike\Buffer\HttpBuffer;
 use Spike\Exception\BadRequestException;
 
 class ProtocolFactory
 {
     /**
-     * @param $buffer
-     * @return Psr7\Request|MessageInterface
+     * @param BufferInterface $buffer
+     * @return MessageInterface
      */
     public static function create($buffer)
     {
-        $firstLine = is_resource($buffer) ?
-            fgets($buffer) : explode("\r\n", $buffer)[0];
-        $isHttpRequest = strpos($firstLine, 'HTTP') !== false;
-        if ($isHttpRequest) {
-            $protocol = Psr7\parse_request($buffer);
+        if ($buffer instanceof HttpBuffer) {
+            $protocol = HttpRequest::fromString($buffer);
         } else {
-            list(, $flag) = explode(':', $firstLine);
+            list(, $flag) = explode(':', $buffer);
             $flag = trim($flag);
             switch ($flag) {
                 case 'register_domain':

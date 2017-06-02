@@ -5,12 +5,13 @@
  */
 namespace Spike\Server\Handler;
 
+use Spike\Protocol\MessageInterface;
 use Spike\Protocol\RegisterHostResponse;
 use Spike\Server\ProxyHost;
 
 class RegisterHostHandler extends Handler
 {
-    public function handle($message)
+    public function handle(MessageInterface $message)
     {
         $proxyHosts = array_map(function($host){
             return new ProxyHost($host, $this->connection);

@@ -5,9 +5,11 @@
  */
 namespace Spike\Client\Handler;
 
+use Spike\Protocol\MessageInterface;
+
 class RegisterHostResponseHandler extends Handler
 {
-    public function handle($message)
+    public function handle(MessageInterface $message)
     {
     }
 }

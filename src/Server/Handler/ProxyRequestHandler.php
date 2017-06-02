@@ -5,18 +5,18 @@
  */
 namespace Spike\Server\Handler;
 
-use Psr\Http\Message\RequestInterface;
+use Spike\Protocol\MessageInterface;
 use Spike\Exception\RuntimeException;
 use Spike\Protocol\ProxyRequest;
 use Spike\Server\ProxyConnection;
 
 class ProxyRequestHandler extends Handler
 {
-    public function handle($request)
+    public function handle(MessageInterface $message)
     {
         $proxyConnection = new ProxyConnection($this->connection);
         $this->server->addProxyConnection($proxyConnection);
-
+        $request = $message->getRequest();
         $forwardHost = $request->getUri()->getHost();
         if ($request->getUri()->getPort()) {
             $forwardHost .= "{$request->getUri()->getPort()}";

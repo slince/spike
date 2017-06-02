@@ -14,5 +14,5 @@ interface HandlerInterface
      * Handling the message
      * @param MessageInterface|RequestInterface $message
      */
-    public function handle($message);
+    public function handle(MessageInterface $message);
 }

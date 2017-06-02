@@ -6,11 +6,12 @@
 namespace Spike\Client\Handler;
 
 use Spike\Exception\RuntimeException;
+use Spike\Protocol\MessageInterface;
 use Spike\Protocol\ProxyResponse;
 
 class ProxyRequestHandler extends Handler
 {
-    public function handle($message)
+    public function handle(MessageInterface $message)
     {
         $forwardedConnectionId = $message->getHeader('Forwarded-Connection-Id');
         $request = $message->getRequest();

@@ -7,13 +7,14 @@ namespace Spike\Server\Handler;
 
 use Spike\Exception\RuntimeException;
 use GuzzleHttp\Psr7;
+use Spike\Protocol\MessageInterface;
 
 class ProxyResponseHandler extends Handler
 {
     /**
      * {@inheritdoc}
      */
-    public function handle($message)
+    public function handle(MessageInterface $message)
     {
         $forwardedConnectionId = $message->getHeader('Forwarded-Connection-Id');
         if (!$forwardedConnectionId || !($proxyConnection = $this->server->findProxyConnection($forwardedConnectionId))) {
