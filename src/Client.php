@@ -9,6 +9,7 @@ use Slince\Event\Event;
 use Slince\Event\SubscriberInterface;
 use Spike\Client\Command\ShowProxyHostsCommand;
 use Spike\Client\EventStore;
+use Spike\Client\Subscriber\ScreenPrettySubscriber;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -47,9 +48,6 @@ class Client extends Application implements SubscriberInterface
     public function getEvents()
     {
         return [
-            EventStore::CLIENT_RUN => 'onClientRun',
-            EventStore::ACCEPT_CONNECTION => 'onAcceptConnection',
-            EventStore::SOCKET_ERROR => 'onClientError',
         ];
     }
 
@@ -71,31 +69,23 @@ class Client extends Application implements SubscriberInterface
         }
     }
 
-    public function onClientRun(Event $event)
-    {
-        $this->output->writeln("<info>The server is running ...</info>");
-    }
-
-    public function onAcceptConnection(Event $event)
-    {
-        $this->output->writeln("<info>Accepted a new connection.</info>");
-    }
-
-    public function onReceiveMessage(Event $event)
-    {
-        $this->output->writeln("<info>Received a message.</info>");
-    }
-
-    public function onClientError(Event $event)
-    {
-        $this->output->writeln("<warnning>Client error.</warnning>");
-    }
-
     public function getDefaultCommands()
     {
         return array_merge(parent::getDefaultCommands(), [
             new ShowProxyHostsCommand($this),
         ]);
+    }
+
+    /**
+     * Gets all subscribers
+     * @return array
+     */
+    public function getSubscribers()
+    {
+        return [
+            $this,
+            new ScreenPrettySubscriber($this)
+        ];
     }
 
     protected function getDefaultInputDefinition()

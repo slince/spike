@@ -64,4 +64,20 @@ class Application extends BaseApplication
     {
         return $this->configuration;
     }
+
+    /**
+     * @return InputInterface
+     */
+    public function getInput()
+    {
+        return $this->input;
+    }
+
+    /**
+     * @return OutputInterface
+     */
+    public function getOutput()
+    {
+        return $this->output;
+    }
 }

@@ -8,6 +8,7 @@ namespace Spike;
 use Slince\Event\Event;
 use Slince\Event\SubscriberInterface;
 use Spike\Server\EventStore;
+use Spike\Server\Subscriber\ScreenPrettySubscriber;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -42,41 +43,31 @@ class Server extends Application implements SubscriberInterface
         return $exitCode;
     }
 
-    public function getEvents()
-    {
-        return [
-            EventStore::SERVER_RUN => 'onServerRun',
-            EventStore::ACCEPT_CONNECTION => 'onAcceptConnection',
-            EventStore::SOCKET_ERROR => 'onServerError',
-        ];
-    }
-
     /**
      * Start the server
      */
     protected function doRunServer()
     {
-        $this->dispatcher->addSubscriber($this);
+        foreach ($this->getSubscribers() as $subscriber) {
+            $this->dispatcher->addSubscriber($subscriber);
+        }
         $this->server->run();
     }
 
-    public function onServerRun(Event $event)
+    public function getEvents()
     {
-        $this->output->writeln("<info>The server is running ...</info>");
+        return [];
     }
 
-    public function onAcceptConnection(Event $event)
+    /**
+     * Gets all subscribers
+     * @return array
+     */
+    public function getSubscribers()
     {
-        $this->output->writeln("<info>Accepted a new connection.</info>");
-    }
-
-    public function onReceiveMessage(Event $event)
-    {
-        $this->output->writeln("<info>Received a message.</info>");
-    }
-
-    public function onServerError(Event $event)
-    {
-        $this->output->writeln("<warnning>Received a message.</warnning>");
+        return [
+            $this,
+            new ScreenPrettySubscriber($this)
+        ];
     }
 }

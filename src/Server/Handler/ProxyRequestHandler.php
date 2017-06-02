@@ -19,20 +19,21 @@ class ProxyRequestHandler extends Handler
         $proxyConnection = new ProxyConnection($this->connection);
         $this->server->addProxyConnection($proxyConnection);
         $request = $message->getRequest();
-        $forwardHost = $request->getUri()->getHost();
+        $host = $request->getUri()->getHost();
         if ($request->getUri()->getPort()) {
-            $forwardHost .= "{$request->getUri()->getPort()}";
+            $host .= "{$request->getUri()->getPort()}";
         }
-        $proxyHost = $this->server->findProxyHost($forwardHost);
+        $proxyHost = $this->server->findProxyHost($host);
         if (is_null($proxyHost)) {
-            throw new RuntimeException(sprintf('Cannot find proxy client for the host "%s"', $forwardHost));
+            throw new RuntimeException(sprintf('Cannot find proxy client for the host "%s"', $host));
         }
         $proxyRequest = new ProxyRequest($request, [
             'Forwarded-Connection-Id' => $proxyConnection->getId()
         ]);
         $proxyHost->getConnection()->write($proxyRequest);
-        $this->server->getDispatcher()->dispatch(new Event(EventStore::RECEIVE_MESSAGE, $this, [
+        $this->server->getDispatcher()->dispatch(new Event(EventStore::SEND_PROXY_REQUEST, $this, [
             'message' => $message,
+            'proxyHost' => $proxyHost,
             'proxyRequest' => $proxyRequest
         ]));
     }
