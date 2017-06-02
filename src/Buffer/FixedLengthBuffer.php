@@ -7,7 +7,7 @@ namespace Spike\Buffer;
 
 use React\Socket\ConnectionInterface;
 
-class LengthLimitBuffer extends Buffer
+class FixedLengthBuffer extends Buffer
 {
     /**
      * Bytes, buffer length

@@ -5,9 +5,11 @@
  */
 namespace Spike\Server\Handler;
 
+use Slince\Event\Event;
 use Spike\Protocol\MessageInterface;
 use Spike\Exception\RuntimeException;
 use Spike\Protocol\ProxyRequest;
+use Spike\Server\EventStore;
 use Spike\Server\ProxyConnection;
 
 class ProxyRequestHandler extends Handler
@@ -29,5 +31,9 @@ class ProxyRequestHandler extends Handler
             'Forwarded-Connection-Id' => $proxyConnection->getId()
         ]);
         $proxyHost->getConnection()->write($proxyRequest);
+        $this->server->getDispatcher()->dispatch(new Event(EventStore::RECEIVE_MESSAGE, $this, [
+            'message' => $message,
+            'proxyRequest' => $proxyRequest
+        ]));
     }
 }

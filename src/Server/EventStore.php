@@ -30,4 +30,16 @@ final class EventStore
      * @var string
      */
     const RECEIVE_MESSAGE = 'receive_message';
+
+    /**
+     * Emit when the server send a proxy request to a proxy client
+     * @var string
+     */
+    const SEND_PROXY_REQUEST = 'send_proxy_request';
+
+    /**
+     * Emit when the server receive a proxy response from a proxy client
+     * @var string
+     */
+    const RECEIVE_PROXY_RESPONSE = 'receive_proxy_response';
 }

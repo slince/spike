@@ -182,6 +182,7 @@ class Client
     protected function createHandler($message, $connection)
     {
         if ($message instanceof ProxyRequest) {
+            var_dump($message);exit;
             $handler = new ProxyRequestHandler($this, $connection);
         } elseif ($message instanceof RegisterHostResponse) {
             $handler = new RegisterHostResponseHandler($this, $connection);

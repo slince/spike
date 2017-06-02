@@ -39,7 +39,7 @@ class HttpBuffer extends Buffer
                 $length = $match[1];
                 $furtherContentLength = $length - strlen($this->body);
                 if ($furtherContentLength > 0) {
-                    $bodyBuffer = new LengthLimitBuffer($this->connection, $furtherContentLength);
+                    $bodyBuffer = new FixedLengthBuffer($this->connection, $furtherContentLength);
                     $bodyBuffer->gather(function(BufferInterface $bodyBuffer){
                         $this->body .= (string)$bodyBuffer;
                         $this->handleComplete();
