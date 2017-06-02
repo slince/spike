@@ -41,12 +41,12 @@ class Application extends BaseApplication
      */
     protected $output;
 
-    public function __construct($name, $version)
+    public function __construct(Configuration $configuration, $name = null, $version = null)
     {
-        parent::__construct($name, $version);
-        $this->dispatcher =  new Dispatcher();
+        $this->configuration = $configuration;
         $this->container = new Container();
-        $this->configuration = new Configuration();
+        $this->dispatcher =  new Dispatcher();
+        parent::__construct($name, $version);
     }
 
     /**

@@ -1,4 +1,5 @@
 {
+    "server-address": "127.0.0.1:80",
     "proxy-hosts": {
           "127.0.0.1": "www.baidu.com"
     }

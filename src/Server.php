@@ -10,6 +10,7 @@ use Slince\Event\SubscriberInterface;
 use Spike\Server\EventStore;
 use Spike\Server\Subscriber\ScreenPrettySubscriber;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class Server extends Application implements SubscriberInterface
@@ -23,11 +24,10 @@ class Server extends Application implements SubscriberInterface
      */
     protected $server;
 
-    public function __construct($configFile = null)
+    public function __construct(Configuration $configuration)
     {
-        parent::__construct(static::NAME, static::VERSION);
-        is_null($configFile) || $this->configuration->load($configFile);
-        $this->server = new Server\Server($this->configuration->getServerAddress(), null, $this->dispatcher);
+        parent::__construct($configuration,static::NAME, static::VERSION);
+        $this->server = new Server\Server($this->configuration->getAddress(), null, $this->dispatcher);
     }
 
     public function doRun(InputInterface $input, OutputInterface $output)
@@ -69,5 +69,15 @@ class Server extends Application implements SubscriberInterface
             $this,
             new ScreenPrettySubscriber($this)
         ];
+    }
+
+    protected function getDefaultInputDefinition()
+    {
+        $definition = parent::getDefaultInputDefinition();
+        $definition->addOption(new InputOption('config', null, InputOption::VALUE_OPTIONAL,
+            'The configuration file, support json,ini,xml and yaml format'));
+        $definition->addOption(new InputOption('address', null, InputOption::VALUE_OPTIONAL,
+            'The ip address that bind to'));
+        return $definition;
     }
 }

@@ -30,6 +30,7 @@ class ScreenPrettySubscriber extends Subscriber
             EventStore::CLIENT_RUN => 'onClientRun',
             EventStore::ACCEPT_CONNECTION => 'onAcceptConnection',
             EventStore::SOCKET_ERROR => 'onClientError',
+            EventStore::CONNECT_TO_SERVER => 'onConnectToServer',
         ];
     }
 
@@ -50,6 +51,11 @@ class ScreenPrettySubscriber extends Subscriber
     }
 
     public function onClientError(Event $event)
+    {
+        $this->output->writeln("<warnning>Client error.</warnning>");
+    }
+
+    public function onConnectToServer(Event $event)
     {
         $this->output->writeln("<warnning>Client error.</warnning>");
     }

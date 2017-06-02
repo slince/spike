@@ -25,11 +25,17 @@ class Client extends Application implements SubscriberInterface
      */
     protected $client;
 
-    public function __construct($configFile = null)
+    protected $serverAddress;
+
+    public function __construct(Configuration $configuration)
     {
-        parent::__construct(static::NAME, static::VERSION);
-        is_null($configFile) || $this->configuration->load($configFile);
-        $this->client = new Client\Client($this->configuration->getServerAddress(), null, null, $this->dispatcher);
+        parent::__construct($configuration,static::NAME, static::VERSION);
+        $this->client = new Client\Client(
+            $this->configuration->getServerAddress(),
+            null,
+            null,
+            $this->dispatcher
+        );
     }
 
     public function doRun(InputInterface $input, OutputInterface $output)
@@ -56,7 +62,9 @@ class Client extends Application implements SubscriberInterface
      */
     protected function doRunServer()
     {
-        $this->dispatcher->addSubscriber($this);
+        foreach ($this->getSubscribers() as $subscriber) {
+            $this->dispatcher->addSubscriber($subscriber);
+        }
         $this->prepareProxyHosts();
         $this->client->run();
     }
@@ -91,8 +99,11 @@ class Client extends Application implements SubscriberInterface
     protected function getDefaultInputDefinition()
     {
         $definition = parent::getDefaultInputDefinition();
-        $definition->addOption(new InputOption('config', 'c', InputOption::VALUE_OPTIONAL,
+        $definition->addOption(new InputOption('config', null, InputOption::VALUE_OPTIONAL,
             'The configuration file, support json,ini,xml and yaml format'));
+
+        $definition->addOption(new InputOption('address', null, InputOption::VALUE_OPTIONAL,
+            'The server address'));
         return $definition;
     }
 }

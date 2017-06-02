@@ -1,6 +1,7 @@
 #!/usr/bin/env php
 <?php
 use Spike\Client;
+use Spike\Configuration;
 use Symfony\Component\Console\Input\ArgvInput;
 
 date_default_timezone_set('prc');
@@ -11,10 +12,19 @@ foreach ([__DIR__ . '/../../../vendor/autoload.php'
         break;
     }
 }
+$configuration  = new Configuration();
 $input = new ArgvInput();
-if (true === $input->hasParameterOption(array('--config'), true)) {
+if (true === $input->hasParameterOption(['--config'], true)) {
     $configFile = $input->getParameterOption('--config');
 } else {
-    $configFile = null;
+    $configFile = $configuration->getDefaultClientConfigFile();
 }
-(new Client($configFile))->run($input);
+file_exists($configFile) && $configuration->load($configFile);
+
+if (true === $input->hasParameterOption(['--address'], true)) {
+    $address = $input->getParameterOption('--address');
+    $address && $configuration->set('server-address', $address);
+}
+
+date_default_timezone_set($configuration->getTimezone());
+(new Client($configuration))->run($input);
