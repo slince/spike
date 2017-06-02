@@ -44,6 +44,6 @@ class Configuration  extends Config
 
     public function getDefaultClientConfigFile()
     {
-        return getcwd() . '/' . 'spike-client.json';
+        return getcwd() . '/' . 'spike.json';
     }
 }
