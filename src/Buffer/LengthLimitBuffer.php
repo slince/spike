@@ -21,7 +21,7 @@ class LengthLimitBuffer extends Buffer
         $this->length = $length;
         $this->connection->on('data', function($data){
             $this->content .= $data;
-            if (strlen($this->content) > $this->length) {
+            if (strlen($this->content) >= $this->length) {
                 $this->content = substr($this->content, 0, $this->length);
                 $this->isGatherComplete = true;
                 call_user_func($this->callback, $this);

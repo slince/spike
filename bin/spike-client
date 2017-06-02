@@ -1,0 +1,20 @@
+#!/usr/bin/env php
+<?php
+use Spike\Client;
+use Symfony\Component\Console\Input\ArgvInput;
+
+date_default_timezone_set('prc');
+foreach ([__DIR__ . '/../../../vendor/autoload.php'
+     , __DIR__ . '/../vendor/autoload.php'] as $autoloadFile) {
+    if (is_file($autoloadFile)) {
+        include $autoloadFile;
+        break;
+    }
+}
+$input = new ArgvInput();
+if (true === $input->hasParameterOption(array('--config'), true)) {
+    $configFile = $input->getParameterOption('--config');
+} else {
+    $configFile = null;
+}
+(new Client($configFile))->run($input);

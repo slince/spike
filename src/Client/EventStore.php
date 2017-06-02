@@ -36,4 +36,10 @@ final class EventStore
      * @var string
      */
     const CONNECT_TO_SERVER =  'connect_to_server';
+
+    /**
+     * Emit when server socket has error
+     * @var string
+     */
+    const SOCKET_ERROR = 'socket_error';
 }

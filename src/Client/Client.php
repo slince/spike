@@ -86,7 +86,7 @@ class Client
     protected function handleConnection(ConnectionInterface $connection)
     {
         $handle = function ($data) use ($connection) {
-            $firstLineMessage = explode("\r\n", $data)[0];
+            $firstLineMessage = strstr($data, "\r\n", true);
             if (strpos($firstLineMessage, 'HTTP') !== false) {
                 $buffer = new HttpBuffer($connection);
             } elseif (strpos($firstLineMessage, 'Spike') !== false) {

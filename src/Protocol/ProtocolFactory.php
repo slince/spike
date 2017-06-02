@@ -20,7 +20,7 @@ class ProtocolFactory
         if ($buffer instanceof HttpBuffer) {
             $protocol = HttpRequest::fromString($buffer);
         } else {
-            list(, $flag) = explode(':', $buffer);
+            list(, $flag) = explode(':', strstr($buffer, "\r\n", true));
             $flag = trim($flag);
             switch ($flag) {
                 case 'register_domain':
