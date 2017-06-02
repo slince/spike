@@ -39,10 +39,12 @@ abstract class Response extends Message implements ResponseInterface
 
     public function toString()
     {
+        $body = $this->getBody();
         $headers = array_merge([
             'Spike-Action' => $this->action,
             'Spike-Version' => static::VERSION,
-            'Code' => $this->code
+            'Code' => $this->code,
+            'Content-Length' => strlen($body)
         ], $this->headers);
         $buffer = '';
         foreach ($headers as $header => $value) {
@@ -50,7 +52,7 @@ abstract class Response extends Message implements ResponseInterface
         }
         return $buffer
             . "\r\n\r\n"
-            . $this->getBody();
+            . $body;
     }
 
     public static function fromString($string)

@@ -11,9 +11,11 @@ abstract class Request extends Message implements RequestInterface
 {
     public function toString()
     {
+        $body = $this->getBody();
         $headers = array_merge([
             'Spike-Action' => $this->action,
             'Spike-Version' => MessageInterface::VERSION,
+            'Content-Length' => strlen($body)
         ], $this->headers);
         $buffer = '';
         foreach ($headers as $header => $value) {
@@ -21,7 +23,7 @@ abstract class Request extends Message implements RequestInterface
         }
         return $buffer
             . "\r\n\r\n"
-            . $this->getBody();
+            . $body;
     }
 
     public static function fromString($string)

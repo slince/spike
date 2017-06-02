@@ -12,16 +12,20 @@ use React\Socket\ConnectionInterface;
 use React\Socket\Connector;
 use Slince\Event\Dispatcher;
 use Slince\Event\Event;
+use Spike\Buffer\BufferInterface;
 use Spike\ChunkBuffer;
 use Spike\Client\Handler\HandlerInterface;
 use Spike\Client\Handler\ProxyRequestHandler;
 use Spike\Client\Handler\RegisterHostResponseHandler;
+use Spike\Exception\BadRequestException;
 use Spike\Exception\InvalidArgumentException;
 use Spike\Protocol\RegisterHostRequest;
 use Spike\Protocol\RegisterHostResponse;
 use Spike\Protocol\ProtocolFactory;
 use Spike\Protocol\MessageInterface;
 use Spike\Protocol\ProxyRequest;
+use Spike\Buffer\HttpBuffer;
+use Spike\Buffer\SpikeBuffer;
 
 class Client
 {
@@ -74,18 +78,33 @@ class Client
             ]));
             //Reports the proxy hosts
             $this->transferProxyHosts($connection);
-            //Gather the message and handles it
-            $chunkBuffer = new ChunkBuffer($connection);
-            $chunkBuffer->gather(function($data) use($connection){
-                $message = ProtocolFactory::create($data);
+            $this->handleConnection($connection);
+        });
+        $this->loop->run();
+    }
+
+    protected function handleConnection(ConnectionInterface $connection)
+    {
+        $handle = function ($data) use ($connection) {
+            $firstLineMessage = explode("\r\n", $data)[0];
+            if (strpos($firstLineMessage, 'HTTP') !== false) {
+                $buffer = new HttpBuffer($connection);
+            } elseif (strpos($firstLineMessage, 'Spike') !== false) {
+                $buffer = new SpikeBuffer($connection);
+            } else {
+                throw new BadRequestException("Unsupported protocol");
+            }
+            $buffer->gather(function (BufferInterface $buffer) use ($connection) {
+                $message = ProtocolFactory::create($buffer);
                 $this->dispatcher->dispatch(new Event(EventStore::RECEIVE_MESSAGE, $this, [
                     'message' => $message,
                     'connection' => $connection
                 ]));
                 $this->createHandler($message, $connection)->handle($message);
             });
-        });
-        $this->loop->run();
+            $connection->emit('data', [$data]);
+        };
+        $connection->once('data', $handle);
     }
 
     /**

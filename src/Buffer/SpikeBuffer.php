@@ -25,21 +25,24 @@ class SpikeBuffer extends Buffer
         $this->headers .= $data;
         $pos = strpos($this->headers, "\r\n\r\n");
         if ($pos !== false) {
-            $this->headers = substr($this->headers, 0, $pos);
             $this->body .= substr($this->headers, $pos + 4);
-
+            $this->headers = substr($this->headers, 0, $pos);
             $this->connection->removeListener('data', [$this, 'handleData']);
-
             if (preg_match("/Content-Length: ?(\d+)/i", $this->headers, $match)) {
                 $length = $match[1];
-                $bodyBuffer = new LengthLimitBuffer($this->connection, $length - strlen($this->body));
+                $furtherContentLength = $length - strlen($this->body);
+                if ($furtherContentLength > 0) {
+                    $bodyBuffer = new LengthLimitBuffer($this->connection, $furtherContentLength);
+                    $bodyBuffer->gather(function(BufferInterface $bodyBuffer){
+                        $this->body .= (string)$bodyBuffer;
+                        $this->handleComplete();
+                    });
+                } else {
+                    $this->handleComplete();
+                }
             } else {
                 throw new InvalidArgumentException('Bad http message');
             }
-            $bodyBuffer->gather(function(BufferInterface $bodyBuffer){
-                $this->body .= (string)$bodyBuffer;
-                $this->handleComplete();
-            });
         }
     }
 

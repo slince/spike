@@ -17,7 +17,6 @@ use Slince\Event\Event;
 use Spike\Buffer\BufferInterface;
 use Spike\Buffer\HttpBuffer;
 use Spike\Buffer\SpikeBuffer;
-use Spike\ChunkBuffer;
 use Spike\Exception\BadRequestException;
 use Spike\Exception\InvalidArgumentException;
 use Spike\Protocol\HttpRequest;
@@ -91,7 +90,7 @@ class Server
             $firstLineMessage = explode("\r\n", $data)[0];
             if (strpos($firstLineMessage, 'HTTP') !== false) {
                 $buffer = new HttpBuffer($connection);
-            } elseif (strpos($firstLineMessage, 'SPIKE') !== false) {
+            } elseif (strpos($firstLineMessage, 'Spike') !== false) {
                 $buffer = new SpikeBuffer($connection);
             } else {
                 throw new BadRequestException("Unsupported protocol");
@@ -104,6 +103,7 @@ class Server
                 ]));
                 $this->createHandler($message, $connection)->handle($message);
             });
+            $connection->emit('data', [$data]);
         };
         $connection->once('data', $handle);
     }

@@ -21,6 +21,14 @@ class HttpRequest implements MessageInterface
     }
 
     /**
+     * @return Psr7Request
+     */
+    public function getRequest()
+    {
+        return $this->request;
+    }
+
+    /**
      * Creates a protocol from a string
      * @param $string
      * @return HttpRequest
