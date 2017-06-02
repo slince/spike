@@ -8,7 +8,7 @@ namespace Spike\Buffer;
 use React\Socket\ConnectionInterface;
 use Spike\Exception\InvalidArgumentException;
 
-class HttpRequestBuffer extends Buffer
+class HttpBuffer extends Buffer
 {
     protected $headers;
 
@@ -36,14 +36,33 @@ class HttpRequestBuffer extends Buffer
                 $length = $match[1];
                 $bodyBuffer = new LengthLimitBuffer($this->connection, $length - strlen($this->body));
             } else {
+                $method = strstr($this->headers, ' ', true);
+                if($method === 'GET' || $method === 'OPTIONS' || $method === 'HEAD') {
+                    $this->handleComplete();
+                    return;
+                }
                 throw new InvalidArgumentException('Bad http message');
             }
             $bodyBuffer->gather(function(BufferInterface $bodyBuffer){
                 $this->body .= (string)$bodyBuffer;
-                $this->content = $this->headers . "\r\n\r\n" . $this->body;
-                $this->isGatherComplete = true;
-                call_user_func($this->callback, $this);
+                $this->handleComplete();
             });
         }
+    }
+
+    protected function handleComplete()
+    {
+        $this->content = $this->headers . "\r\n\r\n" . $this->body;
+        $this->isGatherComplete = true;
+        call_user_func($this->callback, $this);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function flush()
+    {
+        parent::flush();
+        $this->connection->on('data', [$this, 'handleData']);
     }
 }
