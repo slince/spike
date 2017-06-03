@@ -5,10 +5,8 @@
  */
 namespace Spike;
 
-use Slince\Event\Event;
 use Slince\Event\SubscriberInterface;
 use Spike\Client\Command\ShowProxyHostsCommand;
-use Spike\Client\EventStore;
 use Spike\Client\Subscriber\ScreenPrettySubscriber;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -21,10 +19,15 @@ class Client extends Application implements SubscriberInterface
     const VERSION = '1.0.0.dev';
 
     /**
+     * The client instance
      * @var Client\Client
      */
     protected $client;
 
+    /**
+     * The server address
+     * @var string
+     */
     protected $serverAddress;
 
     public function __construct(Configuration $configuration)
