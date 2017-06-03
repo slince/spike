@@ -31,6 +31,7 @@ class LoggerSubscriber extends Subscriber
             EventStore::SOCKET_ERROR => 'onSocketError',
             EventStore::SEND_PROXY_REQUEST => 'onSendProxyRequest',
             EventStore::RECEIVE_PROXY_RESPONSE => 'onReceiveProxyResponse',
+            EventStore::CONNECTION_ERROR => 'onConnectionError',
         ];
     }
 
@@ -54,15 +55,20 @@ class LoggerSubscriber extends Subscriber
         $this->logger->warning('Received a error: ' . $event->getArgument('exception'));
     }
 
+    public function onConnectionError(Event $event)
+    {
+        $this->logger->warning($event->getArgument('exception')->getMessage());
+    }
+
     public function onSendProxyRequest(Event $event)
     {
-        $this->logger->info(sprintf('<info>Received a proxy request to "%s".</info>',
+        $this->logger->info(sprintf('Received a proxy request to "%s".',
             $event->getArgument('proxyHost')->getHost()
         ));
     }
 
     public function onReceiveProxyResponse(Event $event)
     {
-        $this->logger->info(sprintf('<info>Received a proxy response, and has resent it.</info>'));
+        $this->logger->info(sprintf('Received a proxy response, and has resent it.'));
     }
 }

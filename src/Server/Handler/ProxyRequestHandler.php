@@ -23,7 +23,7 @@ class ProxyRequestHandler extends Handler
         }
         $proxyHost = $this->server->findProxyHost($host);
         if (is_null($proxyHost)) {
-            throw new RuntimeException(sprintf('Cannot find proxy client for the host "%s"', $host));
+            throw new RuntimeException(sprintf('Cannot find the proxy client for the host "%s"', $host));
         }
         //Stores the proxy connection and proxy request
         $proxyConnection = new ProxyConnection($this->connection);
