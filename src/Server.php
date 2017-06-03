@@ -56,7 +56,14 @@ class Server extends Application implements SubscriberInterface
 
     public function getEvents()
     {
-        return [];
+        return [
+            EventStore::RECEIVE_PROXY_RESPONSE => 'onReceiveProxyResponse'
+        ];
+    }
+
+    public function onReceiveProxyResponse(Event $event)
+    {
+        $response = $event->getArgument('response');
     }
 
     /**

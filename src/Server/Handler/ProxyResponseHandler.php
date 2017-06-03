@@ -5,12 +5,11 @@
  */
 namespace Spike\Server\Handler;
 
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
 use Slince\Event\Event;
 use GuzzleHttp\Psr7;
 use Spike\Exception\RuntimeException;
 use Spike\Protocol\MessageInterface;
+use Spike\Server;
 use Spike\Server\EventStore;
 
 class ProxyResponseHandler extends Handler
@@ -30,10 +29,12 @@ class ProxyResponseHandler extends Handler
             $response = $response->withoutHeader('Transfer-Encoding');
         }
         $response = $response->withHeader('Content-Length', strlen($response->getBody()));
-        $proxyConnection->getConnection()->write(Psr7\str($response));
+        $response = $response->withHeader('X-Proxy-Agent', Server::NAME . ';version:'  .  Server::VERSION);
         $this->server->getDispatcher()->dispatch(new Event(EventStore::RECEIVE_PROXY_RESPONSE, $this, [
             'proxyConnection' => $proxyConnection,
-            'proxyResponse' => $message
+            'proxyResponse' => $message,
+            'response' => $response
         ]));
+        $proxyConnection->getConnection()->write(Psr7\str($response));
     }
 }
