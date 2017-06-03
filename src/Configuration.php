@@ -5,6 +5,7 @@
  */
 namespace Spike;
 
+use Monolog\Logger;
 use Slince\Config\Config;
 use Spike\Exception\InvalidArgumentException;
 
@@ -35,6 +36,16 @@ class Configuration  extends Config
     public function getTimezone()
     {
         return $this->get('timezone', 'Asia/shanghai');
+    }
+
+    public function getLogFile()
+    {
+        return $this->get('log.file', getcwd() . '/access.log');
+    }
+
+    public function getLogLevel()
+    {
+        return $this->get('log.level', Logger::INFO);
     }
 
     public function getDefaultServerConfigFile()

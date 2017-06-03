@@ -5,23 +5,22 @@
  */
 namespace Spike\Server\Subscriber;
 
-use function GuzzleHttp\Psr7\str;
 use Slince\Event\Event;
+use Spike\Logger\Logger;
 use Spike\Server;
 use Spike\Server\EventStore;
-use Symfony\Component\Console\Output\OutputInterface;
 
-class ScreenPrettySubscriber extends Subscriber
+class LoggerSubscriber extends Subscriber
 {
     /**
-     * @var OutputInterface
+     * @var Logger
      */
-    protected $output;
+    protected $logger;
 
     public function __construct(Server $server)
     {
         parent::__construct($server);
-        $this->output =  $server->getOutput();
+        $this->logger = $server->getLogger();
     }
 
     public function getEvents()
@@ -29,7 +28,7 @@ class ScreenPrettySubscriber extends Subscriber
         return [
             EventStore::SERVER_RUN => 'onServerRun',
             EventStore::ACCEPT_CONNECTION => 'onAcceptConnection',
-            EventStore::SOCKET_ERROR => 'onServerError',
+            EventStore::SOCKET_ERROR => 'onSocketError',
             EventStore::SEND_PROXY_REQUEST => 'onSendProxyRequest',
             EventStore::RECEIVE_PROXY_RESPONSE => 'onReceiveProxyResponse',
         ];
@@ -37,32 +36,33 @@ class ScreenPrettySubscriber extends Subscriber
 
     public function onServerRun(Event $event)
     {
-        $this->output->writeln("<info>The server is running ...</info>");
+        $this->logger->info('The server is running ...');
     }
 
     public function onAcceptConnection(Event $event)
     {
-        $this->output->writeln("<info>Accepted a new connection.</info>");
+        $this->logger->info('Accepted a new connection.');
     }
 
     public function onReceiveMessage(Event $event)
     {
+        $this->logger->info('Received a new message.');
     }
 
-    public function onServerError(Event $event)
+    public function onSocketError(Event $event)
     {
+        $this->logger->warning('Received a error: ' . $event->getArgument('exception'));
     }
 
     public function onSendProxyRequest(Event $event)
     {
-        $this->output->writeln(sprintf('<info>Received a proxy request to "%s".</info>',
+        $this->logger->info(sprintf('<info>Received a proxy request to "%s".</info>',
             $event->getArgument('proxyHost')->getHost()
         ));
     }
 
     public function onReceiveProxyResponse(Event $event)
     {
-        $proxyResponse = $event->getArgument('proxyResponse');
-        $this->output->writeln(sprintf('<info>Received a proxy response, and has resent it.</info>'));
+        $this->logger->info(sprintf('<info>Received a proxy response, and has resent it.</info>'));
     }
 }

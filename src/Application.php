@@ -7,15 +7,13 @@ namespace Spike;
 
 use Slince\Di\Container;
 use Slince\Event\Dispatcher;
+use Spike\Logger\Logger;
 use Symfony\Component\Console\Application as BaseApplication;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class Application extends BaseApplication
 {
-    const NAME = 'spike-server';
-
-    const VERSION = '1.0.0.dev';
     /**
      * @var Container
      */
@@ -41,6 +39,11 @@ class Application extends BaseApplication
      */
     protected $output;
 
+    /**
+     * @var Logger
+     */
+    protected $logger;
+
     public function __construct(Configuration $configuration, $name = null, $version = null)
     {
         $this->configuration = $configuration;
@@ -63,6 +66,14 @@ class Application extends BaseApplication
     public function getConfiguration()
     {
         return $this->configuration;
+    }
+
+    /**
+     * @return Logger
+     */
+    public function getLogger()
+    {
+        return $this->logger;
     }
 
     /**

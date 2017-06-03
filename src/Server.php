@@ -8,7 +8,8 @@ namespace Spike;
 use Slince\Event\Event;
 use Slince\Event\SubscriberInterface;
 use Spike\Server\EventStore;
-use Spike\Server\Subscriber\ScreenPrettySubscriber;
+use Spike\Server\Subscriber\LoggerSubscriber;
+use Spike\Logger\Logger;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -34,6 +35,12 @@ class Server extends Application implements SubscriberInterface
     {
         $this->input = $input;
         $this->output = $output;
+        //Logger
+        $this->logger = new Logger(
+            $this->getConfiguration()->getLogLevel(),
+            $this->getConfiguration()->getLogFile(),
+            $this->output
+        );
         $commandName = $input->getFirstArgument();
         if ($commandName) {
             $exitCode = parent::doRun($input, $output);
@@ -74,7 +81,7 @@ class Server extends Application implements SubscriberInterface
     {
         return [
             $this,
-            new ScreenPrettySubscriber($this)
+            new LoggerSubscriber($this)
         ];
     }
 
