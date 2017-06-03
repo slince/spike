@@ -15,6 +15,12 @@ abstract class SpikeResponse extends Spike
      */
     protected $code;
 
+    /**
+     * SpikeResponse constructor.
+     * @param string $code
+     * @param string $action
+     * @param array $headers
+     */
     public function __construct($code, $action, $headers = [])
     {
         $this->code = $code;
@@ -40,7 +46,7 @@ abstract class SpikeResponse extends Spike
     public function getHeaders()
     {
         return array_replace(parent::getHeaders(), [
-            'code' => $this->code
+            'Code' => $this->code
         ]);
     }
 

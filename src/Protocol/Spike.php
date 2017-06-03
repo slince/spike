@@ -21,6 +21,11 @@ abstract class Spike implements SpikeInterface
      */
     protected $headers = [];
 
+    /**
+     * Spike constructor.
+     * @param string $action
+     * @param array $headers
+     */
     public function __construct($action, $headers = [])
     {
         $this->action = $action;
