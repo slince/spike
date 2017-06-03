@@ -12,11 +12,43 @@ use Spike\Protocol\MessageInterface;
 use Spike\Protocol\ProxyResponse;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use GuzzleHttp\Psr7;
 use GuzzleHttp\Cookie\CookieJar;
 
 class ProxyRequestHandler extends Handler
 {
+    public function handle(MessageInterface $message)
+    {
+        $forwardedConnectionId = $message->getHeader('Forwarded-Connection-Id');
+        $originRequest = $message->getRequest();
+
+        $proxyHost = $this->getProxyHost($originRequest);
+        $forwardHost = $this->client->getForwardHost($proxyHost);
+        if (!$forwardHost) {
+            throw new RuntimeException(sprintf('The host "%s" is not supported by the client', $proxyHost));
+        }
+        $request = $this->applyForwardHost($originRequest, $forwardHost);
+        //Emit the event
+        $this->client->getDispatcher()->dispatch(new Event(EventStore::RECEIVE_PROXY_REQUEST, $this, [
+            'message' => $message,
+            'originRequest' => $originRequest,
+            'request' => $request
+        ]));
+
+        $response = $this->transfer($request, $originRequest);
+        $proxyResponse = new ProxyResponse(0, $response, [
+            'Forwarded-Connection-Id' => $forwardedConnectionId
+        ]);
+        $this->connection->write($proxyResponse);
+
+        //Emit the event
+        $this->client->getDispatcher()->dispatch(new Event(EventStore::SEND_PROXY_RESPONSE, $this, [
+            'message' => $message,
+            'proxyHost' => $proxyHost,
+            'request' => $request,
+            'proxyResponse'  => $proxyResponse
+        ]));
+    }
+
     protected function getProxyHost(RequestInterface $request)
     {
         $proxyHost = $request->getUri()->getHost();
@@ -36,55 +68,28 @@ class ProxyRequestHandler extends Handler
         return $request->withUri($uri);
     }
 
-    protected function transfer(RequestInterface $request)
+    protected function transfer(RequestInterface $request, RequestInterface $originRequest)
     {
         $jar = new CookieJar;
         $response = $this->client->getHttpClient()->send($request, [
             'cookies' => $jar
         ]);
+        $cookies = $this->handleCookies($jar, $request, $originRequest);
+        $response = $response->withHeader('Set-Cookie', $cookies);
         return $response;
     }
 
-    public function handle(MessageInterface $message)
+    protected function handleCookies(CookieJar $cookies, RequestInterface $request, RequestInterface $originRequest)
     {
-        $forwardedConnectionId = $message->getHeader('Forwarded-Connection-Id');
-        $request = $message->getRequest();
-
-        $proxyHost = $this->getProxyHost($request);
-        $forwardHost = $this->client->getForwardHost($proxyHost);
-        if (!$forwardHost) {
-            throw new RuntimeException(sprintf('The host "%s" is not supported by the client', $proxyHost));
+        $handledCookies = [];
+        $forwardHost = $request->getUri()->getHost();
+        $proxyHost = $originRequest->getUri()->getHost();
+        foreach ($cookies as $cookie) {
+            if ($cookie->matchesDomain($forwardHost)) {
+                $cookie->setDomain($proxyHost);
+            }
+            $handledCookies[] = $cookie;
         }
-        $request = $this->applyForwardHost($request, $forwardHost);
-        //Emit the event
-        $this->client->getDispatcher()->dispatch(new Event(EventStore::RECEIVE_PROXY_REQUEST, $this, [
-            'message' => $message,
-            'proxyHost' => $proxyHost,
-            'request' => $request
-        ]));
-
-        $response = $this->transfer($request);
-        
-        $proxyResponse = new ProxyResponse(0, $response, [
-            'Forwarded-Connection-Id' => $forwardedConnectionId
-        ]);
-        $this->connection->write($proxyResponse);
-
-        //Emit the event
-        $this->client->getDispatcher()->dispatch(new Event(EventStore::SEND_PROXY_RESPONSE, $this, [
-            'message' => $message,
-            'proxyHost' => $proxyHost,
-            'request' => $request,
-            'proxyResponse'  => $proxyResponse
-        ]));
-    }
-
-    protected function fixResponse(ResponseInterface $response, $proxyHost, $forwardHost)
-    {
-        $response = $response->withHeader('Content-Length', strlen((string)$response->getBody()));
-        if ($response->hasHeader('Transfer-Encoding')) {
-            $response = $response->withoutHeader('Transfer-Encoding');
-        }
-        return str_replace([$forwardHost, strstr($forwardHost)], [$proxyHost], Psr7\str($response));
+        return $handledCookies;
     }
 }

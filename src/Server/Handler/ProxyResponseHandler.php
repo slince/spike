@@ -24,18 +24,16 @@ class ProxyResponseHandler extends Handler
         if (!$forwardedConnectionId || !($proxyConnection = $this->server->findProxyConnection($forwardedConnectionId))) {
             throw new RuntimeException('Lose Connection or the connection has been close');
         }
-        $proxyConnection->getConnection()->write(Psr7\str($message->getResponse()));
+        $response = $message->getResponse();
+        //Use content-length mode
+        if ($response->hasHeader('Transfer-Encoding')) {
+            $response = $response->withoutHeader('Transfer-Encoding');
+        }
+        $response = $response->withHeader('Content-Length', strlen($response->getBody()));
+        $proxyConnection->getConnection()->write(Psr7\str($response));
         $this->server->getDispatcher()->dispatch(new Event(EventStore::RECEIVE_PROXY_RESPONSE, $this, [
             'proxyConnection' => $proxyConnection,
             'proxyResponse' => $message
         ]));
-    }
-
-    protected function fixResponse(ResponseInterface $response, RequestInterface $request)
-    {
-        $response = $response->withHeader('Content-Length', strlen((string)$response->getBody()));
-        if ($response->hasHeader('Transfer-Encoding')) {
-            $response = $response->withoutHeader('Transfer-Encoding');
-        }
     }
 }
