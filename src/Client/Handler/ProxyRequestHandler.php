@@ -5,6 +5,8 @@
  */
 namespace Spike\Client\Handler;
 
+use Slince\Event\Event;
+use Spike\Client\EventStore;
 use Spike\Exception\RuntimeException;
 use Spike\Protocol\MessageInterface;
 use Spike\Protocol\ProxyResponse;
@@ -28,10 +30,26 @@ class ProxyRequestHandler extends Handler
         list($host, $port) = explode(':', $forwardHost);
         $uri = $request->getUri()->withHost($host)->withPort($port);
         $request = $request->withUri($uri);
-        $response = $this->client->getHttpClient()->send($request);
 
-        $this->connection->write(new ProxyResponse(0, $response, [
+        //Emit the event
+        $this->client->getDispatcher()->dispatch(new Event(EventStore::RECEIVE_PROXY_REQUEST, $this, [
+            'message' => $message,
+            'proxyHost' => $proxyHost,
+            'request' => $request
+        ]));
+
+        $response = $this->client->getHttpClient()->send($request);
+        $proxyResponse = new ProxyResponse(0, $response, [
             'Forwarded-Connection-Id' => $forwardedConnectionId
+        ]);
+        $this->connection->write($proxyResponse);
+
+        //Emit the event
+        $this->client->getDispatcher()->dispatch(new Event(EventStore::SEND_PROXY_RESPONSE, $this, [
+            'message' => $message,
+            'proxyHost' => $proxyHost,
+            'request' => $request,
+            'proxyResponse'  => $proxyResponse
         ]));
     }
 }

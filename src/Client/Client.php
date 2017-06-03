@@ -80,6 +80,7 @@ class Client
             $this->transferProxyHosts($connection);
             $this->handleConnection($connection);
         });
+        $this->dispatcher->dispatch(EventStore::CLIENT_RUN);
         $this->loop->run();
     }
 

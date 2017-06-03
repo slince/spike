@@ -29,15 +29,17 @@ class ScreenPrettySubscriber extends Subscriber
         return [
             EventStore::CLIENT_RUN => 'onClientRun',
             EventStore::ACCEPT_CONNECTION => 'onAcceptConnection',
-            EventStore::SOCKET_ERROR => 'onClientError',
+            EventStore::SOCKET_ERROR => 'onSocketError',
             EventStore::CONNECT_TO_SERVER => 'onConnectToServer',
+            EventStore::RECEIVE_PROXY_REQUEST => 'onReceiveProxyRequest',
+            EventStore::SEND_PROXY_RESPONSE => 'onSendProxyResponse',
         ];
     }
 
 
     public function onClientRun(Event $event)
     {
-        $this->output->writeln("<info>The server is running ...</info>");
+        $this->output->writeln("<info>The client is running ...</info>");
     }
 
     public function onAcceptConnection(Event $event)
@@ -50,13 +52,23 @@ class ScreenPrettySubscriber extends Subscriber
         $this->output->writeln("<info>Received a message.</info>");
     }
 
-    public function onClientError(Event $event)
+    public function onSocketError(Event $event)
     {
-        $this->output->writeln("<warnning>Client error.</warnning>");
+        $this->output->writeln("<error>Client error.</error>");
     }
 
     public function onConnectToServer(Event $event)
     {
-        $this->output->writeln("<warnning>Client error.</warnning>");
+        $this->output->writeln("<info>The client has connected to the server.</info>");
+    }
+
+    public function onReceiveProxyRequest()
+    {
+        $this->output->writeln("<info>The client receive a proxy request.</info>");
+    }
+
+    public function onSendProxyResponse()
+    {
+        $this->output->writeln("<info>The client sends a proxy response.</info>");
     }
 }

@@ -23,10 +23,10 @@ class ProxyResponseHandler extends Handler
             throw new RuntimeException('Lose Connection or the connection has been close');
         }
         $proxyConnection->getConnection()->write(Psr7\str($message->getResponse()));
-        $this->server->getDispatcher()->dispatch(new Event(EventStore::RECEIVE_MESSAGE, $this, [
+        $this->server->getDispatcher()->dispatch(new Event(EventStore::RECEIVE_PROXY_RESPONSE, $this, [
             'message' => $message,
             'proxyConnection' => $proxyConnection,
-            'proxyRequest' => $message
+            'proxyResponse' => $message
         ]));
     }
 }

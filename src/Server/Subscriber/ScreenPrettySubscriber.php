@@ -30,6 +30,7 @@ class ScreenPrettySubscriber extends Subscriber
             EventStore::ACCEPT_CONNECTION => 'onAcceptConnection',
             EventStore::SOCKET_ERROR => 'onServerError',
             EventStore::SEND_PROXY_REQUEST => 'onSendProxyRequest',
+            EventStore::RECEIVE_PROXY_RESPONSE => 'onReceiveProxyResponse',
         ];
     }
 
@@ -56,5 +57,10 @@ class ScreenPrettySubscriber extends Subscriber
         $this->output->writeln(sprintf('<info>Received a proxy request to "%s".</info>',
             $event->getArgument('proxyHost')->getHost()
         ));
+    }
+
+    public function onReceiveProxyResponse(Event $event)
+    {
+        $this->output->writeln(sprintf('<info>Received a proxy response, and has resent it.</info>'));
     }
 }
