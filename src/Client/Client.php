@@ -86,7 +86,7 @@ class Client
 
     protected function handleConnection(ConnectionInterface $connection)
     {
-        $handle = function ($data) use ($connection) {
+        $handle = function ($data) use ($connection, &$handle) {
             $firstLineMessage = strstr($data, "\r\n", true);
             if (strpos($firstLineMessage, 'HTTP') !== false) {
                 $buffer = new HttpBuffer($connection);
@@ -95,13 +95,16 @@ class Client
             } else {
                 throw new BadRequestException("Unsupported protocol");
             }
-            $buffer->gather(function (BufferInterface $buffer) use ($connection) {
+            $buffer->gather(function (BufferInterface $buffer) use ($connection, $handle) {
                 $message = ProtocolFactory::create($buffer);
                 $this->dispatcher->dispatch(new Event(EventStore::RECEIVE_MESSAGE, $this, [
                     'message' => $message,
                     'connection' => $connection
                 ]));
                 $this->createHandler($message, $connection)->handle($message);
+                $buffer->flush(); //Flush the buffer and continue gather message
+                $connection->removeAllListeners();
+                $connection->once('data', $handle); //An loop has been end
             });
             $connection->emit('data', [$data]);
         };
@@ -183,7 +186,6 @@ class Client
     protected function createHandler($message, $connection)
     {
         if ($message instanceof ProxyRequest) {
-            var_dump($message);exit;
             $handler = new ProxyRequestHandler($this, $connection);
         } elseif ($message instanceof RegisterHostResponse) {
             $handler = new RegisterHostResponseHandler($this, $connection);

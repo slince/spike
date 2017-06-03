@@ -86,7 +86,7 @@ class Server
 
     protected function handleConnection(ConnectionInterface $connection)
     {
-        $handle = function ($data) use ($connection) {
+        $handle = function ($data) use ($connection, &$handle) {
             $firstLineMessage = strstr($data, "\r\n", true);
             if (strpos($firstLineMessage, 'HTTP') !== false) {
                 $buffer = new HttpBuffer($connection);
@@ -95,7 +95,7 @@ class Server
             } else {
                 throw new BadRequestException("Unsupported protocol");
             }
-            $buffer->gather(function (BufferInterface $buffer) use ($connection) {
+            $buffer->gather(function (BufferInterface $buffer) use ($connection, $handle) {
                 $message = ProtocolFactory::create($buffer);
                 $this->dispatcher->dispatch(new Event(EventStore::RECEIVE_MESSAGE, $this, [
                     'message' => $message,
@@ -103,6 +103,8 @@ class Server
                 ]));
                 $this->createHandler($message, $connection)->handle($message);
                 $buffer->flush(); //Flush the buffer and continue gather message
+                $connection->removeAllListeners();
+                $connection->once('data', $handle); //An loop has been end
             });
             $connection->emit('data', [$data]);
         };

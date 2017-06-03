@@ -5,6 +5,8 @@
  */
 namespace Spike\Server\Handler;
 
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use Slince\Event\Event;
 use GuzzleHttp\Psr7;
 use Spike\Exception\RuntimeException;
@@ -24,9 +26,16 @@ class ProxyResponseHandler extends Handler
         }
         $proxyConnection->getConnection()->write(Psr7\str($message->getResponse()));
         $this->server->getDispatcher()->dispatch(new Event(EventStore::RECEIVE_PROXY_RESPONSE, $this, [
-            'message' => $message,
             'proxyConnection' => $proxyConnection,
             'proxyResponse' => $message
         ]));
+    }
+
+    protected function fixResponse(ResponseInterface $response, RequestInterface $request)
+    {
+        $response = $response->withHeader('Content-Length', strlen((string)$response->getBody()));
+        if ($response->hasHeader('Transfer-Encoding')) {
+            $response = $response->withoutHeader('Transfer-Encoding');
+        }
     }
 }

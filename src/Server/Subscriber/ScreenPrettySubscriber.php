@@ -5,6 +5,7 @@
  */
 namespace Spike\Server\Subscriber;
 
+use function GuzzleHttp\Psr7\str;
 use Slince\Event\Event;
 use Spike\Server;
 use Spike\Server\EventStore;
@@ -61,6 +62,8 @@ class ScreenPrettySubscriber extends Subscriber
 
     public function onReceiveProxyResponse(Event $event)
     {
+        $proxyResponse = $event->getArgument('proxyResponse');
+        var_dump(str($proxyResponse->getResponse()));exit;
         $this->output->writeln(sprintf('<info>Received a proxy response, and has resent it.</info>'));
     }
 }

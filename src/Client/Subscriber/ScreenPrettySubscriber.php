@@ -67,7 +67,7 @@ class ScreenPrettySubscriber extends Subscriber
         $this->output->writeln("<info>The client receive a proxy request.</info>");
     }
 
-    public function onSendProxyResponse()
+    public function onSendProxyResponse(Event $event)
     {
         $this->output->writeln("<info>The client sends a proxy response.</info>");
     }

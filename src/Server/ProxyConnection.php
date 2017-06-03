@@ -6,6 +6,7 @@
 namespace Spike\Server;
 
 use React\Socket\ConnectionInterface;
+use Spike\Protocol\ProxyRequest;
 
 class ProxyConnection
 {
@@ -13,6 +14,11 @@ class ProxyConnection
      * @var ConnectionInterface
      */
     protected $connection;
+
+    /**
+     * @var ProxyRequest
+     */
+    protected $proxyRequest;
 
     public function __construct(ConnectionInterface $connection)
     {
@@ -33,6 +39,22 @@ class ProxyConnection
     public function setConnection($connection)
     {
         $this->connection = $connection;
+    }
+
+    /**
+     * @param ProxyRequest $proxyRequest
+     */
+    public function setProxyRequest($proxyRequest)
+    {
+        $this->proxyRequest = $proxyRequest;
+    }
+
+    /**
+     * @return ProxyRequest
+     */
+    public function getProxyRequest()
+    {
+        return $this->proxyRequest;
     }
 
     /**
