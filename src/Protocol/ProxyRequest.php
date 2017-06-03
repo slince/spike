@@ -12,7 +12,7 @@ use Psr\Http\Message\RequestInterface as Psr7Request;
  * Action: proxy_request
  * raw_request_message
  */
-class ProxyRequest extends Request
+class ProxyRequest extends SpikeRequest
 {
     /**
      * @var Psr7Request

@@ -7,7 +7,7 @@ namespace Spike\Protocol;
 
 use Spike\Exception\BadResponseException;
 
-abstract class Response extends Message implements ResponseInterface
+abstract class SpikeResponse extends Spike
 {
     /**
      * The status code of the response
@@ -37,27 +37,16 @@ abstract class Response extends Message implements ResponseInterface
         return $this->code;
     }
 
-    public function toString()
+    public function getHeaders()
     {
-        $body = $this->getBody();
-        $headers = array_merge([
-            'Spike-Action' => $this->action,
-            'Spike-Version' => static::VERSION,
-            'Code' => $this->code,
-            'Content-Length' => strlen($body)
-        ], $this->headers);
-        $buffer = '';
-        foreach ($headers as $header => $value) {
-            $buffer .= "{$header}: {$value}\r\n";
-        }
-        return $buffer
-            . "\r\n\r\n"
-            . $body;
+        return array_replace(parent::getHeaders(), [
+            'code' => $this->code
+        ]);
     }
 
     public static function fromString($string)
     {
-        list($headers, $bodyBuffer) = Message::parseMessages($string);
+        list($headers, $bodyBuffer) = Spike::parseMessages($string);
         if (!isset($headers['Spike-Action']) || !isset($headers['Code'])) {
             throw new BadResponseException('Missing value');
         }

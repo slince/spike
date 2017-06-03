@@ -8,7 +8,7 @@ namespace Spike\Protocol;
 use GuzzleHttp\Psr7;
 use Psr\Http\Message\ResponseInterface as Psr7Response;
 
-class ProxyResponse extends Response
+class ProxyResponse extends SpikeResponse
 {
     /**
      * @var Psr7Response

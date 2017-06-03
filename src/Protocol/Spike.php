@@ -5,7 +5,9 @@
  */
 namespace Spike\Protocol;
 
-abstract class Message implements MessageInterface
+use Spike\Exception\BadRequestException;
+
+abstract class Spike implements SpikeInterface
 {
     /**
      * The action
@@ -31,7 +33,7 @@ abstract class Message implements MessageInterface
     }
 
     /**
-     * @param mixed $action
+     * {@inheritdoc}
      */
     public function setAction($action)
     {
@@ -39,31 +41,76 @@ abstract class Message implements MessageInterface
     }
 
     /**
-     * @return mixed
+     * {@inheritdoc}
      */
     public function getAction()
     {
         return $this->action;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function setHeaders(array $headers)
     {
         $this->headers = $headers;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getHeaders()
     {
         return $this->headers;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function setHeader($name, $value)
     {
         $this->headers[$name] = $value;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getHeader($name)
     {
         return isset($this->headers[$name]) ? $this->headers[$name] : null;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function toString()
+    {
+        $body = $this->getBody();
+        $headers = array_merge([
+            'Spike-Action' => $this->action,
+            'Spike-Version' => SpikeInterface::VERSION,
+            'Content-Length' => strlen($body)
+        ], $this->getHeaders());
+        $buffer = '';
+        foreach ($headers as $header => $value) {
+            $buffer .= "{$header}: {$value}\r\n";
+        }
+        return $buffer
+            . "\r\n\r\n"
+            . $body;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function fromString($string)
+    {
+        list($headers, $bodyBuffer) = Spike::parseMessages($string);
+        if (!isset($headers['Spike-Action'])) {
+            throw new BadRequestException('Missing value for the header "action"');
+        }
+        $bodyBuffer = trim($bodyBuffer);
+        return new static(static::parseBody($bodyBuffer), $headers);
     }
 
     /**

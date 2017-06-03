@@ -5,7 +5,7 @@
  */
 namespace Spike\Protocol;
 
-class RegisterHostResponse extends Response
+class RegisterHostResponse extends SpikeResponse
 {
     protected $body;
 

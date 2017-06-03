@@ -8,12 +8,6 @@ namespace Spike\Protocol;
 interface MessageInterface
 {
     /**
-     * The version of protocol
-     * @var string
-     */
-    const VERSION = 1.0;
-
-    /**
      * Creates a protocol from a string
      * @param $string
      * @return MessageInterface
@@ -25,11 +19,4 @@ interface MessageInterface
      * @return string
      */
     public function toString();
-
-    /**
-     * Gets the message header by given name
-     * @param string $name
-     * @return string
-     */
-    public function getHeader($name);
 }
