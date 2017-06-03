@@ -25,4 +25,11 @@ interface MessageInterface
      * @return string
      */
     public function toString();
+
+    /**
+     * Gets the message header by given name
+     * @param string $name
+     * @return string
+     */
+    public function getHeader($name);
 }
