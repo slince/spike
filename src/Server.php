@@ -5,9 +5,12 @@
  */
 namespace Spike;
 
+use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\Psr7;
 use Slince\Event\Event;
 use Slince\Event\SubscriberInterface;
 use Spike\Server\EventStore;
+use Spike\Server\Exception\MissingProxyClientException;
 use Spike\Server\Subscriber\LoggerSubscriber;
 use Spike\Logger\Logger;
 use Symfony\Component\Console\Input\InputInterface;
@@ -64,13 +67,18 @@ class Server extends Application implements SubscriberInterface
     public function getEvents()
     {
         return [
-            EventStore::RECEIVE_PROXY_RESPONSE => 'onReceiveProxyResponse'
+            EventStore::CONNECTION_ERROR => 'onConnectionError'
         ];
     }
 
-    public function onReceiveProxyResponse(Event $event)
+    public function onConnectionError(Event $event)
     {
-        $response = $event->getArgument('response');
+        $exception = $event->getArgument('exception');
+        $connection = $event->getArgument('connection');
+        if ($exception instanceof MissingProxyClientException) {
+            $response = $this->createErrorResponse();
+            $connection->write(Psr7\str($response));
+        }
     }
 
     /**
@@ -93,5 +101,14 @@ class Server extends Application implements SubscriberInterface
         $definition->addOption(new InputOption('address', null, InputOption::VALUE_OPTIONAL,
             'The ip address that bind to'));
         return $definition;
+    }
+
+
+    protected function createErrorResponse($status = 500, $body = ' ')
+    {
+        $body = $body ?: 'Did not find the proxy client, or the proxy client did not respond';
+        return new Response($status, [
+            'Content-Length' => strlen($body),
+        ], $body);
     }
 }

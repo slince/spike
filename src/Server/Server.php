@@ -111,7 +111,6 @@ class Server
                     'connection' => $connection,
                     'exception' => $exception,
                 ]));
-                $connection->close();
             }
         };
         $connection->once('data', $handle);

@@ -7,9 +7,9 @@ namespace Spike\Server\Handler;
 
 use Slince\Event\Event;
 use Spike\Protocol\MessageInterface;
-use Spike\Exception\RuntimeException;
 use Spike\Protocol\ProxyRequest;
 use Spike\Server\EventStore;
+use Spike\Server\Exception\MissingProxyClientException;
 use Spike\Server\ProxyConnection;
 
 class ProxyRequestHandler extends Handler
@@ -23,7 +23,7 @@ class ProxyRequestHandler extends Handler
         }
         $proxyHost = $this->server->findProxyHost($host);
         if (is_null($proxyHost)) {
-            throw new RuntimeException(sprintf('Cannot find the proxy client for the host "%s"', $host));
+            throw new MissingProxyClientException(sprintf('Cannot find the proxy client for the host "%s"', $host));
         }
         //Stores the proxy connection and proxy request
         $proxyConnection = new ProxyConnection($this->connection);
