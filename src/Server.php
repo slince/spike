@@ -104,7 +104,7 @@ class Server extends Application implements SubscriberInterface
     }
 
 
-    protected function createErrorResponse($status = 500, $body = ' ')
+    protected function createErrorResponse($status = 500, $body = '')
     {
         $body = $body ?: 'Did not find the proxy client, or the proxy client did not respond';
         return new Response($status, [
