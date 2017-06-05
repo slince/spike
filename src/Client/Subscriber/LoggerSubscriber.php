@@ -8,19 +8,20 @@ namespace Spike\Client\Subscriber;
 use Slince\Event\Event;
 use Spike\Client;
 use Spike\Client\EventStore;
+use Spike\Logger\Logger;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ScreenPrettySubscriber extends Subscriber
+class LoggerSubscriber extends Subscriber
 {
     /**
-     * @var OutputInterface
+     * @var Logger
      */
-    protected $output;
+    protected $logger;
 
     public function __construct(Client $client)
     {
         parent::__construct($client);
-        $this->output =  $client->getOutput();
+        $this->logger =  $client->getLogger();
     }
 
 
@@ -39,36 +40,36 @@ class ScreenPrettySubscriber extends Subscriber
 
     public function onClientRun(Event $event)
     {
-        $this->output->writeln("<info>The client is running ...</info>");
+        $this->logger->info("The client is running ...");
     }
 
     public function onAcceptConnection(Event $event)
     {
-        $this->output->writeln("<info>Accepted a new connection.</info>");
+        $this->logger->info("Accepted a new connection.");
     }
 
     public function onReceiveMessage(Event $event)
     {
-        $this->output->writeln("<info>Received a message.</info>");
+        $this->logger->info("Received a message.");
     }
 
     public function onSocketError(Event $event)
     {
-        $this->output->writeln("<error>Client error.</error>");
+        $this->logger->error("Client error.");
     }
 
     public function onConnectToServer(Event $event)
     {
-        $this->output->writeln("<info>The client has connected to the server.</info>");
+        $this->logger->info("The client has connected to the server.");
     }
 
     public function onReceiveProxyRequest()
     {
-        $this->output->writeln("<info>The client receive a proxy request.</info>");
+        $this->logger->info("The client receive a proxy request.");
     }
 
     public function onSendProxyResponse(Event $event)
     {
-        $this->output->writeln("<info>The client sends a proxy response.</info>");
+        $this->logger->info("he client sends a proxy response.");
     }
 }

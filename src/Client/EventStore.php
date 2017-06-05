@@ -38,6 +38,12 @@ final class EventStore
     const ACCEPT_CONNECTION = 'accept_connection';
 
     /**
+     * Emit when connection error
+     * @var string
+     */
+    const CONNECTION_ERROR = 'connection_error';
+
+    /**
      * Emit when client receive message
      * @var string
      */

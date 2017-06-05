@@ -19,6 +19,7 @@ use Spike\Client\Handler\ProxyRequestHandler;
 use Spike\Client\Handler\RegisterHostResponseHandler;
 use Spike\Exception\BadRequestException;
 use Spike\Exception\InvalidArgumentException;
+use Spike\Exception\RuntimeException;
 use Spike\Protocol\RegisterHostRequest;
 use Spike\Protocol\RegisterHostResponse;
 use Spike\Protocol\ProtocolFactory;
@@ -87,26 +88,34 @@ class Client
     protected function handleConnection(ConnectionInterface $connection)
     {
         $handle = function ($data) use ($connection, &$handle) {
-            $firstLineMessage = strstr($data, "\r\n", true);
-            if (strpos($firstLineMessage, 'HTTP') !== false) {
-                $buffer = new HttpBuffer($connection);
-            } elseif (strpos($firstLineMessage, 'Spike') !== false) {
-                $buffer = new SpikeBuffer($connection);
-            } else {
-                throw new BadRequestException("Unsupported protocol");
-            }
-            $buffer->gather(function (BufferInterface $buffer) use ($connection, $handle) {
-                $message = ProtocolFactory::create($buffer);
-                $this->dispatcher->dispatch(new Event(EventStore::RECEIVE_MESSAGE, $this, [
-                    'message' => $message,
-                    'connection' => $connection
-                ]));
-                $this->createHandler($message, $connection)->handle($message);
-                $buffer->flush(); //Flush the buffer and continue gather message
+            try {
                 $connection->removeAllListeners();
-                $connection->once('data', $handle); //An loop has been end
-            });
-            $connection->emit('data', [$data]);
+                $firstLineMessage = strstr($data, "\r\n", true);
+                if (strpos($firstLineMessage, 'HTTP') !== false) {
+                    $buffer = new HttpBuffer($connection);
+                } elseif (strpos($firstLineMessage, 'Spike') !== false) {
+                    $buffer = new SpikeBuffer($connection);
+                } else {
+                    throw new BadRequestException("Unsupported protocol");
+                }
+                $buffer->gather(function (BufferInterface $buffer) use ($connection, $handle) {
+                    $message = ProtocolFactory::create($buffer);
+                    $this->dispatcher->dispatch(new Event(EventStore::RECEIVE_MESSAGE, $this, [
+                        'message' => $message,
+                        'connection' => $connection
+                    ]));
+                    $this->createHandler($message, $connection)->handle($message);
+                    $buffer->flush(); //Flush the buffer and continue gather message
+                    $connection->removeAllListeners();
+                    $connection->once('data', $handle); //An loop has been end
+                });
+                $connection->emit('data', [$data]);
+            } catch (RuntimeException $exception) {
+                $this->dispatcher->dispatch(new Event(EventStore::CONNECTION_ERROR, $this, [
+                    'connection' => $connection,
+                    'exception' => $exception,
+                ]));
+            }
         };
         $connection->once('data', $handle);
     }

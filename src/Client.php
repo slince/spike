@@ -5,9 +5,12 @@
  */
 namespace Spike;
 
+use Slince\Event\Event;
 use Slince\Event\SubscriberInterface;
 use Spike\Client\Command\ShowProxyHostsCommand;
-use Spike\Client\Subscriber\ScreenPrettySubscriber;
+use Spike\Client\Subscriber\LoggerSubscriber;
+use Spike\Logger\Logger;
+use Spike\Server\EventStore;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -45,6 +48,12 @@ class Client extends Application implements SubscriberInterface
     {
         $this->input = $input;
         $this->output = $output;
+        //Logger
+        $this->logger = new Logger(
+            $this->getConfiguration()->getLogLevel(),
+            $this->getConfiguration()->getLogFile(),
+            $this->output
+        );
         $commandName = $input->getFirstArgument();
         if ($commandName) {
             $exitCode = parent::doRun($input, $output);
@@ -57,6 +66,7 @@ class Client extends Application implements SubscriberInterface
     public function getEvents()
     {
         return [
+            EventStore::CONNECTION_ERROR => 'onConnectionError'
         ];
     }
 
@@ -80,6 +90,12 @@ class Client extends Application implements SubscriberInterface
         }
     }
 
+    public function onConnectionError(Event $event)
+    {
+        $exception = $event->getArgument('exception');
+        $connection = $event->getArgument('connection');
+    }
+
     public function getDefaultCommands()
     {
         return array_merge(parent::getDefaultCommands(), [
@@ -95,7 +111,7 @@ class Client extends Application implements SubscriberInterface
     {
         return [
             $this,
-            new ScreenPrettySubscriber($this)
+            new LoggerSubscriber($this)
         ];
     }
 

@@ -7,6 +7,7 @@ namespace Spike\Client\Handler;
 
 use Slince\Event\Event;
 use Spike\Client\EventStore;
+use Spike\Client\Exception\UnsupportedHostException;
 use Spike\Exception\RuntimeException;
 use Spike\Protocol\MessageInterface;
 use Spike\Protocol\ProxyResponse;
@@ -24,7 +25,7 @@ class ProxyRequestHandler extends Handler
         $proxyHost = $this->getProxyHost($originRequest);
         $forwardHost = $this->client->getForwardHost($proxyHost);
         if (!$forwardHost) {
-            throw new RuntimeException(sprintf('The host "%s" is not supported by the client', $proxyHost));
+            throw new UnsupportedHostException(sprintf('The host "%s" is not supported by the client', $proxyHost));
         }
         $request = $this->applyForwardHost($originRequest, $forwardHost);
         //Emit the event
