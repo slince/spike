@@ -10,6 +10,7 @@ use Slince\Event\SubscriberInterface;
 use Spike\Client\Command\ShowProxyHostsCommand;
 use Spike\Client\Subscriber\LoggerSubscriber;
 use Spike\Logger\Logger;
+use Spike\Protocol\ReportClientException;
 use Spike\Server\EventStore;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -94,6 +95,7 @@ class Client extends Application implements SubscriberInterface
     {
         $exception = $event->getArgument('exception');
         $connection = $event->getArgument('connection');
+        $connection->write(new ReportClientException($exception));
     }
 
     public function getDefaultCommands()

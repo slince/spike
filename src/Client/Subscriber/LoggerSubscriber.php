@@ -31,6 +31,7 @@ class LoggerSubscriber extends Subscriber
             EventStore::CLIENT_RUN => 'onClientRun',
             EventStore::ACCEPT_CONNECTION => 'onAcceptConnection',
             EventStore::SOCKET_ERROR => 'onSocketError',
+            EventStore::CONNECTION_ERROR => 'onConnectionError',
             EventStore::CONNECT_TO_SERVER => 'onConnectToServer',
             EventStore::RECEIVE_PROXY_REQUEST => 'onReceiveProxyRequest',
             EventStore::SEND_PROXY_RESPONSE => 'onSendProxyResponse',
@@ -56,6 +57,11 @@ class LoggerSubscriber extends Subscriber
     public function onSocketError(Event $event)
     {
         $this->logger->error("Client error.");
+    }
+
+    public function onConnectionError(Event $event)
+    {
+        $this->logger->warning($event->getArgument('exception')->getMessage());
     }
 
     public function onConnectToServer(Event $event)

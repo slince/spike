@@ -32,6 +32,7 @@ class LoggerSubscriber extends Subscriber
             EventStore::SEND_PROXY_REQUEST => 'onSendProxyRequest',
             EventStore::RECEIVE_PROXY_RESPONSE => 'onReceiveProxyResponse',
             EventStore::CONNECTION_ERROR => 'onConnectionError',
+            EventStore::RECEIVE_CLIENT_EXCEPTION => 'onClientException',
         ];
     }
 
@@ -70,5 +71,10 @@ class LoggerSubscriber extends Subscriber
     public function onReceiveProxyResponse(Event $event)
     {
         $this->logger->info(sprintf('Received a proxy response, and has resent it.'));
+    }
+
+    public function onClientException(Event $event)
+    {
+        $this->logger->info(sprintf('Received an exception from the client.'));
     }
 }
