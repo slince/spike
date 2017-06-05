@@ -71,11 +71,11 @@ class LoggerSubscriber extends Subscriber
 
     public function onReceiveProxyRequest()
     {
-        $this->logger->info("The client receive a proxy request.");
+        $this->logger->info("Receives a proxy request.");
     }
 
     public function onSendProxyResponse(Event $event)
     {
-        $this->logger->info("he client sends a proxy response.");
+        $this->logger->info("Sends a proxy response.");
     }
 }

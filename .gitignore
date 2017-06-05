@@ -6,4 +6,4 @@ composer.lock
 .idea
 tmp/
  _login.png
- access.log
+*.log

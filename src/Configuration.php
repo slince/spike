@@ -40,7 +40,7 @@ class Configuration  extends Config
 
     public function getLogFile()
     {
-        return $this->get('log.file', getcwd() . '/access.log');
+        return isset($this['log']['file']) ? $this['log']['file']: getcwd() . '/access.log';
     }
 
     public function getLogLevel()
