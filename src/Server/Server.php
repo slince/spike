@@ -27,8 +27,8 @@ use Spike\Server\Handler\HandlerInterface;
 use Spike\Server\Handler\ProxyRequestHandler;
 use Spike\Server\Handler\ProxyResponseHandler;
 use Spike\Server\Handler\RegisterHostHandler;
-use Spike\Tunnel\HttpTunnel;
-use Spike\Tunnel\TunnelInterface;
+use Spike\Server\Tunnel\HttpTunnel;
+use Spike\Server\Tunnel\TunnelInterface;
 
 class Server
 {
@@ -61,6 +61,11 @@ class Server
      * @var TunnelInterface[]
      */
     protected $tunnels = [];
+
+    /**
+     * @var TunnelServer
+     */
+    protected $tunnelServers = [];
 
     protected $host;
 
@@ -137,15 +142,14 @@ class Server
         $connection->once('data', $handle);
     }
 
-    protected function createSocketForTunnel(TunnelInterface $tunnel)
+    protected function createTunnelServer(TunnelInterface $tunnel)
     {
-        $socket = new Socket("{$this->host}:{$tunnel->getRemotePort()}", $this->loop);
         if ($tunnel instanceof HttpTunnel) {
-
+            $tunnelServer = new HttpTunnelServer($tunnel, "{$this->host}:{$tunnel->getPort()}", $this->loop);
+        } else {
+            $tunnelServer = new TcpTunnelServer($tunnel, "{$this->host}:{$tunnel->getPort()}", $this->loop);
         }
-        $socket->on('connection', function(ConnectionInterface $connection){
-
-        });
+        $this->tunnelServers[] = $tunnelServer;
     }
 
     /**

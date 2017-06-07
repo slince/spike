@@ -16,4 +16,13 @@ interface TunnelInterface
     public function close();
 
     public function pipe(ConnectionInterface $connection);
+
+    public function write();
+
+    /**
+     * @return ConnectionInterface
+     */
+    public function getConnection();
+
+    public function getPort();
 }
