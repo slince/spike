@@ -6,6 +6,7 @@
 namespace Spike\Server;
 
 use Cake\Collection\Collection;
+use function foo\func;
 use React\EventLoop\LoopInterface;
 use React\EventLoop\Factory as LoopFactory;
 use React\Socket\ConnectionInterface;
@@ -16,6 +17,7 @@ use Spike\Buffer\BufferInterface;
 use Spike\Buffer\HttpBuffer;
 use Spike\Buffer\SpikeBuffer;
 use Spike\Exception\BadRequestException;
+use Spike\Exception\InvalidArgumentException;
 use Spike\Exception\RuntimeException;
 use Spike\Protocol\HttpRequest;
 use Spike\Protocol\RegisterHostRequest;
@@ -25,6 +27,8 @@ use Spike\Server\Handler\HandlerInterface;
 use Spike\Server\Handler\ProxyRequestHandler;
 use Spike\Server\Handler\ProxyResponseHandler;
 use Spike\Server\Handler\RegisterHostHandler;
+use Spike\Tunnel\HttpTunnel;
+use Spike\Tunnel\TunnelInterface;
 
 class Server
 {
@@ -53,11 +57,30 @@ class Server
      */
     protected $proxyHosts = [];
 
+    /**
+     * @var TunnelInterface[]
+     */
+    protected $tunnels = [];
+
+    protected $host;
+
+    protected $port;
+
     public function __construct($address, LoopInterface $loop = null, Dispatcher $dispatcher = null)
     {
         $this->loop = $loop ?: LoopFactory::create();
         $this->socket = new Socket($address, $this->loop);
         $this->dispatcher = $dispatcher ?: new Dispatcher();
+        list($this->host, $this->port) = $this->parseAddress($address);
+    }
+
+    protected function parseAddress($address)
+    {
+        $parts = array_filter(explode($address, ':'));
+        if (count($parts) !== 2) {
+            throw new InvalidArgumentException(sprintf('The address "%s" is invalid', $address));
+        }
+        return $parts;
     }
 
     /**
@@ -88,9 +111,7 @@ class Server
             try{
                 $connection->removeAllListeners();
                 $firstLineMessage = strstr($data, "\r\n", true);
-                if (strpos($firstLineMessage, 'HTTP') !== false) {
-                    $buffer = new HttpBuffer($connection);
-                } elseif (strpos($firstLineMessage, 'Spike') !== false) {
+                if (strpos($firstLineMessage, 'Spike') !== false) {
                     $buffer = new SpikeBuffer($connection);
                 } else {
                     throw new BadRequestException("Unsupported protocol");
@@ -114,6 +135,17 @@ class Server
             }
         };
         $connection->once('data', $handle);
+    }
+
+    protected function createSocketForTunnel(TunnelInterface $tunnel)
+    {
+        $socket = new Socket("{$this->host}:{$tunnel->getRemotePort()}", $this->loop);
+        if ($tunnel instanceof HttpTunnel) {
+
+        }
+        $socket->on('connection', function(ConnectionInterface $connection){
+
+        });
     }
 
     /**

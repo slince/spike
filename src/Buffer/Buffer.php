@@ -71,6 +71,15 @@ abstract class Buffer implements BufferInterface
     }
 
     /**
+     * Gathers ok
+     */
+    protected function gatherComplete()
+    {
+        $this->isGatherComplete = true;
+        call_user_func($this->callback, $this);
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function flush()

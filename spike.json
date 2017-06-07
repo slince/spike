@@ -1,8 +1,24 @@
 {
     "server-address": "127.0.0.1:80",
     "proxy-hosts": {
-        "127.0.0.1": "www.baidu.com"
+        "http://127.0.0.1": "http://www.baidu.com",
+        "tcp://127.0.0.1:3306": "http://www.baidu.com"
     },
+    "tunnels": [
+        {
+            "protocol": "http",
+            "remotePort": "8049",
+            "hosts": {
+                "foo.spike.com": "www.baidu.com",
+                "bar.spike.com": "127.0.0.1"
+            }
+        },
+        {
+            "protocol": "tcp",
+            "remotePort": "8488",
+            "host": "127.0.0.1:3306"
+        }
+    ],
     "log": {
         "file": "./client.log",
         "level": "info"

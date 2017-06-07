@@ -23,8 +23,7 @@ class FixedLengthBuffer extends Buffer
             $this->content .= $data;
             if (strlen($this->content) >= $this->length) {
                 $this->content = substr($this->content, 0, $this->length);
-                $this->isGatherComplete = true;
-                call_user_func($this->callback, $this);
+                $this->gatherComplete();
             }
         });
     }

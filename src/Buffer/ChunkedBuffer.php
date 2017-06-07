@@ -31,8 +31,7 @@ class ChunkedBuffer extends Buffer
         }
         $length = hexdec($lengthHex);
         if ($length == 0) {
-            $this->isGatherComplete = true;
-            call_user_func($this->callback, $this);
+            $this->gatherComplete();
             return;
         }
         $this->content .= substr($data, $pos + 2, $length);

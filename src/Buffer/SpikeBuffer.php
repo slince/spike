@@ -35,10 +35,10 @@ class SpikeBuffer extends Buffer
                     $bodyBuffer = new FixedLengthBuffer($this->connection, $furtherContentLength);
                     $bodyBuffer->gather(function(BufferInterface $bodyBuffer){
                         $this->body .= (string)$bodyBuffer;
-                        $this->handleComplete();
+                        $this->gatherComplete();
                     });
                 } else {
-                    $this->handleComplete();
+                    $this->gatherComplete();
                 }
             } else {
                 throw new InvalidArgumentException('Bad http message');
@@ -46,11 +46,10 @@ class SpikeBuffer extends Buffer
         }
     }
 
-    protected function handleComplete()
+    protected function gatherComplete()
     {
         $this->content = $this->headers . "\r\n\r\n" . $this->body;
-        $this->isGatherComplete = true;
-        call_user_func($this->callback, $this);
+        parent::gatherComplete();
     }
 
     /**

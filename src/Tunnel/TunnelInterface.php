@@ -1,0 +1,24 @@
+<?php
+/**
+ * Spike library
+ * @author Tao <taosikai@yeah.net>
+ */
+namespace Spike\Tunnel;
+
+interface TunnelInterface
+{
+    const TUNNEL_TCP = 'tcp';
+
+    const TUNNEL_HTTP = 'http';
+
+    /**
+     * Get the tunnel information
+     * @return array
+     */
+    public function toArray();
+
+    /**
+     * @return string
+     */
+    public function getRemotePort();
+}
