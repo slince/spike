@@ -7,46 +7,40 @@ namespace Spike\Server\Tunnel;
 
 use React\Socket\ConnectionInterface;
 
-class Tunnel
+class Tunnel implements TunnelInterface
 {
-    /**
-     * The supported protocol of the tunnel
-     * @var string
-     */
-    protected $protocol;
-
-    /**
-     * The remote port
-     * @var int
-     */
-    protected $remotePort;
-
-    /**
-     * @var ConnectionInterface
-     */
     protected $connection;
 
-    public function __construct(ConnectionInterface $connection, $protocol, $remotePort)
+    protected $active;
+
+    protected $port;
+
+    public function __construct(ConnectionInterface $connection, $port)
     {
         $this->connection = $connection;
-        $this->protocol = $protocol;
-        $this->remotePort = $remotePort;
+        $this->port = $port;
+    }
+
+    public function isActive()
+    {
+        return $this->active;
+    }
+
+    public function open()
+    {
+        return $this;
+    }
+
+    public function close()
+    {
     }
 
     /**
-     * @return string
+     * @return mixed
      */
-    public function getProtocol()
+    public function getPort()
     {
-        return $this->protocol;
-    }
-
-    /**
-     * @return int
-     */
-    public function getRemotePort()
-    {
-        return $this->remotePort;
+        return $this->port;
     }
 
     /**
@@ -55,5 +49,10 @@ class Tunnel
     public function getConnection()
     {
         return $this->connection;
+    }
+
+    public function pipe(ConnectionInterface $connection)
+    {
+        $connection->pipe($this->connection);
     }
 }

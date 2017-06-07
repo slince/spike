@@ -14,10 +14,10 @@ class HttpTunnel extends Tunnel
      */
     protected $hosts;
 
-    public function __construct(ConnectionInterface $connection, $protocol, $remotePort, $hosts)
+    public function __construct(ConnectionInterface $connection, $port, $hosts)
     {
-        parent::__construct($connection, $protocol, $remotePort);
         $this->hosts = $hosts;
+        parent::__construct($connection, $port);
     }
 
     /**

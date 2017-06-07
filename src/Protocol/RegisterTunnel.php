@@ -5,24 +5,22 @@
  */
 namespace Spike\Protocol;
 
-use Spike\Tunnel\Tunnel;
-use Spike\Tunnel\TunnelFactory;
 
 class RegisterTunnel extends SpikeRequest
 {
     /**
-     * @var Tunnel
+     * @var array
      */
     protected $tunnel;
 
-    public function __construct(Tunnel $tunnel, array $headers = [])
+    public function __construct(array $tunnel, array $headers = [])
     {
         $this->tunnel = $tunnel;
         parent::__construct('register_tunnel', $headers);
     }
 
     /**
-     * @return Tunnel
+     * @return array
      */
     public function getTunnel()
     {
@@ -30,7 +28,7 @@ class RegisterTunnel extends SpikeRequest
     }
 
     /**
-     * @param Tunnel $tunnel
+     * @param array $tunnel
      */
     public function setTunnel($tunnel)
     {
@@ -39,11 +37,11 @@ class RegisterTunnel extends SpikeRequest
 
     public static function parseBody($body)
     {
-        return TunnelFactory::fromArray(json_decode($body, true));
+        return json_decode($body, true);
     }
 
     public function getBody()
     {
-        return json_encode($this->tunnel->toArray());
+        return json_encode($this->tunnel);
     }
 }
