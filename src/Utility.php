@@ -16,7 +16,7 @@ class Utility
      */
     public static function parseAddress($address)
     {
-        $parts = array_filter(explode($address, ':'));
+        $parts = array_filter(explode(':', $address));
         if (count($parts) !== 2) {
             throw new InvalidArgumentException(sprintf('The address "%s" is invalid', $address));
         }

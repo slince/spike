@@ -12,24 +12,24 @@ class HttpTunnel extends Tunnel
     /**
      * @var array
      */
-    protected $hosts;
+    protected $proxyHosts;
 
-    public function __construct($port, $hosts, ConnectionInterface $connection = null)
+    public function __construct($port, $proxyHosts, ConnectionInterface $connection = null)
     {
-        $this->hosts = $hosts;
+        $this->proxyHosts = $proxyHosts;
         parent::__construct($port, $connection);
     }
 
     /**
-     * @return mixed
+     * @return array
      */
-    public function getHosts()
+    public function getProxyHosts()
     {
-        return $this->hosts;
+        return $this->proxyHosts;
     }
 
     public function supportHost($host)
     {
-        return in_array($host, $this->hosts);
+        return in_array($host, $this->proxyHosts);
     }
 }

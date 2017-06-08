@@ -7,19 +7,28 @@ namespace Spike\Client\Tunnel;
 
 class TcpTunnel extends Tunnel
 {
-    protected $localHost;
+    protected $host;
 
-    public function __construct($protocol, $remotePort, $localHost)
+    public function __construct($remotePort, $host)
     {
-        parent::__construct($protocol, $remotePort);
-        $this->localHost = $localHost;
+        parent::__construct(static::TUNNEL_TCP, $remotePort);
+        $this->host = $host;
     }
 
     /**
      * @return string
      */
-    public function getLocalHost()
+    public function getHost()
     {
-        return $this->localHost;
+        return $this->host;
+    }
+
+    public function toArray()
+    {
+        return [
+            'protocol' => $this->protocol,
+            'remotePort' => $this->remotePort,
+            'host' => $this->host,
+        ];
     }
 }

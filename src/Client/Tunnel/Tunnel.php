@@ -5,7 +5,7 @@
  */
 namespace Spike\Client\Tunnel;
 
-class Tunnel
+abstract class Tunnel implements TunnelInterface
 {
     /**
      * The supported protocol of the tunnel

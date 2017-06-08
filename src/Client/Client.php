@@ -17,6 +17,8 @@ use Spike\ChunkBuffer;
 use Spike\Client\Handler\HandlerInterface;
 use Spike\Client\Handler\ProxyRequestHandler;
 use Spike\Client\Handler\RegisterHostResponseHandler;
+use Spike\Client\Tunnel\TunnelFactory;
+use Spike\Client\Tunnel\TunnelInterface;
 use Spike\Exception\BadRequestException;
 use Spike\Exception\InvalidArgumentException;
 use Spike\Exception\RuntimeException;
@@ -27,6 +29,7 @@ use Spike\Protocol\MessageInterface;
 use Spike\Protocol\ProxyRequest;
 use Spike\Buffer\HttpBuffer;
 use Spike\Buffer\SpikeBuffer;
+use Spike\Protocol\RegisterTunnel;
 
 class Client
 {
@@ -56,18 +59,27 @@ class Client
     protected $serverAddress;
 
     /**
-     * Proxy host to forward host map
-     * @var array
+     * Tunnels
+     * @var TunnelInterface
      */
-    protected $forwardHosts = [];
+    protected $tunnels = [];
 
-    public function __construct($serverAddress, LoopInterface $loop = null, HttpClient $client = null, Dispatcher $dispatcher = null)
+    public function __construct($serverAddress, $tunnels, LoopInterface $loop = null, Dispatcher $dispatcher = null)
     {
         $this->serverAddress = $serverAddress;
-        $this->httpClient = $client ?: new HttpClient();
+        $this->dispatcher = $dispatcher ?: new Dispatcher();
         $this->loop = $loop ?: LoopFactory::create();
         $this->connector = new Connector($this->loop);
-        $this->dispatcher = $dispatcher ?: new Dispatcher();
+        $this->tunnels = $this->createTunnels($tunnels);
+    }
+
+    protected function createTunnels($data)
+    {
+        $tunnels = [];
+        foreach ($data as $info) {
+            $tunnels[] = TunnelFactory::fromArray($info);
+        }
+        return $tunnels;
     }
 
     public function run()
@@ -78,7 +90,7 @@ class Client
                 'connection' => $connection
             ]));
             //Reports the proxy hosts
-            $this->transferProxyHosts($connection);
+            $this->transferTunnels($connection);
             $this->handleConnection($connection);
         });
         $this->dispatcher->dispatch(EventStore::CLIENT_RUN);
@@ -87,6 +99,9 @@ class Client
 
     protected function handleConnection(ConnectionInterface $connection)
     {
+        
+
+
         $handle = function ($data) use ($connection, &$handle) {
             try {
                 $connection->removeAllListeners();
@@ -121,22 +136,6 @@ class Client
     }
 
     /**
-     * @return LoopInterface
-     */
-    public function getLoop()
-    {
-        return $this->loop;
-    }
-
-    /**
-     * @return HttpClient
-     */
-    public function getHttpClient()
-    {
-        return $this->httpClient;
-    }
-
-    /**
      * @return Dispatcher
      */
     public function getDispatcher()
@@ -145,45 +144,17 @@ class Client
     }
 
     /**
-     * Gets all forward hosts
-     * @return array
-     */
-    public function getForwardHosts()
-    {
-        return $this->forwardHosts;
-    }
-
-    /**
-     * Adds a forward host
-     * @param string $proxyHost
-     * @param string $forwardHost
-     */
-    public function addForwardHost($proxyHost, $forwardHost)
-    {
-        $this->forwardHosts[$proxyHost] = $forwardHost;
-    }
-
-    /**
-     * Gets the forward host for the host
-     * @param string $proxyHost
-     * @return string|null
-     */
-    public function getForwardHost($proxyHost)
-    {
-        return isset($this->forwardHosts[$proxyHost]) ? $this->forwardHosts[$proxyHost] : null;
-    }
-
-    /**
      * Reports the proxy hosts to the server
      * @param ConnectionInterface $connection
      */
-    protected function transferProxyHosts(ConnectionInterface $connection)
+    protected function transferTunnels(ConnectionInterface $connection)
     {
-        $proxyHosts = array_keys($this->forwardHosts);
-        $this->dispatcher->dispatch(new Event(EventStore::TRANSFER_PROXY_HOSTS, $this, [
-            'proxyHosts' => $proxyHosts
+        $this->dispatcher->dispatch(new Event(EventStore::REGISTER_TUNNELS, $this, [
+            'tunnels' => $this->tunnels
         ]));
-        $connection->write(new RegisterHostRequest($proxyHosts));
+        foreach ($this->tunnels as $tunnel) {
+            $connection->write(new RegisterTunnel($tunnel->toArray()));
+        }
     }
 
     /**

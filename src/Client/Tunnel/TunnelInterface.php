@@ -3,7 +3,7 @@
  * Spike library
  * @author Tao <taosikai@yeah.net>
  */
-namespace Spike\Tunnel;
+namespace Spike\Client\Tunnel;
 
 interface TunnelInterface
 {

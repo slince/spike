@@ -26,10 +26,10 @@ final class EventStore
     const SOCKET_ERROR = 'socket_error';
 
     /**
-     * Emit when client reports its proxy hosts to the server
+     * Emit when client registers array of tunnels to the server
      * @var string
      */
-    const TRANSFER_PROXY_HOSTS = 'transfer_proxy_hosts';
+    const REGISTER_TUNNELS = 'register_tunnels';
 
     /**
      * Emit when client accepts a new connection

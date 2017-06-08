@@ -17,8 +17,6 @@ interface TunnelInterface
 
     public function pipe(ConnectionInterface $connection);
 
-    public function write();
-
     /**
      * @return ConnectionInterface
      */

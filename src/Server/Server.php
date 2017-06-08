@@ -84,7 +84,6 @@ class Server
                 'exception' => $exception
             ]));
         });
-        $this->socket->pause();
         //Emit the event
         $this->dispatcher->dispatch(EventStore::SERVER_RUN);
         $this->loop->run();
