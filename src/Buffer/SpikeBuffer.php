@@ -17,11 +17,16 @@ class SpikeBuffer extends Buffer
     public function __construct(ConnectionInterface $connection)
     {
         parent::__construct($connection);
-        $this->connection->on('data', [$this, 'handleData']);
+        $this->connection->once('data', [$this, 'handleData']);
     }
 
     public function handleData($data)
     {
+        //Checks whether the message is valid spike protocol
+        if (empty($this->headers) && stripos($data, 'spike') === false) {
+            throw new InvalidArgumentException('Bad spike message');
+        }
+        $this->connection->emit('data', $data);
         $this->headers .= $data;
         $pos = strpos($this->headers, "\r\n\r\n");
         if ($pos !== false) {
@@ -41,7 +46,7 @@ class SpikeBuffer extends Buffer
                     $this->gatherComplete();
                 }
             } else {
-                throw new InvalidArgumentException('Bad http message');
+                throw new InvalidArgumentException('Bad spike message');
             }
         }
     }

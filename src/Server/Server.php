@@ -5,8 +5,6 @@
  */
 namespace Spike\Server;
 
-use Cake\Collection\Collection;
-use function foo\func;
 use React\EventLoop\LoopInterface;
 use React\EventLoop\Factory as LoopFactory;
 use React\Socket\ConnectionInterface;
@@ -14,25 +12,33 @@ use React\Socket\Server as Socket;
 use Slince\Event\Dispatcher;
 use Slince\Event\Event;
 use Spike\Buffer\BufferInterface;
-use Spike\Buffer\HttpBuffer;
 use Spike\Buffer\SpikeBuffer;
 use Spike\Exception\BadRequestException;
 use Spike\Exception\InvalidArgumentException;
 use Spike\Exception\RuntimeException;
-use Spike\Protocol\HttpRequest;
-use Spike\Protocol\ProxyResponse;
 use Spike\Protocol\ProtocolFactory;
 use Spike\Protocol\RegisterTunnel;
 use Spike\Server\Handler\HandlerInterface;
-use Spike\Server\Handler\ProxyRequestHandler;
-use Spike\Server\Handler\ProxyResponseHandler;
 use Spike\Server\Handler\RegisterTunnelHandler;
 use Spike\Server\Tunnel\HttpTunnel;
 use Spike\Server\Tunnel\TunnelInterface;
 use Spike\Server\TunnelServer\TunnelServerInterface;
+use Spike\Utility;
 
 class Server
 {
+    /**
+     * The server host
+     * @var string
+     */
+    protected $host;
+
+    /**
+     * The server port
+     * @var int
+     */
+    protected $port;
+
     /**
      * @var LoopInterface
      */
@@ -49,34 +55,16 @@ class Server
     protected $socket;
 
     /**
-     * @var TunnelInterface[]
-     */
-    protected $tunnels = [];
-
-    /**
      * @var TunnelServerInterface
      */
     protected $tunnelServers = [];
 
-    protected $host;
-
-    protected $port;
-
     public function __construct($address, LoopInterface $loop = null, Dispatcher $dispatcher = null)
     {
+        list($this->host, $this->port) = Utility::parseAddress($address);
         $this->loop = $loop ?: LoopFactory::create();
         $this->socket = new Socket($address, $this->loop);
         $this->dispatcher = $dispatcher ?: new Dispatcher();
-        list($this->host, $this->port) = $this->parseAddress($address);
-    }
-
-    protected function parseAddress($address)
-    {
-        $parts = array_filter(explode($address, ':'));
-        if (count($parts) !== 2) {
-            throw new InvalidArgumentException(sprintf('The address "%s" is invalid', $address));
-        }
-        return $parts;
     }
 
     /**
@@ -104,34 +92,16 @@ class Server
 
     protected function handleConnection(ConnectionInterface $connection)
     {
-        $handle = function ($data) use ($connection, &$handle) {
-            try{
-                $connection->removeAllListeners();
-                $firstLineMessage = strstr($data, "\r\n", true);
-                if (strpos($firstLineMessage, 'Spike') !== false) {
-                    $buffer = new SpikeBuffer($connection);
-                } else {
-                    throw new BadRequestException("Unsupported protocol");
-                }
-                $buffer->gather(function (BufferInterface $buffer) use ($connection, $handle) {
-                    $message = ProtocolFactory::create($buffer);
-                    $this->dispatcher->dispatch(new Event(EventStore::RECEIVE_MESSAGE, $this, [
-                        'message' => $message,
-                        'connection' => $connection
-                    ]));
-                    $this->createHandler($message, $connection)->handle($message);
-                    $buffer->flush(); //Flush the buffer and continue gather message
-                    $connection->once('data', $handle); //An loop has been end
-                });
-                $connection->emit('data', [$data]);
-            } catch (RuntimeException $exception) {
-                $this->dispatcher->dispatch(new Event(EventStore::CONNECTION_ERROR, $this, [
-                    'connection' => $connection,
-                    'exception' => $exception,
-                ]));
-            }
-        };
-        $connection->once('data', $handle);
+        $buffer =  new SpikeBuffer($connection);
+        $buffer->gather(function (BufferInterface $buffer) use ($connection) {
+            $message = ProtocolFactory::create($buffer);
+            $this->dispatcher->dispatch(new Event(EventStore::RECEIVE_MESSAGE, $this, [
+                'message' => $message,
+                'connection' => $connection
+            ]));
+            $this->createHandler($message, $connection)->handle($message);
+            $buffer->flush(); //Flush the buffer and continue gather message
+        });
     }
 
     public function createTunnelServer(TunnelInterface $tunnel)

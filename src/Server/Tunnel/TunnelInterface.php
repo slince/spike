@@ -9,9 +9,9 @@ use React\Socket\ConnectionInterface;
 
 interface TunnelInterface
 {
-    public function open();
-
     public function isActive();
+
+    public function open();
 
     public function close();
 

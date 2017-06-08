@@ -22,6 +22,10 @@ class HttpBuffer extends Buffer
 
     public function handleData($data)
     {
+        //Checks whether the message is valid spike protocol
+        if (empty($this->headers) && stripos($data, 'http') === false) {
+            throw new InvalidArgumentException('Bad http message');
+        }
         $this->headers .= $data;
         $pos = strpos($this->headers, "\r\n\r\n");
         if ($pos !== false) {

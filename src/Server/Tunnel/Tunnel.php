@@ -15,6 +15,8 @@ class Tunnel implements TunnelInterface
 
     protected $port;
 
+    protected $localUri;
+
     public function __construct($port, ConnectionInterface $connection = null)
     {
         $this->connection = $connection;
