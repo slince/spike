@@ -27,7 +27,7 @@ class Logger extends Monologer
      */
     protected $output;
 
-    public function __construct($level = Monologer::INFO, $file, ConsoleOutput $output)
+    public function __construct($level, $file, ConsoleOutput $output)
     {
         $this->level = $level;
         $this->file = $file;;

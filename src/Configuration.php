@@ -30,6 +30,14 @@ class Configuration  extends Config
     }
 
     /**
+     * @return array
+     */
+    public function getTunnels()
+    {
+        return $this->get('tunnels');
+    }
+
+    /**
      * Gets the current timezone
      * @return string
      */

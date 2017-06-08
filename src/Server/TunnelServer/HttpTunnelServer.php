@@ -28,6 +28,7 @@ class HttpTunnelServer extends TunnelServer
                 if ($this->tunnel->supportHost($host)) {
                     $message = new StartProxy([
                         'port' => $this->tunnel->getPort(),
+                        'proxyHost' => $host,
                         'clientIp' => $connection->getLocalAddress()
                     ]);
                     $this->tunnel->getConnection()->write($message);

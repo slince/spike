@@ -17,6 +17,7 @@ use Spike\ChunkBuffer;
 use Spike\Client\Handler\HandlerInterface;
 use Spike\Client\Handler\ProxyRequestHandler;
 use Spike\Client\Handler\RegisterHostResponseHandler;
+use Spike\Client\Tunnel\HttpTunnel;
 use Spike\Client\Tunnel\TunnelFactory;
 use Spike\Client\Tunnel\TunnelInterface;
 use Spike\Exception\BadRequestException;
@@ -30,6 +31,7 @@ use Spike\Protocol\ProxyRequest;
 use Spike\Buffer\HttpBuffer;
 use Spike\Buffer\SpikeBuffer;
 use Spike\Protocol\RegisterTunnel;
+use Spike\Protocol\StartProxy;
 
 class Client
 {
@@ -63,6 +65,13 @@ class Client
      * @var TunnelInterface
      */
     protected $tunnels = [];
+
+    /**
+     * @var ProxyContext
+     */
+    protected $proxyContext;
+
+    protected $tunnelClient;
 
     public function __construct($serverAddress, $tunnels, LoopInterface $loop = null, Dispatcher $dispatcher = null)
     {
@@ -99,21 +108,10 @@ class Client
 
     protected function handleConnection(ConnectionInterface $connection)
     {
-        
-
-
-        $handle = function ($data) use ($connection, &$handle) {
+        if (!$this->proxyContext) {
             try {
-                $connection->removeAllListeners();
-                $firstLineMessage = strstr($data, "\r\n", true);
-                if (strpos($firstLineMessage, 'HTTP') !== false) {
-                    $buffer = new HttpBuffer($connection);
-                } elseif (strpos($firstLineMessage, 'Spike') !== false) {
-                    $buffer = new SpikeBuffer($connection);
-                } else {
-                    throw new BadRequestException("Unsupported protocol");
-                }
-                $buffer->gather(function (BufferInterface $buffer) use ($connection, $handle) {
+                $buffer = new SpikeBuffer($connection);
+                $buffer->gather(function(BufferInterface $buffer) use($connection){
                     $message = ProtocolFactory::create($buffer);
                     $this->dispatcher->dispatch(new Event(EventStore::RECEIVE_MESSAGE, $this, [
                         'message' => $message,
@@ -121,18 +119,22 @@ class Client
                     ]));
                     $this->createHandler($message, $connection)->handle($message);
                     $buffer->flush(); //Flush the buffer and continue gather message
-                    $connection->removeAllListeners();
-                    $connection->once('data', $handle); //An loop has been end
                 });
-                $connection->emit('data', [$data]);
-            } catch (RuntimeException $exception) {
+            } catch (InvalidArgumentException $exception) {
                 $this->dispatcher->dispatch(new Event(EventStore::CONNECTION_ERROR, $this, [
                     'connection' => $connection,
                     'exception' => $exception,
                 ]));
             }
-        };
-        $connection->once('data', $handle);
+        }
+    }
+
+    /**
+     * @return TunnelInterface[]
+     */
+    public function getTunnels()
+    {
+        return $this->tunnels;
     }
 
     /**
@@ -141,6 +143,25 @@ class Client
     public function getDispatcher()
     {
         return $this->dispatcher;
+    }
+
+    /**
+     * @param ProxyContext $proxyContext
+     */
+    public function setProxyContext(ProxyContext $proxyContext)
+    {
+        $this->proxyContext = $proxyContext;
+    }
+
+    public function createTunnelClient(ConnectionInterface $connection)
+    {
+        $tunnel = $this->proxyContext->getTunnel();
+        if ($tunnel instanceof HttpTunnel) {
+            $address = $this->proxyContext->getArgument('forwardHost');
+        } else {
+            $address = $tunnel->getHost();
+        }
+        $this->tunnelClient = new TunnelClient($address, $connection, $this->loop);
     }
 
     /**
@@ -165,10 +186,8 @@ class Client
      */
     protected function createHandler($message, $connection)
     {
-        if ($message instanceof ProxyRequest) {
+        if ($message instanceof StartProxy) {
             $handler = new ProxyRequestHandler($this, $connection);
-        } elseif ($message instanceof RegisterHostResponse) {
-            $handler = new RegisterHostResponseHandler($this, $connection);
         } else {
             throw new InvalidArgumentException(sprintf('Cannot find handler for message type: "%s"',
                 get_class($message)

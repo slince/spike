@@ -28,6 +28,16 @@ class HttpTunnel extends Tunnel
         return isset($this->hosts[$proxyHost]) ? $this->hosts[$proxyHost] : null;
     }
 
+    /**
+     * Checks whether support the proxy host
+     * @param string $proxyHost
+     * @return bool
+     */
+    public function supportProxyHost($proxyHost)
+    {
+        return isset($this->hosts[$proxyHost]);
+    }
+
     public function toArray()
     {
         return [

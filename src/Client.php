@@ -14,6 +14,7 @@ use Spike\Protocol\ReportClientException;
 use Spike\Server\EventStore;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class Client extends Application implements SubscriberInterface
@@ -39,7 +40,7 @@ class Client extends Application implements SubscriberInterface
         parent::__construct($configuration,static::NAME, static::VERSION);
         $this->client = new Client\Client(
             $this->configuration->getServerAddress(),
-            null,
+            $this->configuration->getTunnels(),
             null,
             $this->dispatcher
         );
@@ -79,16 +80,7 @@ class Client extends Application implements SubscriberInterface
         foreach ($this->getSubscribers() as $subscriber) {
             $this->dispatcher->addSubscriber($subscriber);
         }
-        $this->prepareProxyHosts();
         $this->client->run();
-    }
-
-    protected function prepareProxyHosts()
-    {
-        $proxyHosts = $this->configuration->get('proxy-hosts') ?: [];
-        foreach ($proxyHosts  as $proxyHost => $forwardHost) {
-            $this->client->addForwardHost($proxyHost, $forwardHost);
-        }
     }
 
     public function onConnectionError(Event $event)

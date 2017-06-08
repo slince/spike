@@ -9,7 +9,7 @@
             "protocol": "http",
             "remotePort": "8049",
             "hosts": {
-                "foo.spike.com": "www.baidu.com",
+                "www.lazy.com": "www.baidu.com",
                 "bar.spike.com": "127.0.0.1"
             }
         },

@@ -23,6 +23,7 @@ class SpikeBuffer extends Buffer
     public function handleData($data)
     {
         //Checks whether the message is valid spike protocol
+        var_dump($data);exit;
         if (empty($this->headers) && stripos($data, 'spike') === false) {
             throw new InvalidArgumentException('Bad spike message');
         }
