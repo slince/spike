@@ -1,9 +1,5 @@
 {
-    "server-address": "127.0.0.1:80",
-    "proxy-hosts": {
-        "http://127.0.0.1": "http://www.baidu.com",
-        "tcp://127.0.0.1:3306": "http://www.baidu.com"
-    },
+    "server-address": "127.0.0.1:8089",
     "tunnels": [
         {
             "protocol": "http",
