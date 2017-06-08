@@ -23,14 +23,11 @@ class ProtocolFactory
             list(, $flag) = explode(':', strstr($buffer, "\r\n", true));
             $flag = trim($flag);
             switch ($flag) {
-                case 'proxy_request':
-                    $protocol = ProxyRequest::fromString($buffer);
-                    break;
-                case 'proxy_response':
-                    $protocol = ProxyResponse::fromString($buffer);
+                case 'register_tunnel':
+                    $protocol = RegisterTunnel::fromString($buffer);
                     break;
                 default:
-                    throw new BadRequestException('Bad request');
+                    throw new BadRequestException(sprintf('Bad request: "%s"', $buffer));
             }
         }
         return $protocol;
