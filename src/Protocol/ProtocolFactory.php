@@ -23,12 +23,6 @@ class ProtocolFactory
             list(, $flag) = explode(':', strstr($buffer, "\r\n", true));
             $flag = trim($flag);
             switch ($flag) {
-                case 'register_domain':
-                    $protocol = RegisterHostRequest::fromString($buffer);
-                    break;
-                case 'register_domain_response':
-                    $protocol = RegisterHostResponse::fromString($buffer);
-                    break;
                 case 'proxy_request':
                     $protocol = ProxyRequest::fromString($buffer);
                     break;

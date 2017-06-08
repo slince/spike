@@ -3,7 +3,7 @@
  * Spike library
  * @author Tao <taosikai@yeah.net>
  */
-namespace Spike\Server;
+namespace Spike\Server\TunnelServer;
 
 use React\EventLoop\LoopInterface;
 use React\Socket\ConnectionInterface;

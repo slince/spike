@@ -5,14 +5,17 @@
  */
 namespace Spike\Protocol;
 
-class RegisterHostResponse extends SpikeResponse
+class RegisterTunnelResponse extends SpikeResponse
 {
+    /**
+     * @var array
+     */
     protected $body;
 
-    public function __construct($code, $body = '', $headers = [])
+    public function __construct($code, $body, array $headers = [])
     {
         $this->body = $body;
-        parent::__construct($code,'register_domain_response', $headers);
+        parent::__construct($code,'register_tunnel', $headers);
     }
 
     public function getBody()

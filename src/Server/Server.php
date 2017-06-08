@@ -20,15 +20,16 @@ use Spike\Exception\BadRequestException;
 use Spike\Exception\InvalidArgumentException;
 use Spike\Exception\RuntimeException;
 use Spike\Protocol\HttpRequest;
-use Spike\Protocol\RegisterHostRequest;
 use Spike\Protocol\ProxyResponse;
 use Spike\Protocol\ProtocolFactory;
+use Spike\Protocol\RegisterTunnel;
 use Spike\Server\Handler\HandlerInterface;
 use Spike\Server\Handler\ProxyRequestHandler;
 use Spike\Server\Handler\ProxyResponseHandler;
-use Spike\Server\Handler\RegisterHostHandler;
+use Spike\Server\Handler\RegisterTunnelHandler;
 use Spike\Server\Tunnel\HttpTunnel;
 use Spike\Server\Tunnel\TunnelInterface;
+use Spike\Server\TunnelServer\TunnelServerInterface;
 
 class Server
 {
@@ -48,22 +49,12 @@ class Server
     protected $socket;
 
     /**
-     * @var ProxyConnection[]
-     */
-    protected $proxyConnections = [];
-
-    /**
-     * @var ProxyHost[]
-     */
-    protected $proxyHosts = [];
-
-    /**
      * @var TunnelInterface[]
      */
     protected $tunnels = [];
 
     /**
-     * @var TunnelServer
+     * @var TunnelServerInterface
      */
     protected $tunnelServers = [];
 
@@ -105,6 +96,7 @@ class Server
                 'exception' => $exception
             ]));
         });
+        $this->socket->pause();
         //Emit the event
         $this->dispatcher->dispatch(EventStore::SERVER_RUN);
         $this->loop->run();
@@ -142,94 +134,15 @@ class Server
         $connection->once('data', $handle);
     }
 
-    protected function createTunnelServer(TunnelInterface $tunnel)
+    public function createTunnelServer(TunnelInterface $tunnel)
     {
         if ($tunnel instanceof HttpTunnel) {
-            $tunnelServer = new HttpTunnelServer($tunnel, "{$this->host}:{$tunnel->getPort()}", $this->loop);
+            $tunnelServer = new TunnelServer\HttpTunnelServer($tunnel, "{$this->host}:{$tunnel->getPort()}", $this->loop);
         } else {
-            $tunnelServer = new TcpTunnelServer($tunnel, "{$this->host}:{$tunnel->getPort()}", $this->loop);
+            $tunnelServer = new TunnelServer\TcpTunnelServer($tunnel, "{$this->host}:{$tunnel->getPort()}", $this->loop);
         }
         $this->tunnelServers[] = $tunnelServer;
-    }
-
-    /**
-     * Gets all proxy connections
-     * @return ProxyConnection[]
-     */
-    public function getProxyConnections()
-    {
-        return $this->proxyConnections;
-    }
-
-    /**
-     * Gets the proxy hosts
-     * @return ProxyHost[]
-     */
-    public function getProxyHosts()
-    {
-        return $this->proxyHosts;
-    }
-
-    /**
-     * Sets the proxy hosts of the server
-     * @param Collection $proxyHosts
-     */
-    public function setProxyHosts($proxyHosts)
-    {
-        $this->proxyHosts = $proxyHosts;
-    }
-
-    /**
-     * Adds a proxy host record
-     * @param ProxyHost $proxyHost
-     */
-    public function addProxyHost(ProxyHost $proxyHost)
-    {
-        $this->proxyHosts[] = $proxyHost;
-    }
-
-    /**
-     * Adds some proxy hosts
-     * @param ProxyHost[] $proxyHosts
-     */
-    public function addProxyHosts($proxyHosts)
-    {
-        $this->proxyHosts += $proxyHosts;
-    }
-
-    /**
-     * Finds the proxy host for the given host
-     * @param string $host
-     * @return null|ProxyHost
-     */
-    public function findProxyHost($host)
-    {
-        foreach ($this->proxyHosts as $proxyHost) {
-            if ($proxyHost->getHost() == $host) {
-                return $proxyHost;
-            }
-        }
-        return null;
-    }
-
-    public function addProxyConnection(ProxyConnection $proxyConnection)
-    {
-        $this->proxyConnections[] = $proxyConnection;
-    }
-
-    /**
-     * Finds the proxy connection by given id
-     * @param string $connectionId
-     * @return null|ProxyConnection
-     */
-    public function findProxyConnection($connectionId)
-    {
-        foreach ($this->proxyConnections as $proxyConnection) {
-            if ($proxyConnection->getId() == $connectionId) {
-                return $proxyConnection;
-            }
-        }
-        return null;
+        $tunnelServer->run();
     }
 
     /**
@@ -256,8 +169,8 @@ class Server
      */
     protected function createHandler($protocol, $connection)
     {
-        if ($protocol instanceof RegisterHostRequest) {
-            $handler = new RegisterHostHandler($this, $connection);
+        if ($protocol instanceof RegisterTunnel) {
+            $handler = new RegisterTunnelHandler($this, $connection);
         } elseif ($protocol instanceof HttpRequest) {
             $handler = new ProxyRequestHandler($this, $connection);
         } elseif ($protocol instanceof ProxyResponse) {
