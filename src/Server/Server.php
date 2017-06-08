@@ -154,14 +154,6 @@ class Server
     }
 
     /**
-     * @return LoopInterface
-     */
-    public function getLoop()
-    {
-        return $this->loop;
-    }
-
-    /**
      * Creates the handler for the received message
      * @param $protocol
      * @param $connection
@@ -171,10 +163,6 @@ class Server
     {
         if ($protocol instanceof RegisterTunnel) {
             $handler = new RegisterTunnelHandler($this, $connection);
-        } elseif ($protocol instanceof HttpRequest) {
-            $handler = new ProxyRequestHandler($this, $connection);
-        } elseif ($protocol instanceof ProxyResponse) {
-            $handler = new ProxyResponseHandler($this, $connection);
         } else {
             throw new BadRequestException(sprintf('Cannot find handler for message type: "%s"',
                 gettype($protocol)
