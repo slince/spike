@@ -15,7 +15,7 @@ class RegisterTunnelResponse extends SpikeResponse
     public function __construct($code, $body, array $headers = [])
     {
         $this->body = $body;
-        parent::__construct($code,'register_tunnel', $headers);
+        parent::__construct($code,'register_tunnel_response', $headers);
     }
 
     public function getBody()

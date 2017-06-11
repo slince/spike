@@ -17,11 +17,11 @@ class RegisterTunnelHandler extends Handler
         try {
             $this->server->createTunnelServer($tunnel);
             $response = new RegisterTunnelResponse(0, '', [
-                'Tunnel-ID' => $message->getTunnel()['id']
+                'Tunnel-RemotePort' => $message->getTunnel()['remotePort']
             ]);
         } catch (\Exception $exception) {
             $response = new RegisterTunnelResponse(1, $exception->getMessage(), [
-                'Tunnel-ID' => $message->getTunnel()['id']
+                'Tunnel-RemotePort' => $message->getTunnel()['remotePort']
             ]);
         }
         $this->connection->write($response);

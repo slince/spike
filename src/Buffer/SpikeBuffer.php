@@ -23,20 +23,19 @@ class SpikeBuffer extends Buffer
     public function handleData($data)
     {
         //Checks whether the message is valid spike protocol
-        echo ($data), PHP_EOL;
         if (empty($this->headers) && stripos($data, 'spike') === false) {
             throw new InvalidArgumentException('Bad spike message');
         }
         $this->headers .= $data;
         $pos = strpos($this->headers, "\r\n\r\n");
         if ($pos !== false) {
-            $this->body .= substr($this->headers, $pos + 4);
+            $this->body = substr($this->headers, $pos + 4);
             $this->headers = substr($this->headers, 0, $pos);
-            $this->connection->removeListener('data', [$this, 'handleData']);
             if (preg_match("/Content-Length: ?(\d+)/i", $this->headers, $match)) {
                 $length = $match[1];
                 $furtherContentLength = $length - strlen($this->body);
                 if ($furtherContentLength > 0) {
+                    $this->connection->removeListener('data', [$this, 'handleData']);
                     $bodyBuffer = new FixedLengthBuffer($this->connection, $furtherContentLength);
                     $bodyBuffer->gather(function(BufferInterface $bodyBuffer){
                         $this->body .= (string)$bodyBuffer;

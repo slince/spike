@@ -26,6 +26,9 @@ class ProtocolFactory
                 case 'register_tunnel':
                     $protocol = RegisterTunnel::fromString($buffer);
                     break;
+                case 'register_tunnel_response':
+                    $protocol = RegisterTunnelResponse::fromString($buffer);
+                    break;
                 default:
                     throw new BadRequestException(sprintf('Bad request: "%s"', $buffer));
             }

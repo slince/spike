@@ -175,6 +175,7 @@ class Client
         ]));
         foreach ($this->tunnels as $tunnel) {
             $connection->write(new RegisterTunnel($tunnel->toArray()));
+            break;
         }
     }
 
