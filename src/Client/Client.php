@@ -23,6 +23,7 @@ use Spike\Client\Tunnel\TunnelInterface;
 use Spike\Exception\BadRequestException;
 use Spike\Exception\InvalidArgumentException;
 use Spike\Exception\RuntimeException;
+use Spike\Protocol\AuthRequest;
 use Spike\Protocol\RegisterHostRequest;
 use Spike\Protocol\RegisterHostResponse;
 use Spike\Protocol\ProtocolFactory;
@@ -51,14 +52,16 @@ class Client
     protected $connector;
 
     /**
-     * @var HttpClient
+     * @var ConnectionInterface
      */
-    protected $httpClient;
+    protected $connection;
 
     /**
      * @var string
      */
     protected $serverAddress;
+
+    protected $id;
 
     /**
      * Tunnels
@@ -71,8 +74,6 @@ class Client
      */
     protected $proxyContext;
 
-    protected $tunnelClient;
-
     public function __construct($serverAddress, $tunnels, LoopInterface $loop = null, Dispatcher $dispatcher = null)
     {
         $this->serverAddress = $serverAddress;
@@ -82,6 +83,19 @@ class Client
         $this->tunnels = $this->createTunnels($tunnels);
     }
 
+    /**
+     * Checks whether the client is authorized
+     * @return bool
+     */
+    public function isAuthorized()
+    {
+        return !empty($this->id);
+    }
+
+    /**
+     * @param array $data
+     * @return TunnelInterface[]
+     */
     protected function createTunnels($data)
     {
         $tunnels = [];
@@ -98,12 +112,24 @@ class Client
             $this->dispatcher->dispatch(new Event(EventStore::CONNECT_TO_SERVER, $this, [
                 'connection' => $connection
             ]));
+            //Auth
+            $this->getAuth();
             //Reports the proxy hosts
             $this->transferTunnels($connection);
             $this->handleConnection($connection);
         });
         $this->dispatcher->dispatch(EventStore::CLIENT_RUN);
         $this->loop->run();
+    }
+
+    public function getAuth()
+    {
+        $authInfo = [
+            'os' => PHP_OS, 
+        ];
+        $this->connection->write(new AuthRequest([
+
+        ]));
     }
 
     protected function handleConnection(ConnectionInterface $connection)
@@ -117,7 +143,7 @@ class Client
                         'message' => $message,
                         'connection' => $connection
                     ]));
-                    $this->createHandler($message, $connection)->handle($message);
+                    $this->createMessageHandler($message, $connection)->handle($message);
                     $buffer->flush(); //Flush the buffer and continue gather message
                 });
             } catch (InvalidArgumentException $exception) {
@@ -185,7 +211,7 @@ class Client
      * @param ConnectionInterface $connection
      * @return HandlerInterface
      */
-    protected function createHandler($message, $connection)
+    protected function createMessageHandler($message, $connection)
     {
         if ($message instanceof StartProxy) {
             $handler = new ProxyRequestHandler($this, $connection);

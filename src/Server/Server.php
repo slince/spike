@@ -59,6 +59,11 @@ class Server
      */
     protected $tunnelServers = [];
 
+    /**
+     * @var ConnectionInterface
+     */
+    protected $controlConnections = [];
+
     public function __construct($address, LoopInterface $loop = null, Dispatcher $dispatcher = null)
     {
         list($this->host, $this->port) = Utility::parseAddress($address);
@@ -91,14 +96,14 @@ class Server
 
     protected function handleConnection(ConnectionInterface $connection)
     {
-        $buffer =  new SpikeBuffer($connection);
+        $buffer = new SpikeBuffer($connection);
         $buffer->gather(function (BufferInterface $buffer) use ($connection) {
             $message = ProtocolFactory::create($buffer);
             $this->dispatcher->dispatch(new Event(EventStore::RECEIVE_MESSAGE, $this, [
                 'message' => $message,
                 'connection' => $connection
             ]));
-            $this->createHandler($message, $connection)->handle($message);
+            $this->createMessageHandler($message, $connection)->handle($message);
             $buffer->flush(); //Flush the buffer and continue gather message
         });
     }
@@ -128,7 +133,7 @@ class Server
      * @param $connection
      * @return HandlerInterface
      */
-    protected function createHandler($protocol, $connection)
+    protected function createMessageHandler($protocol, $connection)
     {
         if ($protocol instanceof RegisterTunnel) {
             $handler = new RegisterTunnelHandler($this, $connection);
