@@ -14,13 +14,14 @@ class HttpTunnel extends Tunnel
      */
     protected $proxyHosts;
 
-    public function __construct($port, $proxyHosts, ConnectionInterface $connection = null)
+    public function __construct($port, $proxyHosts, ConnectionInterface $controlConnection = null)
     {
         $this->proxyHosts = $proxyHosts;
-        parent::__construct($port, $connection);
+        parent::__construct($port, $controlConnection);
     }
 
     /**
+     * Gets all proxy hosts
      * @return array
      */
     public function getProxyHosts()
@@ -28,6 +29,11 @@ class HttpTunnel extends Tunnel
         return $this->proxyHosts;
     }
 
+    /**
+     * Checks whether the tunnel supports the host
+     * @param string $host
+     * @return bool
+     */
     public function supportHost($host)
     {
         return in_array($host, $this->proxyHosts);

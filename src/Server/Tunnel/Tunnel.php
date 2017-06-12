@@ -9,36 +9,38 @@ use React\Socket\ConnectionInterface;
 
 class Tunnel implements TunnelInterface
 {
+    /**
+     * The control connection
+     * @var ConnectionInterface
+     */
+    protected $controlConnection;
+
+    /**
+     * The tunnel connection
+     * @var ConnectionInterface
+     */
     protected $connection;
 
+    /**
+     * @var boolean
+     */
     protected $active;
 
+    /**
+     * The tunnel server port
+     * @var int
+     */
     protected $port;
 
-    protected $localUri;
-
-    public function __construct($port, ConnectionInterface $connection = null)
+    public function __construct($port, ConnectionInterface $controlConnection = null)
     {
-        $this->connection = $connection;
+        $this->controlConnection = $controlConnection;
         $this->port = $port;
     }
 
-    public function isActive()
-    {
-        return $this->active;
-    }
-
-    public function open()
-    {
-        return $this;
-    }
-
-    public function close()
-    {
-    }
 
     /**
-     * @return mixed
+     * {@inheritdoc}
      */
     public function getPort()
     {
@@ -46,13 +48,48 @@ class Tunnel implements TunnelInterface
     }
 
     /**
-     * @return ConnectionInterface
+     * {@inheritdoc}
+     */
+    public function isActive()
+    {
+        return $this->active;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getControlConnection()
+    {
+        return $this->controlConnection;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setControlConnection(ConnectionInterface $connection)
+    {
+        $this->controlConnection = $connection;
+    }
+
+    /**
+     * {@inheritdoc}
      */
     public function getConnection()
     {
         return $this->connection;
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function setConnection(ConnectionInterface $connection)
+    {
+        $this->connection = $connection;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function pipe(ConnectionInterface $connection)
     {
         $connection->pipe($this->connection);

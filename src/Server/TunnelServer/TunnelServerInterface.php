@@ -5,11 +5,13 @@
  */
 namespace Spike\Server\TunnelServer;
 
+use React\Socket\ConnectionInterface;
 use Spike\Server\Tunnel\TunnelInterface;
 
 interface TunnelServerInterface
 {
     /**
+     * Gets the tunnel
      * @return TunnelInterface
      */
     public function getTunnel();
@@ -28,4 +30,10 @@ interface TunnelServerInterface
      * Resumes the server
      */
     public function resume();
+
+    /**
+     * Handles the proxy connection
+     * @param ConnectionInterface $connection
+     */
+    public function handleProxyConnection(ConnectionInterface $connection);
 }

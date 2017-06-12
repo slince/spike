@@ -15,7 +15,7 @@ use Spike\Protocol\StartProxy;
 
 class HttpTunnelServer extends TunnelServer
 {
-    public function handleConnection(ConnectionInterface $connection)
+    public function handleProxyConnection(ConnectionInterface $connection)
     {
         try {
             $buffer = new HttpHeaderBuffer($connection);

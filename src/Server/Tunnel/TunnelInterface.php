@@ -9,18 +9,45 @@ use React\Socket\ConnectionInterface;
 
 interface TunnelInterface
 {
-    public function isActive();
-
-    public function open();
-
-    public function close();
-
-    public function pipe(ConnectionInterface $connection);
+    /**
+     * Gets the control connection
+     * @return ConnectionInterface
+     */
+    public function getControlConnection();
 
     /**
+     * Sets the control connection
+     * @param ConnectionInterface $connection
+     */
+    public function setControlConnection(ConnectionInterface $connection);
+
+    /**
+     * Gets the tunnel connection
      * @return ConnectionInterface
      */
     public function getConnection();
 
+    /**
+     * Sets the tunnel connection
+     * @param ConnectionInterface $connection
+     */
+    public function setConnection(ConnectionInterface $connection);
+
+    /**
+     * Checks whether the tunnel is active
+     * @return boolean
+     */
+    public function isActive();
+
+    /**
+     * Pipes the proxy connection to the tunnel
+     * @param ConnectionInterface $proxyConnection
+     */
+    public function pipe(ConnectionInterface $proxyConnection);
+
+    /**
+     * Gets the tunnel server port
+     * @return int
+     */
     public function getPort();
 }

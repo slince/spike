@@ -14,13 +14,14 @@ class TcpTunnel extends Tunnel
      */
     protected $host;
 
-    public function __construct($port, $host, ConnectionInterface $connection = null)
+    public function __construct($port, $host, ConnectionInterface $controlConnection = null)
     {
         $this->host = $host;
-        parent::__construct($port, $connection);
+        parent::__construct($port, $controlConnection);
     }
 
     /**
+     * Gets the local host
      * @return string
      */
     public function getHost()
