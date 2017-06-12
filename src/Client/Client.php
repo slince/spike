@@ -125,30 +125,31 @@ class Client
     public function getAuth()
     {
         $authInfo = [
-            'os' => PHP_OS, 
+            'os' => PHP_OS,
+            'username' => '',
+            'password' => '',
+            'version' => '',
         ];
-        $this->connection->write(new AuthRequest([
-
-        ]));
+        $this->connection->write(new AuthRequest($authInfo));
     }
 
-    protected function handleConnection(ConnectionInterface $connection)
+    protected function handleConnection()
     {
         if (!$this->proxyContext) {
             try {
-                $buffer = new SpikeBuffer($connection);
-                $buffer->gather(function(BufferInterface $buffer) use($connection){
+                $buffer = new SpikeBuffer($this->connection);
+                $buffer->gather(function(BufferInterface $buffer){
                     $message = ProtocolFactory::create($buffer);
                     $this->dispatcher->dispatch(new Event(EventStore::RECEIVE_MESSAGE, $this, [
                         'message' => $message,
-                        'connection' => $connection
+                        'connection' => $this->connection
                     ]));
-                    $this->createMessageHandler($message, $connection)->handle($message);
+                    $this->createMessageHandler($message)->handle($message);
                     $buffer->flush(); //Flush the buffer and continue gather message
                 });
             } catch (InvalidArgumentException $exception) {
                 $this->dispatcher->dispatch(new Event(EventStore::CONNECTION_ERROR, $this, [
-                    'connection' => $connection,
+                    'connection' => $this->connection,
                     'exception' => $exception,
                 ]));
             }
@@ -208,13 +209,12 @@ class Client
     /**
      * Creates the handler for the received message
      * @param MessageInterface $message
-     * @param ConnectionInterface $connection
      * @return HandlerInterface
      */
-    protected function createMessageHandler($message, $connection)
+    protected function createMessageHandler($message)
     {
         if ($message instanceof StartProxy) {
-            $handler = new ProxyRequestHandler($this, $connection);
+            $handler = new ProxyRequestHandler($this, $this->connection);
         } else {
             throw new InvalidArgumentException(sprintf('Cannot find handler for message type: "%s"',
                 get_class($message)
