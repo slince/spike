@@ -136,7 +136,7 @@ class Client
         }
     }
 
-    public function requestAuthorization()
+    protected function requestAuthorization()
     {
         $authInfo = [
             'os' => PHP_OS,
@@ -145,6 +145,12 @@ class Client
             'version' => '',
         ];
         $this->connection->write(new Spike('auth', $authInfo));
+    }
+
+    public function connectionToServer()
+    {
+        $connector = new Connector($this->loop);
+        return $connector->connect($this->serverAddress);
     }
 
     /**

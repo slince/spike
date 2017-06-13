@@ -5,8 +5,22 @@
  */
 namespace Spike\Client\Tunnel;
 
+use React\Socket\ConnectionInterface;
+
 abstract class Tunnel implements TunnelInterface
 {
+    /**
+     * The control connection
+     * @var ConnectionInterface
+     */
+    protected $controlConnection;
+
+    /**
+     * The tunnel connection
+     * @var ConnectionInterface
+     */
+    protected $connection;
+
     /**
      * The supported protocol of the tunnel
      * @var string
@@ -23,6 +37,38 @@ abstract class Tunnel implements TunnelInterface
     {
         $this->protocol = $protocol;
         $this->remotePort = $remotePort;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getControlConnection()
+    {
+        return $this->controlConnection;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setControlConnection(ConnectionInterface $connection)
+    {
+        $this->controlConnection = $connection;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getConnection()
+    {
+        return $this->connection;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setConnection(ConnectionInterface $connection)
+    {
+        $this->connection = $connection;
     }
 
     /**

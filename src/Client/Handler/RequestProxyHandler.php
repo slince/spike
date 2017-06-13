@@ -17,13 +17,10 @@ class RequestProxyHandler extends MessageHandler
         $tunnel = $this->findTunnel($tunnelInfo);
         if ($tunnel instanceof HttpTunnel) {
             if ($tunnel->supportProxyHost($tunnelInfo['proxyHost'])) {
-                $proxyContext = new ProxyContext($tunnel, [
-                    'proxyHost' => $tunnelInfo['proxyHost']
-                ]);
-                $this->client->setProxyContext($proxyContext);
+
             }
         }
-        $this->client->createTunnelClient($this->connection);
+        $this->client->createTunnelClient();
     }
 
     protected function findTunnel($info)
