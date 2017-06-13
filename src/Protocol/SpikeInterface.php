@@ -14,12 +14,6 @@ interface SpikeInterface extends MessageInterface
     const VERSION = 1.0;
 
     /**
-     * Gets the body of the protocol
-     * @return string
-     */
-     public function getBody();
-
-    /**
      * Sets the action of the protocol
      * @param string $action
      */
@@ -30,13 +24,6 @@ interface SpikeInterface extends MessageInterface
      * @return string
      */
      public function getAction();
-
-    /**
-     * Parses the body
-     * @param string $body
-     * @return mixed
-     */
-    public static function parseBody($body);
 
     /**
      * Sets a header with given name and value
@@ -63,4 +50,30 @@ interface SpikeInterface extends MessageInterface
      * @return array
      */
     public function getHeaders();
+
+    /**
+     * Sets the message body
+     * @param mixed $body
+     */
+    public function setBody($body);
+
+    /**
+     * Gets the body of the protocol
+     * @return string
+     */
+    public function getBody();
+
+    /**
+     * Serialize the message body
+     * @param mixed $body
+     * @return string
+     */
+    public static function serializeBody($body);
+
+    /**
+     * Unserialize the message body
+     * @param string $body
+     * @return mixed
+     */
+    public static function unserializeBody($rawBody);
 }

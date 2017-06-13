@@ -7,15 +7,4 @@ namespace Spike\Protocol;
 
 class SpikeRequest extends Spike
 {
-    protected $body;
-
-    public function getBody()
-    {
-        return $this->body;
-    }
-
-    public static function parseBody($body)
-    {
-        return $body;
-    }
 }

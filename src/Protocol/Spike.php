@@ -7,7 +7,7 @@ namespace Spike\Protocol;
 
 use Spike\Exception\BadRequestException;
 
-abstract class Spike implements SpikeInterface
+class Spike implements SpikeInterface
 {
     /**
      * The action
@@ -22,13 +22,20 @@ abstract class Spike implements SpikeInterface
     protected $headers = [];
 
     /**
+     * @var mixed
+     */
+    protected $body;
+
+    /**
      * Spike constructor.
      * @param string $action
+     * @param mixed $body
      * @param array $headers
      */
-    public function __construct($action, $headers = [])
+    public function __construct($action, $body, $headers = [])
     {
         $this->action = $action;
+        $this->body = $body;
         $this->headers = $headers;
     }
 
@@ -90,7 +97,7 @@ abstract class Spike implements SpikeInterface
      */
     public function toString()
     {
-        $body = $this->getBody();
+        $body = static::serializeBody($this->getBody());
         $headers = array_merge([
             'Spike-Action' => $this->action,
             'Spike-Version' => SpikeInterface::VERSION,
@@ -101,8 +108,24 @@ abstract class Spike implements SpikeInterface
             $buffer .= "{$header}: {$value}\r\n";
         }
         return $buffer
-            . "\r\n\r\n"
+            . "\r\n"
             . $body;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setBody($body)
+    {
+        $this->body = $body;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getBody()
+    {
+        return $this->body;
     }
 
     /**
@@ -115,7 +138,23 @@ abstract class Spike implements SpikeInterface
             throw new BadRequestException('Missing value for the header "action"');
         }
         $bodyBuffer = trim($bodyBuffer);
-        return new static(static::parseBody($bodyBuffer), $headers);
+        return new static($headers['Spike-Action'], static::unserializeBody($bodyBuffer), $headers);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function serializeBody($body)
+    {
+        return json_encode($body);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function unserializeBody($rawBody)
+    {
+        return json_decode($rawBody, true);
     }
 
     /**

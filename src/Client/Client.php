@@ -115,8 +115,8 @@ class Client
             //Auth
             $this->getAuth();
             //Reports the proxy hosts
-            $this->transferTunnels($connection);
-            $this->handleConnection($connection);
+            $this->transferTunnels();
+            $this->handleConnection();
         });
         $this->dispatcher->dispatch(EventStore::CLIENT_RUN);
         $this->loop->run();
@@ -193,15 +193,14 @@ class Client
 
     /**
      * Reports the proxy hosts to the server
-     * @param ConnectionInterface $connection
      */
-    protected function transferTunnels(ConnectionInterface $connection)
+    protected function transferTunnels()
     {
         $this->dispatcher->dispatch(new Event(EventStore::REGISTER_TUNNELS, $this, [
             'tunnels' => $this->tunnels
         ]));
         foreach ($this->tunnels as $tunnel) {
-            $connection->write(new RegisterTunnel($tunnel->toArray()));
+            $this->connection->write(new RegisterTunnel($tunnel->toArray()));
             break;
         }
     }

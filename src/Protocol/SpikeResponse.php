@@ -7,7 +7,7 @@ namespace Spike\Protocol;
 
 use Spike\Exception\BadResponseException;
 
-abstract class SpikeResponse extends Spike
+class SpikeResponse extends Spike
 {
     /**
      * The status code of the response
@@ -57,6 +57,6 @@ abstract class SpikeResponse extends Spike
             throw new BadResponseException('Missing value');
         }
         $bodyBuffer = trim($bodyBuffer);
-        return new static(trim($headers['Code']), static::parseBody($bodyBuffer), $headers);
+        return new static(trim($headers['Code']), $headers['Spike-Action'], static::unserializeBody($bodyBuffer), $headers);
     }
 }
