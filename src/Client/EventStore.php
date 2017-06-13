@@ -49,6 +49,10 @@ final class EventStore
      */
     const RECEIVE_MESSAGE = 'receive_message';
 
+    const REGISTER_TUNNEL_ERROR = 'register_tunnel_error';
+
+    const REGISTER_TUNNEL_SUCCESS = 'register_tunnel_success';
+
     /**
      * Emit when client receives message
      * @var string

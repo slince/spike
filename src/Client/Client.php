@@ -5,7 +5,6 @@
  */
 namespace Spike\Client;
 
-use GuzzleHttp\Client as HttpClient;
 use React\EventLoop\LoopInterface;
 use React\EventLoop\Factory as LoopFactory;
 use React\Socket\ConnectionInterface;
@@ -13,26 +12,15 @@ use React\Socket\Connector;
 use Slince\Event\Dispatcher;
 use Slince\Event\Event;
 use Spike\Buffer\BufferInterface;
-use Spike\ChunkBuffer;
 use Spike\Client\Handler\HandlerInterface;
 use Spike\Client\Handler\ProxyRequestHandler;
-use Spike\Client\Handler\RegisterHostResponseHandler;
 use Spike\Client\Tunnel\HttpTunnel;
 use Spike\Client\Tunnel\TunnelFactory;
 use Spike\Client\Tunnel\TunnelInterface;
-use Spike\Exception\BadRequestException;
 use Spike\Exception\InvalidArgumentException;
-use Spike\Exception\RuntimeException;
-use Spike\Protocol\AuthRequest;
-use Spike\Protocol\RegisterHostRequest;
-use Spike\Protocol\RegisterHostResponse;
-use Spike\Protocol\ProtocolFactory;
 use Spike\Protocol\MessageInterface;
-use Spike\Protocol\ProxyRequest;
-use Spike\Buffer\HttpBuffer;
 use Spike\Buffer\SpikeBuffer;
-use Spike\Protocol\RegisterTunnel;
-use Spike\Protocol\StartProxy;
+use Spike\Protocol\SpikeRequest;
 
 class Client
 {
@@ -61,6 +49,14 @@ class Client
      */
     protected $serverAddress;
 
+    /**
+     * @var array
+     */
+    protected $credential;
+
+    /**
+     * @var string
+     */
     protected $id;
 
     /**
@@ -112,17 +108,35 @@ class Client
             $this->dispatcher->dispatch(new Event(EventStore::CONNECT_TO_SERVER, $this, [
                 'connection' => $connection
             ]));
-            //Auth
-            $this->getAuth();
-            //Reports the proxy hosts
-            $this->transferTunnels();
             $this->handleConnection();
         });
         $this->dispatcher->dispatch(EventStore::CLIENT_RUN);
         $this->loop->run();
     }
 
-    public function getAuth()
+    protected function handleConnection()
+    {
+        $this->requestAuthorization();
+        try {
+            $buffer = new SpikeBuffer($this->connection);
+            $buffer->gather(function(BufferInterface $buffer){
+                $message = SpikeRequest::fromString($buffer);
+                $this->dispatcher->dispatch(new Event(EventStore::RECEIVE_MESSAGE, $this, [
+                    'message' => $message,
+                    'connection' => $this->connection
+                ]));
+                $this->createMessageHandler($message)->handle($message);
+                $buffer->flush(); //Flush the buffer and continue gather message
+            });
+        } catch (InvalidArgumentException $exception) {
+            $this->dispatcher->dispatch(new Event(EventStore::CONNECTION_ERROR, $this, [
+                'connection' => $this->connection,
+                'exception' => $exception,
+            ]));
+        }
+    }
+
+    public function requestAuthorization()
     {
         $authInfo = [
             'os' => PHP_OS,
@@ -130,30 +144,15 @@ class Client
             'password' => '',
             'version' => '',
         ];
-        $this->connection->write(new AuthRequest($authInfo));
+        $this->connection->write(new SpikeRequest('auth', $authInfo));
     }
 
-    protected function handleConnection()
+    /**
+     * @param string $id
+     */
+    public function setClientId($id)
     {
-        if (!$this->proxyContext) {
-            try {
-                $buffer = new SpikeBuffer($this->connection);
-                $buffer->gather(function(BufferInterface $buffer){
-                    $message = ProtocolFactory::create($buffer);
-                    $this->dispatcher->dispatch(new Event(EventStore::RECEIVE_MESSAGE, $this, [
-                        'message' => $message,
-                        'connection' => $this->connection
-                    ]));
-                    $this->createMessageHandler($message)->handle($message);
-                    $buffer->flush(); //Flush the buffer and continue gather message
-                });
-            } catch (InvalidArgumentException $exception) {
-                $this->dispatcher->dispatch(new Event(EventStore::CONNECTION_ERROR, $this, [
-                    'connection' => $this->connection,
-                    'exception' => $exception,
-                ]));
-            }
-        }
+        $this->id = $id;
     }
 
     /**
@@ -189,20 +188,6 @@ class Client
             $address = $tunnel->getHost();
         }
         $this->tunnelClient = new TunnelClient($address, $connection, $this->loop);
-    }
-
-    /**
-     * Reports the proxy hosts to the server
-     */
-    protected function transferTunnels()
-    {
-        $this->dispatcher->dispatch(new Event(EventStore::REGISTER_TUNNELS, $this, [
-            'tunnels' => $this->tunnels
-        ]));
-        foreach ($this->tunnels as $tunnel) {
-            $this->connection->write(new RegisterTunnel($tunnel->toArray()));
-            break;
-        }
     }
 
     /**

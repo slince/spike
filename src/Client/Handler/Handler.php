@@ -7,7 +7,7 @@ namespace Spike\Client\Handler;
 
 use React\Socket\ConnectionInterface;
 use Spike\Client\Client;
-use Spike\Server\Server;
+use Slince\Event\Dispatcher;
 
 abstract class Handler implements HandlerInterface
 {
@@ -25,5 +25,14 @@ abstract class Handler implements HandlerInterface
     {
         $this->client = $client;
         $this->connection = $connection;
+    }
+
+    /**
+     * Gets the event dispatcher
+     * @return  Dispatcher
+     */
+    public function getDispatcher()
+    {
+        return $this->client->getDispatcher();
     }
 }

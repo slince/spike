@@ -6,11 +6,30 @@
 namespace Spike\Client\Handler;
 
 use Spike\Protocol\MessageInterface;
+use Slince\Event\Event;
+use Spike\Client\EventStore;
+use Spike\Protocol\SpikeRequest;
 
 class AuthResponseHandler extends Handler
 {
     public function handle(MessageInterface $message)
     {
+        $clientInfo = $message->getBody();
+        $this->client->setClientId($clientInfo['id']);
+        $this->transferTunnels();
+    }
 
+    /**
+     * Reports the proxy hosts to the server
+     */
+    protected function transferTunnels()
+    {
+        $this->client->getDispatcher()->dispatch(new Event(EventStore::REGISTER_TUNNELS, $this, [
+            'tunnels' => $this->client->getTunnels()
+        ]));
+        foreach ($this->client->getTunnels() as $tunnel) {
+            $this->connection->write(new SpikeRequest('register_tunnel', $tunnel->toArray()));
+            break;
+        }
     }
 }

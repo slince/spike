@@ -19,12 +19,13 @@ class SpikeResponse extends Spike
      * SpikeResponse constructor.
      * @param string $code
      * @param string $action
+     * @param mixed $body
      * @param array $headers
      */
-    public function __construct($code, $action, $headers = [])
+    public function __construct($code, $action, $body, $headers = [])
     {
         $this->code = $code;
-        parent::__construct($action, $headers);
+        parent::__construct($action, $body, $headers);
     }
 
     /**
