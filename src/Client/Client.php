@@ -20,7 +20,7 @@ use Spike\Client\Tunnel\TunnelInterface;
 use Spike\Exception\InvalidArgumentException;
 use Spike\Protocol\MessageInterface;
 use Spike\Buffer\SpikeBuffer;
-use Spike\Protocol\SpikeRequest;
+use Spike\Protocol\Spike;
 
 class Client
 {
@@ -120,7 +120,7 @@ class Client
         try {
             $buffer = new SpikeBuffer($this->connection);
             $buffer->gather(function(BufferInterface $buffer){
-                $message = SpikeRequest::fromString($buffer);
+                $message = Spike::fromString($buffer);
                 $this->dispatcher->dispatch(new Event(EventStore::RECEIVE_MESSAGE, $this, [
                     'message' => $message,
                     'connection' => $this->connection
@@ -144,7 +144,7 @@ class Client
             'password' => '',
             'version' => '',
         ];
-        $this->connection->write(new SpikeRequest('auth', $authInfo));
+        $this->connection->write(new Spike('auth', $authInfo));
     }
 
     /**

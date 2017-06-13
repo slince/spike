@@ -8,9 +8,9 @@ namespace Spike\Client\Handler;
 use Spike\Protocol\MessageInterface;
 use Slince\Event\Event;
 use Spike\Client\EventStore;
-use Spike\Protocol\SpikeRequest;
+use Spike\Protocol\Spike;
 
-class AuthResponseHandler extends Handler
+class AuthResponseHandler extends MessageHandler
 {
     public function handle(MessageInterface $message)
     {
@@ -28,7 +28,7 @@ class AuthResponseHandler extends Handler
             'tunnels' => $this->client->getTunnels()
         ]));
         foreach ($this->client->getTunnels() as $tunnel) {
-            $this->connection->write(new SpikeRequest('register_tunnel', $tunnel->toArray()));
+            $this->connection->write(new Spike('register_tunnel', $tunnel->toArray()));
             break;
         }
     }

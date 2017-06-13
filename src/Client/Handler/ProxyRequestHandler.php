@@ -15,7 +15,7 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use GuzzleHttp\Cookie\CookieJar;
 
-class ProxyRequestHandler extends Handler
+class ProxyRequestHandler extends MessageHandler
 {
     public function handle(MessageInterface $message)
     {

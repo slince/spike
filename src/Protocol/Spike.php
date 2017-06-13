@@ -131,19 +131,6 @@ class Spike implements SpikeInterface
     /**
      * {@inheritdoc}
      */
-    public static function fromString($string)
-    {
-        list($headers, $bodyBuffer) = Spike::parseMessages($string);
-        if (!isset($headers['Spike-Action'])) {
-            throw new BadRequestException('Missing value for the header "action"');
-        }
-        $bodyBuffer = trim($bodyBuffer);
-        return new static($headers['Spike-Action'], static::unserializeBody($bodyBuffer), $headers);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public static function serializeBody($body)
     {
         return json_encode($body);
@@ -155,6 +142,20 @@ class Spike implements SpikeInterface
     public static function unserializeBody($rawBody)
     {
         return json_decode($rawBody, true);
+    }
+
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function fromString($string)
+    {
+        list($headers, $bodyBuffer) = Spike::parseMessages($string);
+        if (!isset($headers['Spike-Action'])) {
+            throw new BadRequestException('Missing value for the header "action"');
+        }
+        $bodyBuffer = trim($bodyBuffer);
+        return new static($headers['Spike-Action'], static::unserializeBody($bodyBuffer), $headers);
     }
 
     /**

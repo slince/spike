@@ -9,7 +9,7 @@ use React\Socket\ConnectionInterface;
 use Spike\Client\Client;
 use Slince\Event\Dispatcher;
 
-abstract class Handler implements HandlerInterface
+abstract class MessageHandler implements HandlerInterface
 {
     /**
      * @var Client

@@ -10,13 +10,13 @@ use Spike\Client\EventStore;
 use Spike\Client\Tunnel\TunnelFactory;
 use Spike\Protocol\MessageInterface;
 
-class RegisterTunnelResponseHandler extends Handler
+class RegisterTunnelResponseHandler extends MessageHandler
 {
     public function handle(MessageInterface $message)
     {
         $response = $message->getBody();
         $tunnel = TunnelFactory::fromArray($response['tunnel']);
-        if ($message->getCode() == 0) {
+        if ($message->getHeader('code') == 0) {
             $event = new Event(EventStore::REGISTER_TUNNEL_SUCCESS, $this->client, [
                 'tunnelInfo' => $tunnel
             ]);

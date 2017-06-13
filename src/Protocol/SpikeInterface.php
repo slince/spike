@@ -72,7 +72,7 @@ interface SpikeInterface extends MessageInterface
 
     /**
      * Unserialize the message body
-     * @param string $body
+     * @param string $rawBody
      * @return mixed
      */
     public static function unserializeBody($rawBody);

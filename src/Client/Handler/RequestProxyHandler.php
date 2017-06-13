@@ -9,11 +9,11 @@ use Spike\Client\ProxyContext;
 use Spike\Client\Tunnel\HttpTunnel;
 use Spike\Protocol\MessageInterface;
 
-class StartProxyHandler extends MessageHandler
+class RequestProxyHandler extends MessageHandler
 {
     public function handle(MessageInterface $message)
     {
-        $tunnelInfo = $message->getInfo();
+        $tunnelInfo = $message->getBody();
         $tunnel = $this->findTunnel($tunnelInfo);
         if ($tunnel instanceof HttpTunnel) {
             if ($tunnel->supportProxyHost($tunnelInfo['proxyHost'])) {
