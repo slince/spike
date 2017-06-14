@@ -107,6 +107,8 @@ class Server
         $buffer->gather(function (BufferInterface $buffer) use ($connection) {
             $message = Spike::fromString($buffer);
             var_dump(strval($buffer));
+            echo PHP_EOL;
+
             $this->dispatcher->dispatch(new Event(EventStore::RECEIVE_MESSAGE, $this, [
                 'message' => $message,
                 'connection' => $connection

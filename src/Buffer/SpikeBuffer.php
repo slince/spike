@@ -27,6 +27,7 @@ class SpikeBuffer extends Buffer
             throw new InvalidArgumentException('Bad spike message');
         }
         $this->headers .= $data;
+
         $pos = strpos($this->headers, "\r\n\r\n");
         if ($pos !== false) {
             $this->body = substr($this->headers, $pos + 4);
@@ -40,7 +41,7 @@ class SpikeBuffer extends Buffer
                     $bodyBuffer->gather(function(BufferInterface $bodyBuffer){
                         $this->body .= (string)$bodyBuffer;
                         $this->gatherComplete();
-//                        $bodyBuffer->destroy();
+                        $bodyBuffer->destroy();
                     });
                 } else {
                     $this->gatherComplete();

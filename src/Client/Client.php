@@ -112,8 +112,7 @@ class Client
             $this->setControlConnectionForTunnels($connection);
             $this->requestAuth($connection);
             $this->requestAuth($connection);
-            exit;
-            $this->handleConnection($connection);
+//            $this->handleConnection($connection);
         });
         $this->dispatcher->dispatch(EventStore::CLIENT_RUN);
         $this->loop->run();
