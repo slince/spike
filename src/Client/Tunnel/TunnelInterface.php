@@ -34,6 +34,19 @@ interface TunnelInterface
     public function setConnection(ConnectionInterface $connection);
 
     /**
+     * Listen the tunnel
+     * @param callable $callback
+     * @return mixed
+     */
+    public function listen(callable $callback);
+
+    /**
+     * Pipes the connection to the tunnel
+     * @param ConnectionInterface $connection
+     */
+    public function pipe(ConnectionInterface $connection);
+
+    /**
      * Get the tunnel information
      * @return array
      */

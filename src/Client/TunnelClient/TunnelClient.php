@@ -8,6 +8,7 @@ namespace Spike\Client\TunnelClient;
 use React\EventLoop\LoopInterface;
 use React\Socket\ConnectionInterface;
 use React\Socket\Connector;
+use Spike\Buffer\SpikeBuffer;
 use Spike\Client\Tunnel\TunnelInterface;
 
 abstract class TunnelClient implements TunnelClientInterface
@@ -28,6 +29,16 @@ abstract class TunnelClient implements TunnelClientInterface
         $this->address = $address;
         $this->loop = $loop;
         $this->connector = new Connector($this->loop);
+        $this->tunnel->listen([$this, 'listenTunnel']);
+    }
+
+    public function listenTunnel(ConnectionInterface $connection)
+    {
+        $buffer = new SpikeBuffer($connection);
+    }
+
+    public function run()
+    {
         $this->connector->connect($this->address)->then(function(ConnectionInterface $localConnection){
             $this->handleLocalConnection($localConnection);
         });

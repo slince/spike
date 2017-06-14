@@ -11,5 +11,6 @@ class TcpTunnelClient extends TunnelClient
 {
     public function handleLocalConnection(ConnectionInterface $connection)
     {
+        $this->tunnel->pipe($connection);
     }
 }

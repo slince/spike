@@ -7,6 +7,7 @@ namespace Spike\Client\Handler;
 
 use Spike\Client\ProxyContext;
 use Spike\Client\Tunnel\HttpTunnel;
+use Spike\Exception\InvalidArgumentException;
 use Spike\Protocol\MessageInterface;
 
 class RequestProxyHandler extends MessageHandler
@@ -14,22 +15,7 @@ class RequestProxyHandler extends MessageHandler
     public function handle(MessageInterface $message)
     {
         $tunnelInfo = $message->getBody();
-        $tunnel = $this->findTunnel($tunnelInfo);
-        if ($tunnel instanceof HttpTunnel) {
-            if ($tunnel->supportProxyHost($tunnelInfo['proxyHost'])) {
-
-            }
-        }
-        $this->client->createTunnelClient();
-    }
-
-    protected function findTunnel($info)
-    {
-        foreach ($this->client->getTunnels() as $tunnel) {
-            if ($tunnel->getRemotePort() == $info['port']) {
-                return $tunnel;
-            }
-        }
-        return false;
+        $tunnel = $this->client->findTunnel($tunnelInfo);
+        $this->client->createTunnelConnection($tunnel);
     }
 }

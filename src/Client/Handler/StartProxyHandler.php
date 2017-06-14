@@ -7,32 +7,27 @@ namespace Spike\Client\Handler;
 
 use Spike\Client\ProxyContext;
 use Spike\Client\Tunnel\HttpTunnel;
+use Spike\Exception\InvalidArgumentException;
 use Spike\Protocol\MessageInterface;
 
 class StartProxyHandler extends MessageHandler
 {
     public function handle(MessageInterface $message)
     {
-        $tunnelInfo = $message->getInfo();
-        $tunnel = $this->findTunnel($tunnelInfo);
+        $tunnelInfo = $message->getBody();
+        $tunnel = $this->client->findTunnel($tunnelInfo);
+        if ($tunnel ===  false) {
+            throw new InvalidArgumentException("Can not find the matching tunnel");
+        }
         if ($tunnel instanceof HttpTunnel) {
             if ($tunnel->supportProxyHost($tunnelInfo['proxyHost'])) {
-                $proxyContext = new ProxyContext($tunnel, [
-                    'proxyHost' => $tunnelInfo['proxyHost']
-                ]);
-                $this->client->setProxyContext($proxyContext);
+                $localAddress = $tunnelInfo['proxyHost'];
+            } else {
+                throw new InvalidArgumentException(sprintf('The tunnel does\'t support the host "%s"', $tunnelInfo['proxyHost']));
             }
+        } else {
+            $localAddress = $tunnel->getHost();
         }
-        $this->client->createTunnelClient($this->connection);
-    }
-
-    protected function findTunnel($info)
-    {
-        foreach ($this->client->getTunnels() as $tunnel) {
-            if ($tunnel->getRemotePort() == $info['port']) {
-                return $tunnel;
-            }
-        }
-        return false;
+        $this->client->createTunnelClient($tunnel, $localAddress);
     }
 }

@@ -32,7 +32,7 @@ class Spike implements SpikeInterface
      * @param mixed $body
      * @param array $headers
      */
-    public function __construct($action, $body, $headers = [])
+    public function __construct($action, $body = null, $headers = [])
     {
         $this->action = $action;
         $this->body = $body;
