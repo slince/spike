@@ -12,9 +12,7 @@ class HeaderBuffer extends Buffer
     public function __construct(ConnectionInterface $connection)
     {
         parent::__construct($connection);
-        $this->connection->on('data', function($data){
-            $this->handleData($data);
-        });
+        $this->connection->on('data', [$this, 'handleData']);
     }
 
     public function handleData($data)

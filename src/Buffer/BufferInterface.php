@@ -38,4 +38,9 @@ interface BufferInterface
      * @return void
      */
     public function flush();
+
+    /**
+     * Destroy the buffer
+     */
+    public function destroy();
 }

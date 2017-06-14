@@ -106,6 +106,7 @@ class Server
         $buffer = new SpikeBuffer($connection);
         $buffer->gather(function (BufferInterface $buffer) use ($connection) {
             $message = Spike::fromString($buffer);
+            var_dump(strval($buffer));
             $this->dispatcher->dispatch(new Event(EventStore::RECEIVE_MESSAGE, $this, [
                 'message' => $message,
                 'connection' => $connection

@@ -87,4 +87,10 @@ abstract class Buffer implements BufferInterface
         $this->content = '';
         $this->isGatherComplete = false;
     }
+
+    public function destroy()
+    {
+        $this->flush();
+        $this->connection->removeListener('data', [$this, 'handleData']);
+    }
 }

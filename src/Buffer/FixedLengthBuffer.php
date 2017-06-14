@@ -19,12 +19,15 @@ class FixedLengthBuffer extends Buffer
     {
         parent::__construct($connection);
         $this->length = $length;
-        $this->connection->on('data', function($data){
-            $this->content .= $data;
-            if (strlen($this->content) >= $this->length) {
-                $this->content = substr($this->content, 0, $this->length);
-                $this->gatherComplete();
-            }
-        });
+        $this->connection->on('data', [$this, 'handleData']);
+    }
+
+    public function handleData($data)
+    {
+        $this->content .= $data;
+        if (strlen($this->content) >= $this->length) {
+            $this->content = substr($this->content, 0, $this->length);
+            $this->gatherComplete();
+        }
     }
 }

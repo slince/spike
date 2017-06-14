@@ -40,6 +40,7 @@ class SpikeBuffer extends Buffer
                     $bodyBuffer->gather(function(BufferInterface $bodyBuffer){
                         $this->body .= (string)$bodyBuffer;
                         $this->gatherComplete();
+//                        $bodyBuffer->destroy();
                     });
                 } else {
                     $this->gatherComplete();

@@ -15,14 +15,13 @@ class RegisterTunnelHandler extends Handler
     public function handle(MessageInterface $message)
     {
         $tunnel = TunnelFactory::fromArray($message->getBody());
-        $response = new Spike('auth_response', $tunnel->toArray());
         try {
             $this->server->createTunnelServer($tunnel);
-            $response = new Spike('auth_response', $tunnel->toArray(), [
+            $response = new Spike('register_tunnel_response', $tunnel->toArray(), [
                 'code' => 0
             ]);
         } catch (\Exception $exception) {
-            $response = new Spike('auth_response', array_replace($tunnel->toArray(), [
+            $response = new Spike('register_tunnel_response', array_replace($tunnel->toArray(), [
                 'error' => $exception->getMessage()
             ]), [
                 'code' => $exception->getCode() ?: 1

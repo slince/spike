@@ -17,12 +17,10 @@ class ChunkedBuffer extends Buffer
     public function __construct(ConnectionInterface $connection)
     {
         parent::__construct($connection);
-        $this->connection->on('data', function($data){
-            $this->handleData($data);
-        });
+        $this->connection->on('data', [$this, 'handleData']);
     }
 
-    protected function handleData($data)
+    public function handleData($data)
     {
         if (($pos = strpos($data, static::CRLF)) !== false) {
             $lengthHex = substr($data, 0, $pos);
