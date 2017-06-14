@@ -15,5 +15,6 @@ class TcpTunnelServer extends TunnelServer
     {
         $this->tunnel->getControlConnection()->write(new Spike('request_proxy', $this->tunnel->toArray()));
         $this->tunnel->pipe($connection);
+        $this->pause();
     }
 }

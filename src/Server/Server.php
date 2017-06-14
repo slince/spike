@@ -115,6 +115,10 @@ class Server
         });
     }
 
+    /**
+     * Creates a tunnel server for the tunnel
+     * @param TunnelInterface $tunnel
+     */
     public function createTunnelServer(TunnelInterface $tunnel)
     {
         if ($tunnel instanceof HttpTunnel) {

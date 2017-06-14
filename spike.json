@@ -6,7 +6,7 @@
             "remotePort": "8049",
             "hosts": {
                 "www.lazy.com": "www.baidu.com",
-                "bar.spike.com": "127.0.0.1"
+                "bar.spike.com": "127.0.0.1:8080"
             }
         },
         {

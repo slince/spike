@@ -30,14 +30,9 @@ abstract class TunnelServer implements TunnelServerInterface
         $this->address = $address;
         $this->loop = $loop;
         $this->socket = new Socket($this->address, $loop);
-        $this->socket->on('connection', function(ConnectionInterface $connection){
-            $this->handleConnection($connection);
+        $this->socket->on('connection', function(ConnectionInterface $proxyConnection){
+            $this->handleProxyConnection($proxyConnection);
         });
-    }
-
-    protected function handleConnection(ConnectionInterface $connection)
-    {
-        $this->getTunnel()->getControlConnection()->write(new RequestProxy());
     }
 
     /**

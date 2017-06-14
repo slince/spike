@@ -55,8 +55,8 @@ class Client
 
     public function toArray()
     {
-        return $this->getClientInfo() + [
+        return array_replace($this->getClientInfo(), [
             'id' => $this->getId()
-        ];
+        ]);
     }
 }
