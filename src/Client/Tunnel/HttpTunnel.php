@@ -5,14 +5,20 @@
  */
 namespace Spike\Client\Tunnel;
 
+use React\Socket\ConnectionInterface;
+
 class HttpTunnel extends Tunnel
 {
+    /**
+     * The proxy hosts
+     * @var array
+     */
     protected $hosts;
 
-    public function __construct($remotePort, $hosts)
+    public function __construct($remotePort, $hosts, ConnectionInterface $controlConnection = null)
     {
-        parent::__construct(static::TUNNEL_HTTP, $remotePort);
         $this->hosts = $hosts;
+        parent::__construct($remotePort, $controlConnection);
     }
 
     /**
@@ -41,7 +47,7 @@ class HttpTunnel extends Tunnel
     public function toArray()
     {
         return [
-            'protocol' => $this->protocol,
+            'protocol' => 'http',
             'remotePort' => $this->remotePort,
             'proxyHosts' => array_keys($this->hosts),
         ];

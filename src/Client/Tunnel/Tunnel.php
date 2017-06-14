@@ -22,21 +22,15 @@ abstract class Tunnel implements TunnelInterface
     protected $connection;
 
     /**
-     * The supported protocol of the tunnel
-     * @var string
-     */
-    protected $protocol;
-
-    /**
      * The remote port
      * @var int
      */
     protected $remotePort;
 
-    public function __construct($protocol, $remotePort)
+    public function __construct($remotePort, ConnectionInterface $controlConnection = null)
     {
-        $this->protocol = $protocol;
         $this->remotePort = $remotePort;
+        $this->controlConnection = $controlConnection;
     }
 
     /**
@@ -72,15 +66,7 @@ abstract class Tunnel implements TunnelInterface
     }
 
     /**
-     * @return string
-     */
-    public function getProtocol()
-    {
-        return $this->protocol;
-    }
-
-    /**
-     * @return int
+     * {@inheritdoc}
      */
     public function getRemotePort()
     {

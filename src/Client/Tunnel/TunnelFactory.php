@@ -9,7 +9,7 @@ class TunnelFactory
 {
     public static function fromArray($data)
     {
-        if ($data['protocol'] == TunnelInterface::TUNNEL_HTTP) {
+        if ($data['protocol'] == 'http') {
             $tunnel = new HttpTunnel($data['remotePort'], $data['hosts']);
         } else {
             $tunnel = new TcpTunnel($data['remotePort'], $data['host']);

@@ -12,17 +12,14 @@ use React\Socket\Connector;
 use Slince\Event\Dispatcher;
 use Slince\Event\Event;
 use Spike\Buffer\BufferInterface;
-use Spike\Client\Handler\HandlerInterface;
-use Spike\Client\Handler\ProxyRequestHandler;
-use Spike\Client\Tunnel\HttpTunnel;
 use Spike\Client\Tunnel\TcpTunnel;
 use Spike\Client\Tunnel\TunnelFactory;
 use Spike\Client\Tunnel\TunnelInterface;
 use Spike\Client\TunnelClient\TcpTunnelClient;
 use Spike\Exception\InvalidArgumentException;
-use Spike\Protocol\MessageInterface;
 use Spike\Buffer\SpikeBuffer;
 use Spike\Protocol\Spike;
+use Spike\Protocol\SpikeInterface;
 
 class Client
 {
@@ -99,7 +96,6 @@ class Client
         $tunnels = [];
         foreach ($data as $info) {
             $tunnel = TunnelFactory::fromArray($info);
-            $tunnel->setControlConnection($this->connection);
             $tunnels[] = $tunnel;
         }
         return $tunnels;
@@ -113,6 +109,7 @@ class Client
                 'connection' => $connection
             ]));
             $this->connection = $connection;
+            $this->setControlConnectionForTunnels($connection);
             $this->requestAuth($connection);
             $this->handleConnection($connection);
         });
@@ -152,6 +149,13 @@ class Client
         $connection->write(new Spike('auth', $authInfo));
     }
 
+    protected function setControlConnectionForTunnels(ConnectionInterface $connection)
+    {
+        foreach ($this->tunnels as $tunnel) {
+            $tunnel->setControlConnection($connection);
+        }
+    }
+
     public function createTunnelConnection(TunnelInterface $tunnel)
     {
         $connector = new Connector($this->loop);
@@ -175,6 +179,7 @@ class Client
     public function setClientId($id)
     {
         $this->id = $id;
+        Spike::setGlobalHeader('Client-ID', $id);
     }
 
     /**
@@ -194,6 +199,14 @@ class Client
     }
 
     /**
+     * @return ConnectionInterface
+     */
+    public function getConnection()
+    {
+        return $this->connection;
+    }
+
+    /**
      * Finds the matching tunnel
      * @param array $tunnelInfo
      * @return bool|TunnelInterface
@@ -201,11 +214,11 @@ class Client
     public function findTunnel($tunnelInfo)
     {
         foreach ($this->getTunnels() as $tunnel) {
-            $matching = $tunnel->getRemotePort() == $tunnelInfo['port'];
-            $matching = $matching && (
-                $tunnel instanceof TcpTunnel
-                || $tunnel->supportProxyHost($tunnelInfo['proxyHost'])
-            );
+            $matching = $tunnel->getRemotePort() == $tunnelInfo['port']
+                && (
+                    $tunnel instanceof TcpTunnel
+                    || $tunnel->supportProxyHost($tunnelInfo['proxyHost'])
+                );
             if ($matching) {
                 return $tunnel;
             }
@@ -215,17 +228,28 @@ class Client
 
     /**
      * Creates the handler for the received message
-     * @param MessageInterface $message
-     * @return HandlerInterface
+     * @param SpikeInterface $message
+     * @return Handler\HandlerInterface
      */
-    protected function createMessageHandler($message)
+    protected function createMessageHandler(SpikeInterface $message)
     {
-        if ($message instanceof StartProxy) {
-            $handler = new ProxyRequestHandler($this, $this->connection);
-        } else {
-            throw new InvalidArgumentException(sprintf('Cannot find handler for message type: "%s"',
-                get_class($message)
-            ));
+        switch ($message->getAction()) {
+            case 'auth_response':
+                $handler = new Handler\AuthResponseHandler($this);
+                break;
+            case 'register_tunnel_response':
+                $handler = new Handler\RegisterTunnelResponseHandler($this);
+                break;
+            case 'request_proxy':
+                $handler = new Handler\RequestProxyHandler($this);
+                break;
+            case 'start_proxy':
+                $handler = new Handler\StartProxyHandler($this);
+                break;
+            default:
+                throw new InvalidArgumentException(sprintf('Cannot find handler for message type: "%s"',
+                    get_class($message)
+                ));
         }
         return $handler;
     }

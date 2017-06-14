@@ -27,6 +27,12 @@ class Spike implements SpikeInterface
     protected $body;
 
     /**
+     * The global headers
+     * @var array
+     */
+    protected static $globalHeaders = [];
+
+    /**
      * Spike constructor.
      * @param string $action
      * @param mixed $body
@@ -102,7 +108,7 @@ class Spike implements SpikeInterface
             'Spike-Action' => $this->action,
             'Spike-Version' => SpikeInterface::VERSION,
             'Content-Length' => strlen($body)
-        ], $this->getHeaders());
+        ], $this->headers, static::$globalHeaders);
         $buffer = '';
         foreach ($headers as $header => $value) {
             $buffer .= "{$header}: {$value}\r\n";
@@ -174,5 +180,10 @@ class Spike implements SpikeInterface
             $headers[$header] = isset($parts[1]) ? trim($parts[1]) : null;
         }
         return [$headers, trim($bodyBuffer)];
+    }
+
+    public static function setGlobalHeader($name, $value)
+    {
+        static::$globalHeaders[$name] = $value;
     }
 }

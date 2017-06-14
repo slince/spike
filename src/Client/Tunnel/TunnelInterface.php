@@ -34,13 +34,6 @@ interface TunnelInterface
     public function setConnection(ConnectionInterface $connection);
 
     /**
-     * Listen the tunnel
-     * @param callable $callback
-     * @return mixed
-     */
-    public function listen(callable $callback);
-
-    /**
      * Pipes the connection to the tunnel
      * @param ConnectionInterface $connection
      */
@@ -53,6 +46,7 @@ interface TunnelInterface
     public function toArray();
 
     /**
+     * Gets the mapping remote port
      * @return string
      */
     public function getRemotePort();
