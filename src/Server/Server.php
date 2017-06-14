@@ -18,6 +18,7 @@ use Spike\Exception\InvalidArgumentException;
 use Spike\Exception\RuntimeException;
 use Spike\Protocol\ProtocolFactory;
 use Spike\Protocol\RegisterTunnel;
+use Spike\Protocol\SpikeInterface;
 use Spike\Server\Handler\HandlerInterface;
 use Spike\Server\Handler\RegisterTunnelHandler;
 use Spike\Server\Tunnel\HttpTunnel;
@@ -63,6 +64,11 @@ class Server
      * @var ConnectionInterface
      */
     protected $controlConnections = [];
+
+    /**
+     * @var Client[]
+     */
+    protected $clients;
 
     public function __construct($address, LoopInterface $loop = null, Dispatcher $dispatcher = null)
     {
@@ -128,19 +134,51 @@ class Server
     }
 
     /**
+     * @param Client[] $clients
+     */
+    public function setClients($clients)
+    {
+        $this->clients = $clients;
+    }
+
+    /**
+     * @return Client[]
+     */
+    public function getClients()
+    {
+        return $this->clients;
+    }
+
+    public function addClient(Client $client)
+    {
+        $this->clients[] = $client;
+    }
+
+    /**
      * Creates the handler for the received message
-     * @param $protocol
-     * @param $connection
+     * @param SpikeInterface $message
+     * @param ConnectionInterface $connection
      * @return HandlerInterface
      */
-    protected function createMessageHandler($protocol, $connection)
+    protected function createMessageHandler($message, $connection)
     {
-        if ($protocol instanceof RegisterTunnel) {
-            $handler = new RegisterTunnelHandler($this, $connection);
-        } else {
-            throw new BadRequestException(sprintf('Cannot find handler for message type: "%s"',
-                gettype($protocol)
-            ));
+        switch ($message->getAction()) {
+            case 'auth':
+                $handler = new Handler\AuthHandler($this, $connection);
+                break;
+            case 'register_tunnel':
+                $handler = new Handler\RegisterTunnelHandler($this, $connection);
+                break;
+            case 'register_proxy':
+                $handler = new Handler\RegisterProxyHandler($this, $connection);
+                break;
+            case 'start_proxy':
+                $handler = new Handler\StartProxyHandler($this);
+                break;
+            default:
+                throw new InvalidArgumentException(sprintf('Cannot find handler for message type: "%s"',
+                    get_class($message)
+                ));
         }
         return $handler;
     }
