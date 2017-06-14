@@ -5,25 +5,32 @@
  */
 namespace Spike\Server\Handler;
 
+use Spike\Exception\BadRequestException;
 use Spike\Protocol\MessageInterface;
-use Spike\Protocol\RegisterTunnelResponse;
-use Spike\Server\Tunnel\TunnelFactory;
+use Spike\Protocol\Spike;
+use Spike\Server\TunnelServer\TunnelServerInterface;
 
 class RegisterProxyHandler extends Handler
 {
     public function handle(MessageInterface $message)
     {
-        $tunnel = TunnelFactory::fromArray($message->getTunnel());
-        try {
-            $this->server->createTunnelServer($tunnel);
-            $response = new RegisterTunnelResponse(0, '', [
-                'Tunnel-RemotePort' => $message->getTunnel()['remotePort']
-            ]);
-        } catch (\Exception $exception) {
-            $response = new RegisterTunnelResponse(1, $exception->getMessage(), [
-                'Tunnel-RemotePort' => $message->getTunnel()['remotePort']
-            ]);
+        $tunnelServer = $this->findTunnelServer($message->getBody());
+        $tunnelServer->getTunnel()->setConnection($this->connection);
+        $this->connection->write(new Spike('start_proxy'));
+        $tunnelServer->resume();
+    }
+
+    /**
+     * @param $info
+     * @return TunnelServerInterface
+     */
+    protected function findTunnelServer($info)
+    {
+        foreach ($this->server->getTunnelServers() as $tunnelServer) {
+            if ($tunnelServer->getTunnel()->match($info)) {
+                return $tunnelServer;
+            }
         }
-        $this->connection->write($response);
+        throw new BadRequestException("Can not find the tunnel server");
     }
 }

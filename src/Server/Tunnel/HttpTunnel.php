@@ -34,8 +34,28 @@ class HttpTunnel extends Tunnel
      * @param string $host
      * @return bool
      */
-    public function supportHost($host)
+    public function supportProxyHost($host)
     {
         return in_array($host, $this->proxyHosts);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function match($info)
+    {
+        return parent::match($info)
+            && $this->supportProxyHost($info['proxyHost']);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function toArray()
+    {
+        return [
+            'hosts' => $this->proxyHosts,
+            'port' => $this->port
+        ];
     }
 }

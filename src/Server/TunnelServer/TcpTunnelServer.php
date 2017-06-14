@@ -6,17 +6,14 @@
 namespace Spike\Server\TunnelServer;
 
 use React\Socket\ConnectionInterface;
+use Spike\Protocol\Spike;
 use Spike\Protocol\StartProxy;
 
 class TcpTunnelServer extends TunnelServer
 {
-    public function handleConnection(ConnectionInterface $connection)
+    public function handleProxyConnection(ConnectionInterface $connection)
     {
-        $message = new StartProxy([
-            'port' => $this->tunnel->getPort(),
-            'clientIp' => $connection->getLocalAddress()
-        ]);
-        $this->tunnel->getConnection()->write($message);
+        $this->tunnel->getControlConnection()->write(new Spike('request_proxy', $this->tunnel->toArray()));
         $this->tunnel->pipe($connection);
     }
 }

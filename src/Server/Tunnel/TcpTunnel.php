@@ -28,4 +28,15 @@ class TcpTunnel extends Tunnel
     {
         return $this->host;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function toArray()
+    {
+        return [
+            'host' => $this->host,
+            'port' => $this->port
+        ];
+    }
 }

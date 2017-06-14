@@ -7,7 +7,7 @@ namespace Spike\Server\Tunnel;
 
 use React\Socket\ConnectionInterface;
 
-class Tunnel implements TunnelInterface
+abstract class Tunnel implements TunnelInterface
 {
     /**
      * The control connection
@@ -93,5 +93,13 @@ class Tunnel implements TunnelInterface
     public function pipe(ConnectionInterface $connection)
     {
         $connection->pipe($this->connection);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function match($info)
+    {
+        return $this->getPort() == $info['port'];
     }
 }

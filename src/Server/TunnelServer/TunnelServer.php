@@ -33,7 +33,6 @@ abstract class TunnelServer implements TunnelServerInterface
         $this->socket->on('connection', function(ConnectionInterface $connection){
             $this->handleConnection($connection);
         });
-        $this->pause();
     }
 
     protected function handleConnection(ConnectionInterface $connection)

@@ -32,11 +32,6 @@ abstract class TunnelClient implements TunnelClientInterface
         $this->tunnel->listen([$this, 'listenTunnel']);
     }
 
-    public function listenTunnel(ConnectionInterface $connection)
-    {
-        $buffer = new SpikeBuffer($connection);
-    }
-
     public function run()
     {
         $this->connector->connect($this->address)->then(function(ConnectionInterface $localConnection){

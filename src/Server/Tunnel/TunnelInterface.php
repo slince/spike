@@ -50,4 +50,17 @@ interface TunnelInterface
      * @return int
      */
     public function getPort();
+
+    /**
+     * Checks whether the tunnel match the info
+     * @param array $info
+     * @return boolean
+     */
+    public function match($info);
+
+    /**
+     * Gets the tunnel info
+     * @return array
+     */
+    public function toArray();
 }

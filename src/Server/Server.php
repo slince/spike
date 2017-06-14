@@ -18,6 +18,7 @@ use Spike\Exception\InvalidArgumentException;
 use Spike\Exception\RuntimeException;
 use Spike\Protocol\ProtocolFactory;
 use Spike\Protocol\RegisterTunnel;
+use Spike\Protocol\Spike;
 use Spike\Protocol\SpikeInterface;
 use Spike\Server\Handler\HandlerInterface;
 use Spike\Server\Handler\RegisterTunnelHandler;
@@ -56,7 +57,7 @@ class Server
     protected $socket;
 
     /**
-     * @var TunnelServerInterface
+     * @var TunnelServerInterface[]
      */
     protected $tunnelServers = [];
 
@@ -104,7 +105,7 @@ class Server
     {
         $buffer = new SpikeBuffer($connection);
         $buffer->gather(function (BufferInterface $buffer) use ($connection) {
-            $message = ProtocolFactory::create($buffer);
+            $message = Spike::fromString($buffer);
             $this->dispatcher->dispatch(new Event(EventStore::RECEIVE_MESSAGE, $this, [
                 'message' => $message,
                 'connection' => $connection
@@ -152,6 +153,14 @@ class Server
     public function addClient(Client $client)
     {
         $this->clients[] = $client;
+    }
+
+    /**
+     * @return TunnelServerInterface[]
+     */
+    public function getTunnelServers()
+    {
+        return $this->tunnelServers;
     }
 
     /**
