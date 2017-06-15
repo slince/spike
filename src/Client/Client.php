@@ -117,7 +117,7 @@ class Client
         $this->loop->run();
     }
 
-    protected function handleConnection(ConnectionInterface $connection)
+    public function handleConnection(ConnectionInterface $connection)
     {
         try {
             $buffer = new SpikeBuffer($connection);
@@ -165,6 +165,14 @@ class Client
             $connection->write(new Spike('register_proxy', $tunnel->toArray()));
             $this->handleConnection($connection);
         });
+    }
+
+    /**
+     * @return ConnectionInterface[]
+     */
+    public function getTunnelConnections()
+    {
+        return $this->tunnelConnections;
     }
 
     public function createTunnelClient(TunnelInterface $tunnel, $localAddress)

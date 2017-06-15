@@ -19,15 +19,20 @@ class StartProxyHandler extends MessageHandler
         if ($tunnel ===  false) {
             throw new InvalidArgumentException("Can not find the matching tunnel");
         }
-        if ($tunnel instanceof HttpTunnel) {
-            if ($tunnel->supportProxyHost($tunnelInfo['proxyHost'])) {
-                $localAddress = $tunnelInfo['proxyHost'];
-            } else {
-                throw new InvalidArgumentException(sprintf('The tunnel does\'t support the host "%s"', $tunnelInfo['proxyHost']));
-            }
-        } else {
-            $localAddress = $tunnel->getHost();
+        $localAddress = isset($tunnelInfo['proxyHost']) ?
+            $tunnelInfo['proxyHost'] : $tunnel->getHost();
+        echo '##';
+        $this->connection->removeAllListeners();
+//        $this->connection->on('data', function($data){
+//            var_dump($data);exit;
+//        });
+//        exit;
+        echo count($this->client->getTunnelConnections());
+        foreach ($this->client->getTunnelConnections() as $connection) {
+            $connection->removeAllListeners();
         }
-        $this->client->createTunnelClient($tunnel, $localAddress);
+
+        $this->client->getConnection()->removeAllListeners();
+//        $this->client->createTunnelClient($tunnel, $localAddress);
     }
 }

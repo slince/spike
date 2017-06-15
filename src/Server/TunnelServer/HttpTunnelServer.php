@@ -27,8 +27,9 @@ class HttpTunnelServer extends TunnelServer
                     $this->tunnel->getControlConnection()->write(new Spike('request_proxy', $this->tunnel->toArray()));
                     $this->tunnel->pipe($proxyConnection);
                     $httpMessage = $buffer->getMessage() . $buffer->getContent();
+                    $this->tunnel->setData($httpMessage);
+                    $proxyConnection->pause();
                     $buffer->destroy();
-                    $proxyConnection->emit('data', [$httpMessage]);
                 } else {
                     $body = sprintf('The host "%s" was not bound.', $host);
                     $response = $this->makeErrorResponse(404, $body);

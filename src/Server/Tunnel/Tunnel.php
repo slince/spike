@@ -23,6 +23,12 @@ abstract class Tunnel implements TunnelInterface
     protected $connection;
 
     /**
+     * The proxy connection
+     * @var ConnectionInterface
+     */
+    protected $proxyConnection;
+
+    /**
      * @var boolean
      */
     protected $active;
@@ -86,11 +92,47 @@ abstract class Tunnel implements TunnelInterface
     }
 
     /**
+     * @param string $data
+     */
+    public function setData($data)
+    {
+        $this->data = $data;
+    }
+
+    /**
+     * @return string
+     */
+    public function getData()
+    {
+        return $this->data;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function setConnection(ConnectionInterface $connection)
     {
         $this->connection = $connection;
+        if ($this->proxyConnection) {
+            $this->proxyConnection->pipe($this->connection);
+            $this->connection->pipe($this->proxyConnection);
+        }
+    }
+
+    /**
+     * @param ConnectionInterface $proxyConnection
+     */
+    public function setProxyConnection($proxyConnection)
+    {
+        $this->proxyConnection = $proxyConnection;
+    }
+
+    /**
+     * @return ConnectionInterface
+     */
+    public function getProxyConnection()
+    {
+        return $this->proxyConnection;
     }
 
     /**
@@ -98,17 +140,11 @@ abstract class Tunnel implements TunnelInterface
      */
     public function pipe(ConnectionInterface $proxyConnection)
     {
-        $proxyConnection->on('data', function($data){
-            $this->data .= $data;
-        });
-    }
-
-    public function transfer()
-    {
-        if (is_null($this->connection)) {
-            throw new InvalidArgumentException('Missing the tunnel connection');
+        $this->proxyConnection = $proxyConnection;
+        if ($this->connection) {
+            $this->connection->pipe($proxyConnection);
+            $proxyConnection->pipe($this->connection);
         }
-        $this->connection->write($this->data  );
     }
 
 

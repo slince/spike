@@ -9,9 +9,9 @@ use React\Socket\ConnectionInterface;
 
 class TcpTunnelClient extends TunnelClient
 {
-    public function handleLocalConnection(ConnectionInterface $connection)
+    public function handleLocalConnection(ConnectionInterface $localConnection)
     {
-        $this->tunnel->pipe($connection);
+        $this->tunnel->pipe($localConnection);
         $this->tunnel->getConnection()->on('data', function($data){
             echo $data;
         });
