@@ -6,6 +6,7 @@
 namespace Spike\Server\Tunnel;
 
 use React\Socket\ConnectionInterface;
+use Spike\Exception\InvalidArgumentException;
 
 abstract class Tunnel implements TunnelInterface
 {
@@ -22,12 +23,6 @@ abstract class Tunnel implements TunnelInterface
     protected $connection;
 
     /**
-     * The proxy connection that need to be handled
-     * @var ConnectionInterface
-     */
-    protected $proxyConnection;
-
-    /**
      * @var boolean
      */
     protected $active;
@@ -37,6 +32,11 @@ abstract class Tunnel implements TunnelInterface
      * @var int
      */
     protected $port;
+
+    /**
+     * @var string
+     */
+    protected $data;
 
     public function __construct($port, ConnectionInterface $controlConnection = null)
     {
@@ -91,10 +91,6 @@ abstract class Tunnel implements TunnelInterface
     public function setConnection(ConnectionInterface $connection)
     {
         $this->connection = $connection;
-        if ($this->proxyConnection) {
-            $this->proxyConnection->pipe($this->connection);
-            $this->connection->pipe($this->proxyConnection);
-        }
     }
 
     /**
@@ -102,12 +98,19 @@ abstract class Tunnel implements TunnelInterface
      */
     public function pipe(ConnectionInterface $proxyConnection)
     {
-        $this->proxyConnection = $proxyConnection;
-        if ($this->connection) {
-            $proxyConnection->pipe($this->connection);
-            $this->connection->pipe($proxyConnection);
-        }
+        $proxyConnection->on('data', function($data){
+            $this->data .= $data;
+        });
     }
+
+    public function transfer()
+    {
+        if (is_null($this->connection)) {
+            throw new InvalidArgumentException('Missing the tunnel connection');
+        }
+        $this->connection->write($this->data  );
+    }
+
 
     /**
      * {@inheritdoc}

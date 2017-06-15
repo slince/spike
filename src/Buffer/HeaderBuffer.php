@@ -20,7 +20,7 @@ class HeaderBuffer extends Buffer
         $this->content .= $data;
         $pos = strpos($this->content, "\r\n\r\n");
         if ($pos !== false) {
-            $this->content .= substr($this->content, 0, $pos);
+            $this->message = substr($this->content, 0, $pos);
             $this->gatherComplete();
         }
     }

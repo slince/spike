@@ -14,6 +14,8 @@ class HttpTunnel extends Tunnel
      */
     protected $proxyHosts;
 
+    protected $proxyHost;
+
     public function __construct($port, $proxyHosts, ConnectionInterface $controlConnection = null)
     {
         $this->proxyHosts = $proxyHosts;
@@ -27,6 +29,22 @@ class HttpTunnel extends Tunnel
     public function getProxyHosts()
     {
         return $this->proxyHosts;
+    }
+
+    /**
+     * @param mixed $proxyHost
+     */
+    public function setProxyHost($proxyHost)
+    {
+        $this->proxyHost = $proxyHost;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getProxyHost()
+    {
+        return $this->proxyHost;
     }
 
     /**
@@ -56,6 +74,7 @@ class HttpTunnel extends Tunnel
     {
         return [
             'hosts' => $this->proxyHosts,
+            'proxyHost' => $this->proxyHost,
             'port' => $this->port
         ];
     }

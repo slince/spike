@@ -81,9 +81,4 @@ abstract class Tunnel implements TunnelInterface
         $connection->pipe($this->connection);
         $this->connection->pipe($connection);
     }
-
-    public function listen(callable $callback)
-    {
-        $this->connection->on('data', $callback);
-    }
 }

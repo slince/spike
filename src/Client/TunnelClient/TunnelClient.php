@@ -29,7 +29,6 @@ abstract class TunnelClient implements TunnelClientInterface
         $this->address = $address;
         $this->loop = $loop;
         $this->connector = new Connector($this->loop);
-        $this->tunnel->listen([$this, 'listenTunnel']);
     }
 
     public function run()

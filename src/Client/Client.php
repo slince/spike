@@ -111,7 +111,6 @@ class Client
             $this->connection = $connection;
             $this->setControlConnectionForTunnels($connection);
             $this->requestAuth($connection);
-            $this->requestAuth($connection);
             $this->handleConnection($connection);
         });
         $this->dispatcher->dispatch(EventStore::CLIENT_RUN);
