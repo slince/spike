@@ -22,6 +22,12 @@ abstract class Tunnel implements TunnelInterface
     protected $connection;
 
     /**
+     * The proxy connection that need to be handled
+     * @var ConnectionInterface
+     */
+    protected $proxyConnection;
+
+    /**
      * @var boolean
      */
     protected $active;
@@ -85,14 +91,22 @@ abstract class Tunnel implements TunnelInterface
     public function setConnection(ConnectionInterface $connection)
     {
         $this->connection = $connection;
+        if ($this->proxyConnection) {
+            $this->proxyConnection->pipe($this->connection);
+            $this->connection->pipe($this->proxyConnection);
+        }
     }
 
     /**
      * {@inheritdoc}
      */
-    public function pipe(ConnectionInterface $connection)
+    public function pipe(ConnectionInterface $proxyConnection)
     {
-        $connection->pipe($this->connection);
+        $this->proxyConnection = $proxyConnection;
+        if ($this->connection) {
+            $proxyConnection->pipe($this->connection);
+            $this->connection->pipe($proxyConnection);
+        }
     }
 
     /**
@@ -100,6 +114,6 @@ abstract class Tunnel implements TunnelInterface
      */
     public function match($info)
     {
-        return $this->getPort() == $info['port'];
+        return $this->getPort() == $info['remotePort'];
     }
 }

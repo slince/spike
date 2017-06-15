@@ -185,9 +185,6 @@ class Server
             case 'register_proxy':
                 $handler = new Handler\RegisterProxyHandler($this, $connection);
                 break;
-            case 'start_proxy':
-                $handler = new Handler\StartProxyHandler($this);
-                break;
             default:
                 throw new InvalidArgumentException(sprintf('Cannot find handler for message type: "%s"',
                     get_class($message)

@@ -21,10 +21,10 @@ abstract class MessageHandler implements HandlerInterface
      */
     protected $connection;
 
-    public function __construct(Client $client)
+    public function __construct(Client $client, ConnectionInterface $connection)
     {
         $this->client = $client;
-        $this->connection = $client->getConnection();
+        $this->connection = $connection;
     }
 
     /**

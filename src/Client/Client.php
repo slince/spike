@@ -129,7 +129,7 @@ class Client
                     'message' => $message,
                     'connection' => $connection
                 ]));
-                $this->createMessageHandler($message)->handle($message);
+                $this->createMessageHandler($message, $connection)->handle($message);
             });
         } catch (InvalidArgumentException $exception) {
             $this->dispatcher->dispatch(new Event(EventStore::CONNECTION_ERROR, $this, [
@@ -233,22 +233,23 @@ class Client
     /**
      * Creates the handler for the received message
      * @param SpikeInterface $message
+     * @param ConnectionInterface $connection
      * @return Handler\HandlerInterface
      */
-    protected function createMessageHandler(SpikeInterface $message)
+    protected function createMessageHandler(SpikeInterface $message, ConnectionInterface $connection)
     {
         switch ($message->getAction()) {
             case 'auth_response':
-                $handler = new Handler\AuthResponseHandler($this);
+                $handler = new Handler\AuthResponseHandler($this, $connection);
                 break;
             case 'register_tunnel_response':
-                $handler = new Handler\RegisterTunnelResponseHandler($this);
+                $handler = new Handler\RegisterTunnelResponseHandler($this, $connection);
                 break;
             case 'request_proxy':
-                $handler = new Handler\RequestProxyHandler($this);
+                $handler = new Handler\RequestProxyHandler($this, $connection);
                 break;
             case 'start_proxy':
-                $handler = new Handler\StartProxyHandler($this);
+                $handler = new Handler\StartProxyHandler($this, $connection);
                 break;
             default:
                 throw new InvalidArgumentException(sprintf('Cannot find handler for message type: "%s"',

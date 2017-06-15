@@ -45,7 +45,8 @@ class HttpTunnel extends Tunnel
     public function match($info)
     {
         return parent::match($info)
-            && $this->supportProxyHost($info['proxyHost']);
+            &&  (!isset($info['proxyHost'])
+                || $this->supportProxyHost($info['proxyHost']));
     }
 
     /**
