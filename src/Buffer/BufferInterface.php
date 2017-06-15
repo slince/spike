@@ -21,6 +21,12 @@ interface BufferInterface
     public function getContent();
 
     /**
+     * Gets a full protocol message
+     * @return string
+     */
+    public function getMessage();
+
+    /**
      * call the  callback when buffer gather ok
      * @param callable $callback
      * @return mixed

@@ -15,7 +15,7 @@ class RegisterTunnelResponseHandler extends MessageHandler
     public function handle(MessageInterface $message)
     {
         $response = $message->getBody();
-        $tunnel = TunnelFactory::fromArray($response['tunnel']);
+        $tunnel = $this->client->findTunnel($response);
         if ($message->getHeader('code') == 0) {
             $event = new Event(EventStore::REGISTER_TUNNEL_SUCCESS, $this->client, [
                 'tunnelInfo' => $tunnel

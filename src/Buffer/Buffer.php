@@ -25,6 +25,8 @@ abstract class Buffer implements BufferInterface
      */
     protected $content;
 
+    protected $message;
+
     /**
      * Checks whether gathers ok
      * @var boolean
@@ -55,6 +57,14 @@ abstract class Buffer implements BufferInterface
     }
 
     /**
+     * @return string
+     */
+    public function getMessage()
+    {
+        return $this->message;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function gather(callable $callback)
@@ -75,8 +85,9 @@ abstract class Buffer implements BufferInterface
      */
     protected function gatherComplete()
     {
-        $this->isGatherComplete = true;
+        $this->content = substr($this->content, strlen($this->message));
         call_user_func($this->callback, $this);
+        $this->message = '';
     }
 
     /**

@@ -11,10 +11,10 @@ use Spike\Protocol\StartProxy;
 
 class TcpTunnelServer extends TunnelServer
 {
-    public function handleProxyConnection(ConnectionInterface $connection)
+    public function handleProxyConnection(ConnectionInterface $proxyConnection)
     {
         $this->tunnel->getControlConnection()->write(new Spike('request_proxy', $this->tunnel->toArray()));
-        $this->tunnel->pipe($connection);
+        $this->tunnel->pipe($proxyConnection);
         $this->pause();
     }
 }

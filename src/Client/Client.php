@@ -112,7 +112,7 @@ class Client
             $this->setControlConnectionForTunnels($connection);
             $this->requestAuth($connection);
             $this->requestAuth($connection);
-//            $this->handleConnection($connection);
+            $this->handleConnection($connection);
         });
         $this->dispatcher->dispatch(EventStore::CLIENT_RUN);
         $this->loop->run();
@@ -123,14 +123,13 @@ class Client
         try {
             $buffer = new SpikeBuffer($connection);
             $buffer->gather(function(BufferInterface $buffer) use ($connection){
-                $message = Spike::fromString($buffer);
-                var_dump(strval($buffer));
+                $message = Spike::fromString($buffer->getMessage());
+                echo $buffer->getMessage(), PHP_EOL;
                 $this->dispatcher->dispatch(new Event(EventStore::RECEIVE_MESSAGE, $this, [
                     'message' => $message,
                     'connection' => $connection
                 ]));
                 $this->createMessageHandler($message)->handle($message);
-                $buffer->flush(); //Flush the buffer and continue gather message
             });
         } catch (InvalidArgumentException $exception) {
             $this->dispatcher->dispatch(new Event(EventStore::CONNECTION_ERROR, $this, [
@@ -219,7 +218,10 @@ class Client
             $matching = $tunnel->getRemotePort() == $tunnelInfo['port']
                 && (
                     $tunnel instanceof TcpTunnel
-                    || $tunnel->supportProxyHost($tunnelInfo['proxyHost'])
+                    || (
+                        !isset($tunnelInfo['proxyHost'])
+                        || $tunnel->supportProxyHost($tunnelInfo['proxyHost'])
+                    )
                 );
             if ($matching) {
                 return $tunnel;

@@ -33,7 +33,7 @@ interface TunnelServerInterface
 
     /**
      * Handles the proxy connection
-     * @param ConnectionInterface $connection
+     * @param ConnectionInterface $proxyConnection
      */
-    public function handleProxyConnection(ConnectionInterface $connection);
+    public function handleProxyConnection(ConnectionInterface $proxyConnection);
 }
