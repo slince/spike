@@ -16,6 +16,7 @@ use Spike\Buffer\SpikeBuffer;
 use Spike\Exception\BadRequestException;
 use Spike\Exception\InvalidArgumentException;
 use Spike\Exception\RuntimeException;
+use Spike\Protocol\Parser\SpikeParser;
 use Spike\Protocol\ProtocolFactory;
 use Spike\Protocol\RegisterTunnel;
 use Spike\Protocol\Spike;
@@ -103,15 +104,17 @@ class Server
 
     protected function handleConnection(ConnectionInterface $connection)
     {
-        $buffer = new SpikeBuffer($connection);
-        $buffer->gather(function (BufferInterface $buffer) use ($connection) {
-            $message = Spike::fromString($buffer->getMessage());
-            echo $buffer->getMessage(), PHP_EOL;
-            $this->dispatcher->dispatch(new Event(EventStore::RECEIVE_MESSAGE, $this, [
-                'message' => $message,
-                'connection' => $connection
-            ]));
-            $this->createMessageHandler($message, $connection)->handle($message);
+        $messageParser = new SpikeParser();
+        $connection->on('data', function($data) use($messageParser, $connection){
+            $messages = $messageParser->pushIncoming($data)->parse();
+            foreach ($messages as $message) {
+                $message = Spike::fromString($message);
+                $this->dispatcher->dispatch(new Event(EventStore::RECEIVE_MESSAGE, $this, [
+                    'message' => $message,
+                    'connection' => $connection
+                ]));
+                $this->createMessageHandler($message, $connection)->handle($message);
+            }
         });
     }
 

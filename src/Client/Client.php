@@ -18,6 +18,7 @@ use Spike\Client\Tunnel\TunnelInterface;
 use Spike\Client\TunnelClient\TcpTunnelClient;
 use Spike\Exception\InvalidArgumentException;
 use Spike\Buffer\SpikeBuffer;
+use Spike\Protocol\Parser\SpikeParser;
 use Spike\Protocol\Spike;
 use Spike\Protocol\SpikeInterface;
 
@@ -111,6 +112,7 @@ class Client
             $this->connection = $connection;
             $this->setControlConnectionForTunnels($connection);
             $this->requestAuth($connection);
+            $this->requestAuth($connection);
             $this->handleConnection($connection);
         });
         $this->dispatcher->dispatch(EventStore::CLIENT_RUN);
@@ -119,23 +121,18 @@ class Client
 
     public function handleConnection(ConnectionInterface $connection)
     {
-        try {
-            $buffer = new SpikeBuffer($connection);
-            $buffer->gather(function(BufferInterface $buffer) use ($connection){
-                $message = Spike::fromString($buffer->getMessage());
-                echo $buffer->getMessage(), PHP_EOL;
+        $messageParser = new SpikeParser();
+        $connection->on('data', function($data) use($messageParser, $connection){
+            $messages = $messageParser->pushIncoming($data)->parse();
+            foreach ($messages as $message) {
+                $message = Spike::fromString($message);
                 $this->dispatcher->dispatch(new Event(EventStore::RECEIVE_MESSAGE, $this, [
                     'message' => $message,
                     'connection' => $connection
                 ]));
                 $this->createMessageHandler($message, $connection)->handle($message);
-            });
-        } catch (InvalidArgumentException $exception) {
-            $this->dispatcher->dispatch(new Event(EventStore::CONNECTION_ERROR, $this, [
-                'connection' => $connection,
-                'exception' => $exception,
-            ]));
-        }
+            }
+        });
     }
 
     protected function requestAuth(ConnectionInterface $connection)
@@ -146,6 +143,7 @@ class Client
             'password' => '',
             'version' => '',
         ];
+        echo new Spike('auth', $authInfo);
         $connection->write(new Spike('auth', $authInfo));
     }
 
