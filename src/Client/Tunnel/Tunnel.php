@@ -27,6 +27,8 @@ abstract class Tunnel implements TunnelInterface
      */
     protected $remotePort;
 
+    protected $buffer;
+
     public function __construct($remotePort, ConnectionInterface $controlConnection = null)
     {
         $this->remotePort = $remotePort;
@@ -80,5 +82,15 @@ abstract class Tunnel implements TunnelInterface
     {
         $connection->pipe($this->connection);
         $this->connection->pipe($connection);
+    }
+
+    public function pushBuffer($data)
+    {
+        $this->buffer .= $data;
+    }
+
+    public function getBuffer()
+    {
+        return $this->buffer;
     }
 }

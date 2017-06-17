@@ -11,9 +11,7 @@ class TcpTunnelClient extends TunnelClient
 {
     public function handleLocalConnection(ConnectionInterface $localConnection)
     {
+        $localConnection->write($this->tunnel->getBuffer());
         $this->tunnel->pipe($localConnection);
-        $this->tunnel->getConnection()->on('data', function($data){
-            echo $data;
-        });
     }
 }

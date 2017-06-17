@@ -11,14 +11,12 @@ use React\Socket\ConnectionInterface;
 use React\Socket\Connector;
 use Slince\Event\Dispatcher;
 use Slince\Event\Event;
-use Spike\Buffer\BufferInterface;
 use Spike\Client\Tunnel\TcpTunnel;
 use Spike\Client\Tunnel\TunnelFactory;
 use Spike\Client\Tunnel\TunnelInterface;
 use Spike\Client\TunnelClient\TcpTunnelClient;
 use Spike\Exception\InvalidArgumentException;
-use Spike\Buffer\SpikeBuffer;
-use Spike\Protocol\Parser\SpikeParser;
+use Spike\Parser\SpikeParser;
 use Spike\Protocol\Spike;
 use Spike\Protocol\SpikeInterface;
 
@@ -121,9 +119,10 @@ class Client
 
     public function handleConnection(ConnectionInterface $connection)
     {
-        $messageParser = new SpikeParser();
-        $connection->on('data', function($data) use($messageParser, $connection){
-            $messages = $messageParser->pushIncoming($data)->parse();
+        $parser = new SpikeParser();
+        $connection->on('data', function($data) use($parser, $connection){
+            $parser->pushIncoming($data);
+            $messages = $parser->parse();
             foreach ($messages as $message) {
                 $message = Spike::fromString($message);
                 $this->dispatcher->dispatch(new Event(EventStore::RECEIVE_MESSAGE, $this, [
@@ -161,7 +160,38 @@ class Client
             $this->tunnelConnections[] = $connection;
             $tunnel->setConnection($connection); //sets tunnel connection for the tunnel
             $connection->write(new Spike('register_proxy', $tunnel->toArray()));
-            $this->handleConnection($connection);
+            $this->handleTunnelConnection($connection);
+        });
+    }
+
+    public function handleTunnelConnection(ConnectionInterface $connection)
+    {
+        $parser = new SpikeParser();
+        $connection->on('data', function($data) use($parser, $connection){
+            $parser->pushIncoming($data);
+            $protocol = $parser->parseFirst();
+            if ($protocol) {
+                $connection->removeAllListeners('data');
+                $message = Spike::fromString($protocol);
+                if ($message->getAction() == 'start_proxy') {
+                    $tunnelInfo = $message->getBody();
+                    $tunnel = $this->findTunnel($tunnelInfo);
+                    if ($tunnel ===  false) {
+                        throw new InvalidArgumentException("Can not find the matching tunnel");
+                    }
+                    $tunnel->pushBuffer($protocol . $parser->getRestData());
+                    $localAddress = isset($tunnelInfo['proxyHost']) ?
+                        $tunnelInfo['proxyHost'] : $tunnel->getHost();
+                    $this->connection->on('data', function($data){
+                        var_dump($data);exit;
+                    });
+                    $this->createTunnelClient($tunnel, $localAddress);
+                }
+                $this->dispatcher->dispatch(new Event(EventStore::RECEIVE_MESSAGE, $this, [
+                    'message' => $message,
+                    'connection' => $connection
+                ]));
+            }
         });
     }
 
