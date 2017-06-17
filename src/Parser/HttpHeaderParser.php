@@ -5,9 +5,7 @@
  */
 namespace Spike\Parser;
 
-use Spike\Exception\InvalidArgumentException;
-
-class SpikeParser extends AbstractParser
+class HttpHeaderParser extends AbstractParser
 {
     /**
      * Parse the incoming buffer
@@ -35,19 +33,7 @@ class SpikeParser extends AbstractParser
         if ($pos === false) {
             return null;
         }
-        $header = substr($this->incomingData, 0, $pos);
-        if (preg_match("/Content-Length: ?(\d+)/i", $header, $match)) {
-            $bodyLength = $match[1];
-            //incoming buffer length - header length  - two\r\n
-            if (strlen($this->incomingData) - $pos - 4 >= $bodyLength) {
-                $body = substr($this->incomingData, $pos + 4, $bodyLength);
-            }  else {
-                return null;
-            }
-            $message = $header . "\r\n\r\n" . $body;
-        } else {
-            throw new InvalidArgumentException('Bad spike message');
-        }
+        $message = substr($this->incomingData, 0, $pos);
         $this->incomingData  = substr($this->incomingData, strlen($message));
         return $message;
     }
