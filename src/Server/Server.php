@@ -16,7 +16,7 @@ use Spike\Parser\SpikeParser;
 use Spike\Protocol\Spike;
 use Spike\Protocol\SpikeInterface;
 use Spike\Server\Handler\HandlerInterface;
-use Spike\Server\Tunnel\HttpTunnel;  
+use Spike\Server\Tunnel\HttpTunnel;
 use Spike\Server\Tunnel\TunnelInterface;
 use Spike\Server\TunnelServer\TunnelServerInterface;
 use Spike\Utility;
@@ -97,10 +97,12 @@ class Server
 
     protected function handleConnection(ConnectionInterface $connection)
     {
-        $messageParser = new SpikeParser();
-        $connection->on('data', function($data) use($messageParser, $connection){
-            $messages = $messageParser->pushIncoming($data)->parse();
+        $parser = new SpikeParser();
+        $connection->on('data', function($data) use($parser, $connection){
+            $parser->pushIncoming($data);
+            $messages = $parser->parse();
             foreach ($messages as $message) {
+                echo $message, PHP_EOL,PHP_EOL;
                 $message = Spike::fromString($message);
                 $this->dispatcher->dispatch(new Event(EventStore::RECEIVE_MESSAGE, $this, [
                     'message' => $message,
