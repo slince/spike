@@ -11,6 +11,7 @@ use React\Socket\ConnectionInterface;
 use React\Socket\Connector;
 use Slince\Event\Dispatcher;
 use Slince\Event\Event;
+use Spike\Client\Tunnel\HttpTunnel;
 use Spike\Client\Tunnel\TcpTunnel;
 use Spike\Client\Tunnel\TunnelFactory;
 use Spike\Client\Tunnel\TunnelInterface;
@@ -169,6 +170,7 @@ class Client
             $parser->pushIncoming($data);
             $protocol = $parser->parseFirst();
             if ($protocol) {
+                echo $protocol;
                 $connection->removeAllListeners('data');
                 $message = Spike::fromString($protocol);
                 if ($message->getAction() == 'start_proxy') {
@@ -177,12 +179,12 @@ class Client
                     if ($tunnel ===  false) {
                         throw new InvalidArgumentException("Can not find the matching tunnel");
                     }
-                    $tunnel->pushBuffer($protocol . $parser->getRestData());
-                    $localAddress = isset($tunnelInfo['proxyHost']) ?
-                        $tunnelInfo['proxyHost'] : $tunnel->getHost();
-                    $this->connection->on('data', function($data){
-                        var_dump($data);exit;
-                    });
+                    $tunnel->pushBuffer($parser->getRestData());
+                    if ($tunnel instanceof HttpTunnel) {
+                        $localAddress = $tunnel->getLocalHost($tunnelInfo['proxyHost']);
+                    }  else {
+                        $tunnel->getHost();
+                    }
                     $this->createTunnelClient($tunnel, $localAddress);
                 }
                 $this->dispatcher->dispatch(new Event(EventStore::RECEIVE_MESSAGE, $this, [

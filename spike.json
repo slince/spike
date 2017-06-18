@@ -5,8 +5,8 @@
             "protocol": "http",
             "remotePort": "8049",
             "hosts": {
-                "www.lazy.com": "www.baidu.com",
-                "www.spike.com": "www.baidu.com"
+                "www.lazy.com": " 127.0.0.1:6666",
+                "www.spike.com": "127.0.0.1:6666"
             }
         },
         {
