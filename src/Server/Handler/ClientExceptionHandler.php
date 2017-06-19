@@ -13,7 +13,7 @@ use Spike\Server\EventStore;
 use Slince\Event\Event;
 use Spike\Server;
 
-class ClientExceptionHandler extends Handler
+class ClientExceptionHandler extends MessageHandler
 {
     /**
      * {@inheritdoc}

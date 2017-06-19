@@ -9,7 +9,7 @@ use Spike\Protocol\MessageInterface;
 use Spike\Protocol\Spike;
 use Spike\Server\Client;
 
-class AuthHandler extends Handler
+class AuthHandler extends MessageHandler
 {
     public function handle(MessageInterface $message)
     {

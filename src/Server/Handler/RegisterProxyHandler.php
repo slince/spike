@@ -10,7 +10,7 @@ use Spike\Protocol\MessageInterface;
 use Spike\Protocol\Spike;
 use Spike\Server\TunnelServer\TunnelServerInterface;
 
-class RegisterProxyHandler extends Handler
+class RegisterProxyHandler extends MessageHandler
 {
     public function handle(MessageInterface $message)
     {

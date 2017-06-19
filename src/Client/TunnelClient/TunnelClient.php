@@ -8,9 +8,8 @@ namespace Spike\Client\TunnelClient;
 use React\EventLoop\LoopInterface;
 use React\Socket\ConnectionInterface;
 use React\Socket\Connector;
-use Spike\Buffer\SpikeBuffer;
-use Spike\Client\Tunnel\HttpTunnel;
-use Spike\Client\Tunnel\TunnelInterface;
+use Spike\Tunnel\HttpTunnel;
+use Spike\Tunnel\TunnelInterface;
 use Spike\Parser\SpikeParser;
 use Spike\Protocol\Spike;
 

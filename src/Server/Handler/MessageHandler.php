@@ -8,7 +8,7 @@ namespace Spike\Server\Handler;
 use React\Socket\ConnectionInterface;
 use Spike\Server\Server;
 
-abstract class Handler implements HandlerInterface
+abstract class MessageHandler implements HandlerInterface
 {
     /**
      * @var Server

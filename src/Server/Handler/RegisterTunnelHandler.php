@@ -6,11 +6,10 @@
 namespace Spike\Server\Handler;
 
 use Spike\Protocol\MessageInterface;
-use Spike\Protocol\RegisterTunnelResponse;
 use Spike\Protocol\Spike;
-use Spike\Server\Tunnel\TunnelFactory;
+use Spike\Tunnel\TunnelFactory;
 
-class RegisterTunnelHandler extends Handler
+class RegisterTunnelHandler extends MessageHandler
 {
     public function handle(MessageInterface $message)
     {
