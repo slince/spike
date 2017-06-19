@@ -16,10 +16,10 @@ class HttpTunnel extends Tunnel
 
     protected $proxyHost;
 
-    public function __construct($port, $proxyHosts, ConnectionInterface $controlConnection = null)
+    public function __construct($serverPort, $proxyHosts, ConnectionInterface $controlConnection = null)
     {
         $this->proxyHosts = $proxyHosts;
-        parent::__construct($port, $controlConnection);
+        parent::__construct($serverPort, $controlConnection);
     }
 
     /**

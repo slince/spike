@@ -136,7 +136,7 @@ abstract class Tunnel implements TunnelInterface
      */
     public function match($info)
     {
-        return $this->getServerPort() == $info['remotePort'];
+        return $this->getServerPort() == $info['serverPort'];
     }
 
     /**
