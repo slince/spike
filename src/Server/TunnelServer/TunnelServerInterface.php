@@ -17,6 +17,12 @@ interface TunnelServerInterface
     public function getTunnel();
 
     /**
+     * Gets the control connection
+     * @return ConnectionInterface
+     */
+    public function getControlConnection();
+
+    /**
      * Run the server
      */
     public function run();

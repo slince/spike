@@ -8,11 +8,15 @@ namespace Spike\Server\TunnelServer;
 use React\EventLoop\LoopInterface;
 use React\Socket\ConnectionInterface;
 use React\Socket\Server as Socket;
+use Spike\Protocol\Spike;
 use Spike\Tunnel\TunnelInterface;
 
-abstract class TunnelServer implements TunnelServerInterface
+class TunnelServer implements TunnelServerInterface
 {
-    protected $serverAddress;
+    /**
+     * @var ConnectionInterface
+     */
+    protected $controlConnection;
 
     protected $loop;
 
@@ -23,15 +27,37 @@ abstract class TunnelServer implements TunnelServerInterface
      */
     protected $tunnel;
 
-    public function __construct(TunnelInterface $tunnel, $address, LoopInterface $loop)
+    public function __construct(ConnectionInterface $controlConnection, TunnelInterface $tunnel, $address, LoopInterface $loop)
     {
+        $this->controlConnection = $controlConnection;
         $this->tunnel = $tunnel;
-        $this->serverAddress = $address;
         $this->loop = $loop;
-        $this->socket = new Socket($this->serverAddress, $loop);
-        $this->socket->on('connection', function(ConnectionInterface $proxyConnection){
-            $this->handleProxyConnection($proxyConnection);
-        });
+        $this->socket = new Socket($address, $loop);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function run()
+    {
+        $this->socket->on('connection', [$this, 'handleProxyConnection']);
+    }
+
+    public function handleProxyConnection(ConnectionInterface $proxyConnection)
+    {
+        $this->controlConnection->write(new Spike('request_proxy', $this->tunnel->toArray()));
+        $proxyConnection->removeAllListeners();
+        $this->tunnel->pipe($proxyConnection);
+        $proxyConnection->pause();
+    }
+
+    /**
+     *
+     * {@inheritdoc}
+     */
+    public function getControlConnection()
+    {
+        return $this->controlConnection;
     }
 
     /**
@@ -56,21 +82,5 @@ abstract class TunnelServer implements TunnelServerInterface
     public function resume()
     {
         $this->socket->resume();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function run()
-    {
-        $this->resume();
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getServerAddress()
-    {
-        return $this->serverAddress;
     }
 }

@@ -20,18 +20,14 @@ class HttpTunnelServer extends TunnelServer
             $parser->pushIncoming($data);
             $message = $parser->parseFirst();
             echo $message;
-//exit;
             if ($message) {
                 $psrRequest = Psr7\parse_request($message);
                 $host = $psrRequest->getUri()->getHost();
                 if ($this->tunnel->supportProxyHost($host)) {
-                    $proxyConnection->removeAllListeners();
                     $this->tunnel->setProxyHost($host);
-                    $this->tunnel->getControlConnection()->write(new Spike('request_proxy', $this->tunnel->toArray()));
-                    $this->tunnel->pipe($proxyConnection);
                     $httpMessage = $message . $parser->getRestData();
-                    $this->tunnel->setData($httpMessage);
-                    $proxyConnection->pause();
+                    $this->tunnel->pushBuffer($httpMessage);
+                    parent::handleProxyConnection($proxyConnection);
                 } else {
                     $body = sprintf('The host "%s" was not bound.', $host);
                     $response = $this->makeErrorResponse(404, $body);
