@@ -3,7 +3,7 @@
  * Spike library
  * @author Tao <taosikai@yeah.net>
  */
-namespace Spike\Server\Tunnel;
+namespace Spike\Tunnel;
 
 use React\Socket\ConnectionInterface;
 
@@ -49,7 +49,7 @@ interface TunnelInterface
      * Gets the tunnel server port
      * @return int
      */
-    public function getPort();
+    public function getServerPort();
 
     /**
      * Checks whether the tunnel match the info
@@ -63,4 +63,16 @@ interface TunnelInterface
      * @return array
      */
     public function toArray();
+
+    /**
+     * Push the buffer
+     * @param string $data
+     */
+    public function pushBuffer($data);
+
+    /**
+     * Get the buffer
+     * @return string
+     */
+    public function getBuffer();
 }

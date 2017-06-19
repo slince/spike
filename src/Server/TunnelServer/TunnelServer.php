@@ -8,8 +8,7 @@ namespace Spike\Server\TunnelServer;
 use React\EventLoop\LoopInterface;
 use React\Socket\ConnectionInterface;
 use React\Socket\Server as Socket;
-use Spike\Protocol\RequestProxy;
-use Spike\Server\Tunnel\TunnelInterface;
+use Spike\Tunnel\TunnelInterface;
 
 abstract class TunnelServer implements TunnelServerInterface
 {

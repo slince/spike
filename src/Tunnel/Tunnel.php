@@ -3,7 +3,7 @@
  * Spike library
  * @author Tao <taosikai@yeah.net>
  */
-namespace Spike\Server\Tunnel;
+namespace Spike\Tunnel;
 
 use React\Socket\ConnectionInterface;
 use Spike\Exception\InvalidArgumentException;
@@ -37,26 +37,26 @@ abstract class Tunnel implements TunnelInterface
      * The tunnel server port
      * @var int
      */
-    protected $port;
+    protected $serverPort;
 
     /**
      * @var string
      */
-    protected $data;
+    protected $buffer;
 
-    public function __construct($port, ConnectionInterface $controlConnection = null)
+    public function __construct($serverPort, ConnectionInterface $controlConnection = null)
     {
+        $this->serverPort = $serverPort;
         $this->controlConnection = $controlConnection;
-        $this->port = $port;
     }
 
 
     /**
      * {@inheritdoc}
      */
-    public function getPort()
+    public function getServerPort()
     {
-        return $this->port;
+        return $this->serverPort;
     }
 
     /**
@@ -89,22 +89,6 @@ abstract class Tunnel implements TunnelInterface
     public function getConnection()
     {
         return $this->connection;
-    }
-
-    /**
-     * @param string $data
-     */
-    public function setData($data)
-    {
-        $this->data = $data;
-    }
-
-    /**
-     * @return string
-     */
-    public function getData()
-    {
-        return $this->data;
     }
 
     /**
@@ -147,12 +131,27 @@ abstract class Tunnel implements TunnelInterface
         }
     }
 
-
     /**
      * {@inheritdoc}
      */
     public function match($info)
     {
-        return $this->getPort() == $info['remotePort'];
+        return $this->getServerPort() == $info['remotePort'];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function pushBuffer($data)
+    {
+        $this->buffer .= $data;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getBuffer()
+    {
+        return $this->buffer;
     }
 }

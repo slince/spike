@@ -8,9 +8,6 @@ namespace Spike\Server\TunnelServer;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7;
 use React\Socket\ConnectionInterface;
-use Spike\Buffer\BufferInterface;
-use Spike\Buffer\HttpHeaderBuffer;
-use Spike\Exception\UnsupportedProtocolException;
 use Spike\Parser\HttpHeaderParser;
 use Spike\Protocol\Spike;
 

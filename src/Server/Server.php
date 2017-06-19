@@ -16,8 +16,8 @@ use Spike\Parser\SpikeParser;
 use Spike\Protocol\Spike;
 use Spike\Protocol\SpikeInterface;
 use Spike\Server\Handler\HandlerInterface;
-use Spike\Server\Tunnel\HttpTunnel;
-use Spike\Server\Tunnel\TunnelInterface;
+use Spike\Tunnel\HttpTunnel;
+use Spike\Tunnel\TunnelInterface;
 use Spike\Server\TunnelServer\TunnelServerInterface;
 use Spike\Utility;
 

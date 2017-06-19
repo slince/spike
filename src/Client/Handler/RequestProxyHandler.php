@@ -16,6 +16,9 @@ class RequestProxyHandler extends MessageHandler
     {
         $tunnelInfo = $message->getBody();
         $tunnel = $this->client->findTunnel($tunnelInfo);
-        $this->client->createTunnelConnection($tunnel);
+        if ($tunnel instanceof HttpTunnel) {
+            $tunnel->setProxyHost($tunnelInfo['proxyHost']);
+        }
+        $this->client->createTunnelClient($tunnel);
     }
 }

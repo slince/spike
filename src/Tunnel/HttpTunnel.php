@@ -3,7 +3,7 @@
  * Spike library
  * @author Tao <taosikai@yeah.net>
  */
-namespace Spike\Server\Tunnel;
+namespace Spike\Tunnel;
 
 use React\Socket\ConnectionInterface;
 
@@ -73,9 +73,9 @@ class HttpTunnel extends Tunnel
     public function toArray()
     {
         return [
-            'hosts' => $this->proxyHosts,
+            'proxyHosts' => $this->proxyHosts,
+            'serverPort' => $this->serverPort,
             'proxyHost' => $this->proxyHost,
-            'port' => $this->port
         ];
     }
 }

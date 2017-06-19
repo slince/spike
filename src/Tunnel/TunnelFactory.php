@@ -3,16 +3,16 @@
  * Spike library
  * @author Tao <taosikai@yeah.net>
  */
-namespace Spike\Client\Tunnel;
+namespace Spike\Tunnel;
 
 class TunnelFactory
 {
     public static function fromArray($data)
     {
         if ($data['protocol'] == 'http') {
-            $tunnel = new HttpTunnel($data['remotePort'], $data['hosts']);
+            $tunnel = new HttpTunnel($data['serverPort'], $data['proxyHosts']);
         } else {
-            $tunnel = new TcpTunnel($data['remotePort'], $data['host']);
+            $tunnel = new TcpTunnel($data['serverPort'], $data['host']);
         }
         return $tunnel;
     }

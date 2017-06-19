@@ -11,12 +11,13 @@ use React\Socket\ConnectionInterface;
 use React\Socket\Connector;
 use Slince\Event\Dispatcher;
 use Slince\Event\Event;
-use Spike\Client\Tunnel\HttpTunnel;
-use Spike\Client\Tunnel\TcpTunnel;
-use Spike\Client\Tunnel\TunnelFactory;
-use Spike\Client\Tunnel\TunnelInterface;
+use Spike\Tunnel\TunnelFactory;
+use Spike\Tunnel\TunnelInterface;
 use Spike\Client\TunnelClient\TcpTunnelClient;
+use Spike\Client\TunnelClient\TunnelClient;
+use Spike\Client\TunnelClient\TunnelClientInterface;
 use Spike\Exception\InvalidArgumentException;
+use Spike\Exception\RuntimeException;
 use Spike\Parser\SpikeParser;
 use Spike\Protocol\Spike;
 use Spike\Protocol\SpikeInterface;
@@ -41,13 +42,13 @@ class Client
     /**
      * @var ConnectionInterface
      */
-    protected $connection;
+    protected $controlConnection;
 
     /**
-     * Array of tunnel connections
-     * @var ConnectionInterface[]
+     * @var TunnelClient[]
      */
-    protected $tunnelConnections;
+    protected $tunnelClients = [];
+
     /**
      * @var string
      */
@@ -108,22 +109,23 @@ class Client
             $this->dispatcher->dispatch(new Event(EventStore::CONNECT_TO_SERVER, $this, [
                 'connection' => $connection
             ]));
-            $this->connection = $connection;
+            $this->controlConnection = $connection;
             $this->setControlConnectionForTunnels($connection);
             $this->requestAuth($connection);
-            $this->handleConnection($connection);
+            $this->handleControlConnection($connection);
         });
         $this->dispatcher->dispatch(EventStore::CLIENT_RUN);
         $this->loop->run();
     }
 
-    public function handleConnection(ConnectionInterface $connection)
+    public function handleControlConnection(ConnectionInterface $connection)
     {
         $parser = new SpikeParser();
         $connection->on('data', function($data) use($parser, $connection){
             $parser->pushIncoming($data);
             $messages = $parser->parse();
             foreach ($messages as $message) {
+                echo $message, PHP_EOL;
                 $message = Spike::fromString($message);
                 $this->dispatcher->dispatch(new Event(EventStore::RECEIVE_MESSAGE, $this, [
                     'message' => $message,
@@ -150,63 +152,6 @@ class Client
         foreach ($this->tunnels as $tunnel) {
             $tunnel->setControlConnection($connection);
         }
-    }
-
-    public function createTunnelConnection(TunnelInterface $tunnel)
-    {
-        $connector = new Connector($this->loop);
-        $connector->connect($this->serverAddress)->then(function(ConnectionInterface $connection) use ($tunnel){
-            $this->tunnelConnections[] = $connection;
-            $tunnel->setConnection($connection); //sets tunnel connection for the tunnel
-            $connection->write(new Spike('register_proxy', $tunnel->toArray()));
-            $this->handleTunnelConnection($connection);
-        });
-    }
-
-    public function handleTunnelConnection(ConnectionInterface $connection)
-    {
-        $parser = new SpikeParser();
-        $connection->on('data', function($data) use($parser, $connection){
-            $parser->pushIncoming($data);
-            $protocol = $parser->parseFirst();
-            if ($protocol) {
-                echo $protocol;
-                $connection->removeAllListeners('data');
-                $message = Spike::fromString($protocol);
-                if ($message->getAction() == 'start_proxy') {
-                    $tunnelInfo = $message->getBody();
-                    $tunnel = $this->findTunnel($tunnelInfo);
-                    if ($tunnel ===  false) {
-                        throw new InvalidArgumentException("Can not find the matching tunnel");
-                    }
-                    $tunnel->pushBuffer($parser->getRestData());
-                    if ($tunnel instanceof HttpTunnel) {
-                        $localAddress = $tunnel->getLocalHost($tunnelInfo['proxyHost']);
-                    }  else {
-                        $tunnel->getHost();
-                    }
-                    $this->createTunnelClient($tunnel, $localAddress);
-                }
-                $this->dispatcher->dispatch(new Event(EventStore::RECEIVE_MESSAGE, $this, [
-                    'message' => $message,
-                    'connection' => $connection
-                ]));
-            }
-        });
-    }
-
-    /**
-     * @return ConnectionInterface[]
-     */
-    public function getTunnelConnections()
-    {
-        return $this->tunnelConnections;
-    }
-
-    public function createTunnelClient(TunnelInterface $tunnel, $localAddress)
-    {
-        $tunnelClient = new TcpTunnelClient($tunnel, $localAddress, $this->loop);
-        $tunnelClient->run();
     }
 
     /**
@@ -237,32 +182,46 @@ class Client
     /**
      * @return ConnectionInterface
      */
-    public function getConnection()
+    public function getControlConnection()
     {
-        return $this->connection;
+        return $this->controlConnection;
+    }
+
+    /**
+     * Gets all tunnel clients
+     * @return TunnelClient[]
+     */
+    public function getTunnelClients()
+    {
+        return $this->tunnelClients;
     }
 
     /**
      * Finds the matching tunnel
      * @param array $tunnelInfo
-     * @return bool|TunnelInterface
+     * @throws RuntimeException
+     * @return false|TunnelInterface
      */
     public function findTunnel($tunnelInfo)
     {
-        foreach ($this->getTunnels() as $tunnel) {
-            $matching = $tunnel->getRemotePort() == $tunnelInfo['port']
-                && (
-                    $tunnel instanceof TcpTunnel
-                    || (
-                        !isset($tunnelInfo['proxyHost'])
-                        || $tunnel->supportProxyHost($tunnelInfo['proxyHost'])
-                    )
-                );
-            if ($matching) {
+        foreach ($this->tunnels as $tunnel) {
+            if ($tunnel->match($tunnelInfo)) {
                 return $tunnel;
             }
         }
         return false;
+    }
+
+    /**
+     * Creates a tunnel client to process proxy connection
+     * @param TunnelInterface $tunnel
+     * @return TunnelClientInterface
+     */
+    public function createTunnelClient(TunnelInterface $tunnel)
+    {
+        $tunnelClient = new TcpTunnelClient($tunnel, $this->serverAddress, $this->loop);
+        $this->tunnelClients[] = $tunnelClient;
+        return $tunnelClient;
     }
 
     /**
@@ -282,9 +241,6 @@ class Client
                 break;
             case 'request_proxy':
                 $handler = new Handler\RequestProxyHandler($this, $connection);
-                break;
-            case 'start_proxy':
-                $handler = new Handler\StartProxyHandler($this, $connection);
                 break;
             default:
                 throw new InvalidArgumentException(sprintf('Cannot find handler for message type: "%s"',
