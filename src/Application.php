@@ -53,6 +53,7 @@ class Application extends BaseApplication
     }
 
     /**
+     * Gets the dispatcher
      * @return Dispatcher
      */
     public function getDispatcher()

@@ -5,8 +5,21 @@
  */
 namespace Spike\Protocol;
 
-interface SpikeInterface extends MessageInterface
+interface SpikeInterface
 {
+    /**
+     * Creates a protocol from a string
+     * @param $string
+     * @return SpikeInterface
+     */
+    public static function fromString($string);
+
+    /**
+     * Convert the protocol to string
+     * @return string
+     */
+    public function toString();
+
     /**
      * The version of protocol
      * @var string
@@ -23,7 +36,7 @@ interface SpikeInterface extends MessageInterface
      * Gets action of the protocol
      * @return string
      */
-     public function getAction();
+    public function getAction();
 
     /**
      * Sets a header with given name and value

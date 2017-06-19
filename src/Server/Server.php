@@ -125,15 +125,16 @@ class Server
     public function createTunnelServer(TunnelInterface $tunnel, ConnectionInterface $controlConnection)
     {
         if ($tunnel instanceof HttpTunnel) {
-            $tunnelServer = new TunnelServer\HttpTunnelServer($controlConnection, $tunnel, "{$this->host}:{$tunnel->getServerPort()}", $this->loop);
+            $tunnelServer = new TunnelServer\HttpTunnelServer($this, $controlConnection, $tunnel, $this->loop);
         } else {
-            $tunnelServer = new TunnelServer\TcpTunnelServer($controlConnection, $tunnel, "{$this->host}:{$tunnel->getServerPort()}", $this->loop);
+            $tunnelServer = new TunnelServer\TcpTunnelServer($this, $controlConnection, $tunnel, $this->loop);
         }
         $tunnelServer->run();
         $this->tunnelServers[] = $tunnelServer;
     }
 
     /**
+     * Gets the dispatcher
      * @return Dispatcher
      */
     public function getDispatcher()
@@ -142,14 +143,7 @@ class Server
     }
 
     /**
-     * @param Client[] $clients
-     */
-    public function setClients($clients)
-    {
-        $this->clients = $clients;
-    }
-
-    /**
+     * Gets all clients
      * @return Client[]
      */
     public function getClients()
@@ -157,17 +151,40 @@ class Server
         return $this->clients;
     }
 
+    /**
+     * Adds a client
+     * @param Client $client
+     */
     public function addClient(Client $client)
     {
         $this->clients[] = $client;
     }
 
     /**
+     * Gets all tunnel server
      * @return TunnelServerInterface[]
      */
     public function getTunnelServers()
     {
         return $this->tunnelServers;
+    }
+
+    /**
+     * Gets the server host
+     * @return string
+     */
+    public function getHost()
+    {
+        return $this->host;
+    }
+
+    /**
+     * Gets the server port
+     * @return int
+     */
+    public function getPort()
+    {
+        return $this->port;
     }
 
     /**

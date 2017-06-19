@@ -5,6 +5,7 @@
  */
 namespace Spike\Server;
 
+use Spike\Application as BaseApplication;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7;
 use Slince\Event\Event;
@@ -16,12 +17,17 @@ use Spike\Logger\Logger;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Spike\Application as BaseApplication;
 
 class Application extends BaseApplication implements SubscriberInterface
 {
+    /**
+     * @var string
+     */
     const NAME = 'spike-server';
 
+    /**
+     * @var string
+     */
     const VERSION = '1.0.0.dev';
 
     /**

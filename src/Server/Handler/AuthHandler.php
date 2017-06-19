@@ -5,13 +5,13 @@
  */
 namespace Spike\Server\Handler;
 
-use Spike\Protocol\MessageInterface;
+use Spike\Protocol\SpikeInterface;
 use Spike\Protocol\Spike;
 use Spike\Server\Client;
 
 class AuthHandler extends MessageHandler
 {
-    public function handle(MessageInterface $message)
+    public function handle(SpikeInterface $message)
     {
         $client = new Client($message->getBody(), $this->connection);
         $this->server->addClient($client);

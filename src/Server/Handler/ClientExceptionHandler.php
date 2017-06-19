@@ -8,7 +8,7 @@ namespace Spike\Server\Handler;
 use GuzzleHttp\Psr7;
 use Spike\Client\Exception\UnsupportedHostException;
 use Spike\Exception\RuntimeException;
-use Spike\Protocol\MessageInterface;
+use Spike\Protocol\SpikeInterface;
 use Spike\Server\EventStore;
 use Slince\Event\Event;
 use Spike\Server;
@@ -18,7 +18,7 @@ class ClientExceptionHandler extends MessageHandler
     /**
      * {@inheritdoc}
      */
-    public function handle(MessageInterface $message)
+    public function handle(SpikeInterface $message)
     {
         $clientException  = $message->getException();
         if ($clientException instanceof UnsupportedHostException) {

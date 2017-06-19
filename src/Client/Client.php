@@ -89,6 +89,7 @@ class Client
     }
 
     /**
+     * Creates array of tunnels
      * @param array $data
      * @return TunnelInterface[]
      */
@@ -117,7 +118,11 @@ class Client
         $this->loop->run();
     }
 
-    public function handleControlConnection(ConnectionInterface $connection)
+    /**
+     * Handles the control connection
+     * @param ConnectionInterface $connection
+     */
+    protected function handleControlConnection(ConnectionInterface $connection)
     {
         $parser = new SpikeParser();
         $connection->on('data', function($data) use($parser, $connection){
@@ -134,6 +139,10 @@ class Client
         });
     }
 
+    /**
+     * Request for auth
+     * @param ConnectionInterface $connection
+     */
     protected function requestAuth(ConnectionInterface $connection)
     {
         $authInfo = [
@@ -146,6 +155,7 @@ class Client
     }
 
     /**
+     * Sets the client id
      * @param string $id
      */
     public function setClientId($id)
@@ -155,6 +165,7 @@ class Client
     }
 
     /**
+     * Gets all tunnels
      * @return TunnelInterface[]
      */
     public function getTunnels()
@@ -163,6 +174,7 @@ class Client
     }
 
     /**
+     * Gets the dispatcher
      * @return Dispatcher
      */
     public function getDispatcher()

@@ -9,22 +9,31 @@ use React\Socket\ConnectionInterface;
 
 class Client
 {
+    /**
+     * id
+     * @var string
+     */
     protected $id;
 
-    protected $clientInfo;
+    /**
+     * Client information
+     * @var array
+     */
+    protected $info;
 
     /**
      * @var ConnectionInterface
      */
     protected $controlConnection;
 
-    public function __construct($clientInfo, ConnectionInterface $controlConnection)
+    public function __construct($info, ConnectionInterface $controlConnection)
     {
-        $this->clientInfo = $clientInfo;
+        $this->info = $info;
         $this->controlConnection = $controlConnection;
     }
 
     /**
+     * Sets the control connection for the client
      * @param ConnectionInterface $controlConnection
      */
     public function setControlConnection($controlConnection)
@@ -33,6 +42,8 @@ class Client
     }
 
     /**
+     *
+     * Gets the control connection of the client
      * @return ConnectionInterface
      */
     public function getControlConnection()
@@ -40,22 +51,31 @@ class Client
         return $this->controlConnection;
     }
 
+    /**
+     * Gets the client id
+     * @return string
+     */
     public function getId()
     {
         return $this->id ?: ($this->id = spl_object_hash($this));
     }
 
     /**
-     * @return mixed
+     * Gets the client information
+     * @return array
      */
-    public function getClientInfo()
+    public function getInfo()
     {
-        return $this->clientInfo;
+        return $this->info;
     }
 
+    /**
+     * Gets the client information
+     * @return array
+     */
     public function toArray()
     {
-        return array_replace($this->getClientInfo(), [
+        return array_replace($this->getInfo(), [
             'id' => $this->getId()
         ]);
     }

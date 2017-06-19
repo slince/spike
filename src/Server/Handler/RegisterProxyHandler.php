@@ -6,13 +6,13 @@
 namespace Spike\Server\Handler;
 
 use Spike\Exception\BadRequestException;
-use Spike\Protocol\MessageInterface;
+use Spike\Protocol\SpikeInterface;
 use Spike\Protocol\Spike;
 use Spike\Server\TunnelServer\TunnelServerInterface;
 
 class RegisterProxyHandler extends MessageHandler
 {
-    public function handle(MessageInterface $message)
+    public function handle(SpikeInterface $message)
     {
         $tunnelServer = $this->findTunnelServer($message->getBody());
         $this->connection->removeAllListeners();

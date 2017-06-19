@@ -6,13 +6,13 @@
 namespace Spike\Client\Handler;
 
 use Psr\Http\Message\RequestInterface;
-use Spike\Protocol\MessageInterface;
+use Spike\Protocol\SpikeInterface;
 
 interface HandlerInterface
 {
     /**
      * Handling the message
-     * @param MessageInterface|RequestInterface $message
+     * @param SpikeInterface $message
      */
-    public function handle(MessageInterface $message);
+    public function handle(SpikeInterface $message);
 }

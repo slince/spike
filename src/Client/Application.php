@@ -6,21 +6,25 @@
 namespace Spike\Client;
 
 use Spike\Application as BaseApplication;
-use Slince\Event\Event;
 use Slince\Event\SubscriberInterface;
 use Spike\Client\Command\ShowProxyHostsCommand;
 use Spike\Client\Subscriber\LoggerSubscriber;
 use Spike\Configuration;
 use Spike\Logger\Logger;
-use Spike\Server\EventStore;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class Application extends BaseApplication implements SubscriberInterface
 {
+    /**
+     * @var string
+     */
     const NAME = 'spike-client';
 
+    /**
+     * @var string
+     */
     const VERSION = '1.0.0.dev';
 
     /**

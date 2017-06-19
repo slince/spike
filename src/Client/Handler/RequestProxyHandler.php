@@ -6,11 +6,11 @@
 namespace Spike\Client\Handler;
 
 use Spike\Tunnel\HttpTunnel;
-use Spike\Protocol\MessageInterface;
+use Spike\Protocol\SpikeInterface;
 
 class RequestProxyHandler extends MessageHandler
 {
-    public function handle(MessageInterface $message)
+    public function handle(SpikeInterface $message)
     {
         $tunnelInfo = $message->getBody();
         $tunnel = $this->client->findTunnel($tunnelInfo);

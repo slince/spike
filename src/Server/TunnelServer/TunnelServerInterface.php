@@ -34,14 +34,4 @@ interface TunnelServerInterface
      * Run the server
      */
     public function run();
-
-    /**
-     * Pause the server
-     */
-    public function pause();
-
-    /**
-     * Resumes the server
-     */
-    public function resume();
 }

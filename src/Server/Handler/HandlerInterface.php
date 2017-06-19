@@ -5,13 +5,13 @@
  */
 namespace Spike\Server\Handler;
 
-use Spike\Protocol\MessageInterface;
+use Spike\Protocol\SpikeInterface;
 
 interface HandlerInterface
 {
     /**
      * Handling the message
-     * @param MessageInterface $message
+     * @param SpikeInterface $message
      */
-    public function handle(MessageInterface $message);
+    public function handle(SpikeInterface $message);
 }

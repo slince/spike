@@ -5,13 +5,13 @@
  */
 namespace Spike\Server\Handler;
 
-use Spike\Protocol\MessageInterface;
+use Spike\Protocol\SpikeInterface;
 use Spike\Protocol\Spike;
 use Spike\Tunnel\TunnelFactory;
 
 class RegisterTunnelHandler extends MessageHandler
 {
-    public function handle(MessageInterface $message)
+    public function handle(SpikeInterface $message)
     {
         $tunnel = TunnelFactory::fromArray($message->getBody());
         try {

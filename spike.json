@@ -5,7 +5,7 @@
             "protocol": "http",
             "serverPort": "8049",
             "proxyHosts": {
-                "www.lazy.com": " 127.0.0.1:6666",
+                "www.lazy.com": "www.baidu.com",
                 "www.spike.com": "127.0.0.1:6666"
             }
         },

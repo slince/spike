@@ -8,11 +8,11 @@ namespace Spike\Client\Handler;
 use Slince\Event\Event;
 use Spike\Client\EventStore;
 use Spike\Client\Tunnel\TunnelFactory;
-use Spike\Protocol\MessageInterface;
+use Spike\Protocol\SpikeInterface;
 
 class RegisterTunnelResponseHandler extends MessageHandler
 {
-    public function handle(MessageInterface $message)
+    public function handle(SpikeInterface $message)
     {
         $response = $message->getBody();
         $tunnel = $this->client->findTunnel($response);

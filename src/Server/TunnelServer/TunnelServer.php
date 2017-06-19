@@ -10,9 +10,10 @@ use React\Socket\ConnectionInterface;
 use React\Socket\Server as Socket;
 use Spike\Exception\InvalidArgumentException;
 use Spike\Protocol\Spike;
+use Spike\Server\Server;
 use Spike\Tunnel\TunnelInterface;
 
-abstract class TunnelServer implements TunnelServerInterface
+class TunnelServer implements TunnelServerInterface
 {
     /**
      * @var ConnectionInterface
@@ -43,12 +44,18 @@ abstract class TunnelServer implements TunnelServerInterface
      */
     protected $tunnel;
 
-    public function __construct(ConnectionInterface $controlConnection, TunnelInterface $tunnel, $address, LoopInterface $loop)
+    /**
+     * @var Server
+     */
+    protected $server;
+
+    public function __construct(Server $server, ConnectionInterface $controlConnection, TunnelInterface $tunnel, LoopInterface $loop)
     {
+        $this->server = $server;
         $this->controlConnection = $controlConnection;
         $this->tunnel = $tunnel;
         $this->loop = $loop;
-        $this->socket = new Socket($address, $loop);
+        $this->socket = new Socket($this->getListenAddress(), $loop);
     }
 
     /**
@@ -72,7 +79,6 @@ abstract class TunnelServer implements TunnelServerInterface
         $this->controlConnection->write(new Spike('request_proxy', $this->tunnel->toArray(), [
             'Proxy-Connection-ID' => $proxyConnection->getId()
         ]));
-        echo 'request_proxy';
         $proxyConnection->getConnection()->removeAllListeners();
         $proxyConnection->pause();
     }
@@ -116,6 +122,15 @@ abstract class TunnelServer implements TunnelServerInterface
     }
 
     /**
+     * Gets the server address to bind
+     * @return string
+     */
+    protected function getListenAddress()
+    {
+        return "{$this->server->getHost()}:{$this->tunnel->getServerPort()}";
+    }
+
+    /**
      *
      * {@inheritdoc}
      */
@@ -130,21 +145,5 @@ abstract class TunnelServer implements TunnelServerInterface
     public function getTunnel()
     {
         return $this->tunnel;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function pause()
-    {
-        $this->socket->pause();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function resume()
-    {
-        $this->socket->resume();
     }
 }
