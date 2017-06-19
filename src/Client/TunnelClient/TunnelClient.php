@@ -61,11 +61,6 @@ abstract class TunnelClient implements TunnelClientInterface
                 $connection->removeAllListeners('data');
                 $message = Spike::fromString($protocol);
                 if ($message->getAction() == 'start_proxy') {
-//                    $tunnelInfo = $message->getBody();
-//                    $tunnel = $this->findTunnel($tunnelInfo);
-//                    if ($tunnel ===  false) {
-//                        throw new InvalidArgumentException("Can not find the matching tunnel");
-//                    }
                     $this->tunnel->pushBuffer($parser->getRestData());
                     if ($this->tunnel instanceof HttpTunnel) {
                         $localAddress = $this->tunnel->getLocalHost($this->tunnel->getProxyHost());

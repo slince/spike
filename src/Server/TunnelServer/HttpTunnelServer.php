@@ -7,7 +7,6 @@ namespace Spike\Server\TunnelServer;
 
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7;
-use React\Socket\ConnectionInterface;
 use Spike\Parser\HttpHeaderParser;
 
 class HttpTunnelServer extends TunnelServer

@@ -13,5 +13,6 @@ class TcpTunnelClient extends TunnelClient
     {
         $localConnection->write($this->tunnel->getBuffer());
         $this->tunnel->pipe($localConnection);
+        $localConnection->pipe();
     }
 }
