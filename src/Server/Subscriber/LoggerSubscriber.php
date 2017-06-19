@@ -7,8 +7,8 @@ namespace Spike\Server\Subscriber;
 
 use Slince\Event\Event;
 use Spike\Logger\Logger;
-use Spike\Server;
 use Spike\Server\EventStore;
+use Spike\Server\Application;
 
 class LoggerSubscriber extends Subscriber
 {
@@ -17,7 +17,7 @@ class LoggerSubscriber extends Subscriber
      */
     protected $logger;
 
-    public function __construct(Server $server)
+    public function __construct(Application $server)
     {
         parent::__construct($server);
         $this->logger = $server->getLogger();

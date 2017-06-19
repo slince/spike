@@ -3,35 +3,47 @@
  * Spike library
  * @author Tao <taosikai@yeah.net>
  */
-namespace Spike;
+namespace Spike\Client;
 
-use GuzzleHttp\Psr7\Response;
-use GuzzleHttp\Psr7;
+use Spike\Application as BaseApplication;
 use Slince\Event\Event;
 use Slince\Event\SubscriberInterface;
-use Spike\Server\EventStore;
-use Spike\Server\Exception\MissingProxyClientException;
-use Spike\Server\Subscriber\LoggerSubscriber;
+use Spike\Client\Command\ShowProxyHostsCommand;
+use Spike\Client\Subscriber\LoggerSubscriber;
+use Spike\Configuration;
 use Spike\Logger\Logger;
+use Spike\Server\EventStore;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class Server extends Application implements SubscriberInterface
+class Application extends BaseApplication implements SubscriberInterface
 {
-    const NAME = 'spike-server';
+    const NAME = 'spike-client';
 
     const VERSION = '1.0.0.dev';
 
     /**
-     * @var Server\Server
+     * The client instance
+     * @var Client
      */
-    protected $server;
+    protected $client;
+
+    /**
+     * The server address
+     * @var string
+     */
+    protected $serverAddress;
 
     public function __construct(Configuration $configuration)
     {
         parent::__construct($configuration,static::NAME, static::VERSION);
-        $this->server = new Server\Server($this->configuration->getAddress(), null, $this->dispatcher);
+        $this->client = new Client(
+            $this->configuration->getServerAddress(),
+            $this->configuration->getTunnels(),
+            null,
+            $this->dispatcher
+        );
     }
 
     public function doRun(InputInterface $input, OutputInterface $output)
@@ -53,6 +65,13 @@ class Server extends Application implements SubscriberInterface
         return $exitCode;
     }
 
+    public function getEvents()
+    {
+        return [
+//            EventStore::CONNECTION_ERROR => 'onConnectionError'
+        ];
+    }
+
     /**
      * Start the server
      */
@@ -61,24 +80,14 @@ class Server extends Application implements SubscriberInterface
         foreach ($this->getSubscribers() as $subscriber) {
             $this->dispatcher->addSubscriber($subscriber);
         }
-        $this->server->run();
+        $this->client->run();
     }
 
-    public function getEvents()
+    public function getDefaultCommands()
     {
-        return [
-            EventStore::CONNECTION_ERROR => 'onConnectionError'
-        ];
-    }
-
-    public function onConnectionError(Event $event)
-    {
-        $exception = $event->getArgument('exception');
-        $connection = $event->getArgument('connection');
-        if ($exception instanceof MissingProxyClientException) {
-            $response = $this->createErrorResponse();
-            $connection->write(Psr7\str($response));
-        }
+        return array_merge(parent::getDefaultCommands(), [
+            new ShowProxyHostsCommand($this),
+        ]);
     }
 
     /**
@@ -98,17 +107,9 @@ class Server extends Application implements SubscriberInterface
         $definition = parent::getDefaultInputDefinition();
         $definition->addOption(new InputOption('config', null, InputOption::VALUE_OPTIONAL,
             'The configuration file, support json,ini,xml and yaml format'));
+
         $definition->addOption(new InputOption('address', null, InputOption::VALUE_OPTIONAL,
-            'The ip address that bind to'));
+            'The server address'));
         return $definition;
-    }
-
-
-    protected function createErrorResponse($status = 500, $body = '')
-    {
-        $body = $body ?: 'Did not find the proxy client, or the proxy client did not respond';
-        return new Response($status, [
-            'Content-Length' => strlen($body),
-        ], $body);
     }
 }

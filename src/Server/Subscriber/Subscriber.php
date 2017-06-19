@@ -6,22 +6,22 @@
 namespace Spike\Server\Subscriber;
 
 use Slince\Event\SubscriberInterface;
-use Spike\Server;
+use Spike\Server\Application;
 
 abstract class Subscriber implements SubscriberInterface
 {
     /**
-     * @var Server
+     * @var Application
      */
     protected $server;
 
-    public function __construct(Server $server)
+    public function __construct(Application $server)
     {
         $this->server = $server;
     }
 
     /**
-     * @return Server
+     * @return Application
      */
     public function getServer()
     {

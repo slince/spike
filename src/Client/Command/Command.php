@@ -5,24 +5,24 @@
  */
 namespace Spike\Client\Command;
 
-use Spike\Client;
+use Spike\Client\Application;
 use Symfony\Component\Console\Command\Command as BaseCommand;
 
 class Command extends BaseCommand
 {
     /**
-     * @var Client
+     * @var Application
      */
     protected $client;
 
-    public function __construct(Client $client)
+    public function __construct(Application $client)
     {
         $this->client = $client;
         parent::__construct(null);
     }
 
     /**
-     * @return Client
+     * @return Application
      */
     public function getClient()
     {

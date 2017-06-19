@@ -6,7 +6,7 @@
 namespace Spike\Client\Subscriber;
 
 use Slince\Event\Event;
-use Spike\Client;
+use Spike\Client\Application;
 use Spike\Client\EventStore;
 use Spike\Logger\Logger;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -18,7 +18,7 @@ class LoggerSubscriber extends Subscriber
      */
     protected $logger;
 
-    public function __construct(Client $client)
+    public function __construct(Application $client)
     {
         parent::__construct($client);
         $this->logger =  $client->getLogger();

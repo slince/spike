@@ -1,6 +1,6 @@
 #!/usr/bin/env php
 <?php
-use Spike\Server;
+use Spike\Server\Application;
 use Spike\Configuration;
 use Symfony\Component\Console\Input\ArgvInput;
 
@@ -25,4 +25,4 @@ if (true === $input->hasParameterOption(['--address'], true)) {
 }
 
 date_default_timezone_set($configuration->getTimezone());
-(new Server($configuration))->run($input);
+(new Application($configuration))->run($input);
