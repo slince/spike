@@ -110,7 +110,6 @@ class Client
                 'connection' => $connection
             ]));
             $this->controlConnection = $connection;
-            $this->setControlConnectionForTunnels($connection);
             $this->requestAuth($connection);
             $this->handleControlConnection($connection);
         });
@@ -125,7 +124,6 @@ class Client
             $parser->pushIncoming($data);
             $messages = $parser->parse();
             foreach ($messages as $message) {
-                echo $message, PHP_EOL;
                 $message = Spike::fromString($message);
                 $this->dispatcher->dispatch(new Event(EventStore::RECEIVE_MESSAGE, $this, [
                     'message' => $message,
@@ -145,13 +143,6 @@ class Client
             'version' => '',
         ];
         $connection->write(new Spike('auth', $authInfo));
-    }
-
-    protected function setControlConnectionForTunnels(ConnectionInterface $connection)
-    {
-        foreach ($this->tunnels as $tunnel) {
-            $tunnel->setControlConnection($connection);
-        }
     }
 
     /**

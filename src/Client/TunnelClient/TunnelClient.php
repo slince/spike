@@ -82,9 +82,9 @@ abstract class TunnelClient implements TunnelClientInterface
                 $connection->removeAllListeners('data');
                 $message = Spike::fromString($protocol);
                 if ($message->getAction() == 'start_proxy') {
-                    $this->initBuffer = $parser->getRestData()
+                    $this->initBuffer = $parser->getRestData();
                     if ($this->tunnel instanceof HttpTunnel) {
-                        $localAddress = $this->tunnel->getLocalHost($this->tunnel->getProxyHost());
+                        $localAddress = $this->tunnel->getForwardHost($this->tunnel->getProxyHost());
                     }  else {
                         $localAddress = $this->tunnel->getHost();
                     }

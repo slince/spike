@@ -38,7 +38,7 @@ class HttpTunnel extends Tunnel
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getProxyHost()
     {
@@ -47,12 +47,23 @@ class HttpTunnel extends Tunnel
 
     /**
      * Checks whether the tunnel supports the host
-     * @param string $host
+     * @param string $proxyHost
      * @return bool
      */
-    public function supportProxyHost($host)
+    public function supportProxyHost($proxyHost)
     {
-        return isset($this->proxyHosts[$host]);
+        return isset($this->proxyHosts[$proxyHost]);
+    }
+
+    /**
+     * Gets the forward host of the proxy host
+     * @param string $proxyHost
+     * @return string|null
+     */
+    public function getForwardHost($proxyHost)
+    {
+        return isset($this->proxyHosts[$proxyHost]) ?
+            $this->proxyHosts[$proxyHost] : null;
     }
 
     /**
