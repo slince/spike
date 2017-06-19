@@ -5,9 +5,7 @@
  */
 namespace Spike\Client\Handler;
 
-use Spike\Client\ProxyContext;
-use Spike\Client\Tunnel\HttpTunnel;
-use Spike\Exception\InvalidArgumentException;
+use Spike\Tunnel\HttpTunnel;
 use Spike\Protocol\MessageInterface;
 
 class RequestProxyHandler extends MessageHandler

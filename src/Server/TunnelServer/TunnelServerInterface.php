@@ -6,7 +6,7 @@
 namespace Spike\Server\TunnelServer;
 
 use React\Socket\ConnectionInterface;
-use Spike\Server\Tunnel\TunnelInterface;
+use Spike\Tunnel\TunnelInterface;
 
 interface TunnelServerInterface
 {

@@ -120,9 +120,9 @@ class Server
     public function createTunnelServer(TunnelInterface $tunnel)
     {
         if ($tunnel instanceof HttpTunnel) {
-            $tunnelServer = new TunnelServer\HttpTunnelServer($tunnel, "{$this->host}:{$tunnel->getPort()}", $this->loop);
+            $tunnelServer = new TunnelServer\HttpTunnelServer($tunnel, "{$this->host}:{$tunnel->getServerPort()}", $this->loop);
         } else {
-            $tunnelServer = new TunnelServer\TcpTunnelServer($tunnel, "{$this->host}:{$tunnel->getPort()}", $this->loop);
+            $tunnelServer = new TunnelServer\TcpTunnelServer($tunnel, "{$this->host}:{$tunnel->getServerPort()}", $this->loop);
         }
         $this->tunnelServers[] = $tunnelServer;
         $tunnelServer->run();

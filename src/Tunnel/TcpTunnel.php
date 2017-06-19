@@ -35,6 +35,7 @@ class TcpTunnel extends Tunnel
     public function toArray()
     {
         return [
+            'protocol' => 'tcp',
             'host' => $this->host,
             'serverPort' => $this->serverPort
         ];

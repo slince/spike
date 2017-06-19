@@ -12,7 +12,7 @@ use Spike\Tunnel\TunnelInterface;
 
 abstract class TunnelServer implements TunnelServerInterface
 {
-    protected $address;
+    protected $serverAddress;
 
     protected $loop;
 
@@ -26,9 +26,9 @@ abstract class TunnelServer implements TunnelServerInterface
     public function __construct(TunnelInterface $tunnel, $address, LoopInterface $loop)
     {
         $this->tunnel = $tunnel;
-        $this->address = $address;
+        $this->serverAddress = $address;
         $this->loop = $loop;
-        $this->socket = new Socket($this->address, $loop);
+        $this->socket = new Socket($this->serverAddress, $loop);
         $this->socket->on('connection', function(ConnectionInterface $proxyConnection){
             $this->handleProxyConnection($proxyConnection);
         });
@@ -64,5 +64,13 @@ abstract class TunnelServer implements TunnelServerInterface
     public function run()
     {
         $this->resume();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getServerAddress()
+    {
+        return $this->serverAddress;
     }
 }
