@@ -16,10 +16,7 @@ class RegisterProxyHandler extends MessageHandler
     {
         $tunnelServer = $this->findTunnelServer($message->getBody());
         $this->connection->removeAllListeners();
-        $tunnelServer->getTunnel()->setConnection($this->connection);
-        $this->connection->write(new Spike('start_proxy', $tunnelServer->getTunnel()->toArray()));
-        $tunnelServer->getTunnel()->getProxyConnection()->resume();
-        $tunnelServer->getTunnel()->getConnection()->write($tunnelServer->getTunnel()->getData());
+        $tunnelServer->registerTunnelConnection($this->connection, $message);
     }
 
     /**

@@ -215,11 +215,12 @@ class Client
     /**
      * Creates a tunnel client to process proxy connection
      * @param TunnelInterface $tunnel
+     * @param string $proxyConnectionId
      * @return TunnelClientInterface
      */
-    public function createTunnelClient(TunnelInterface $tunnel)
+    public function createTunnelClient(TunnelInterface $tunnel, $proxyConnectionId)
     {
-        $tunnelClient = new TcpTunnelClient($tunnel, $this->serverAddress, $this->loop);
+        $tunnelClient = new TcpTunnelClient($tunnel, $proxyConnectionId, $this->serverAddress, $this->loop);
         $this->tunnelClients[] = $tunnelClient;
         return $tunnelClient;
     }

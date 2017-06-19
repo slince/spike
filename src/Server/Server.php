@@ -83,7 +83,7 @@ class Server
             $this->dispatcher->dispatch(new Event(EventStore::ACCEPT_CONNECTION, $this, [
                 'connection' => $connection
             ]));
-            $this->handleConnection($connection);
+            $this->handleControlConnection($connection);
         });
         $this->socket->on('error', function($exception){
             $this->dispatcher->dispatch(new Event(EventStore::SOCKET_ERROR, $this, [
@@ -95,7 +95,11 @@ class Server
         $this->loop->run();
     }
 
-    protected function handleConnection(ConnectionInterface $connection)
+    /**
+     * Handles control connection
+     * @param ConnectionInterface $connection
+     */
+    protected function handleControlConnection(ConnectionInterface $connection)
     {
         $parser = new SpikeParser();
         $connection->on('data', function($data) use($parser, $connection){
@@ -116,16 +120,17 @@ class Server
     /**
      * Creates a tunnel server for the tunnel
      * @param TunnelInterface $tunnel
+     * @param ConnectionInterface $controlConnection
      */
-    public function createTunnelServer(TunnelInterface $tunnel)
+    public function createTunnelServer(TunnelInterface $tunnel, ConnectionInterface $controlConnection)
     {
         if ($tunnel instanceof HttpTunnel) {
-            $tunnelServer = new TunnelServer\HttpTunnelServer($tunnel, "{$this->host}:{$tunnel->getServerPort()}", $this->loop);
+            $tunnelServer = new TunnelServer\HttpTunnelServer($controlConnection, $tunnel, "{$this->host}:{$tunnel->getServerPort()}", $this->loop);
         } else {
-            $tunnelServer = new TunnelServer\TcpTunnelServer($tunnel, "{$this->host}:{$tunnel->getServerPort()}", $this->loop);
+            $tunnelServer = new TunnelServer\TcpTunnelServer($controlConnection, $tunnel, "{$this->host}:{$tunnel->getServerPort()}", $this->loop);
         }
-        $this->tunnelServers[] = $tunnelServer;
         $tunnelServer->run();
+        $this->tunnelServers[] = $tunnelServer;
     }
 
     /**

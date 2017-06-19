@@ -17,6 +17,8 @@ abstract class TunnelClient implements TunnelClientInterface
 {
     protected $tunnel;
 
+    protected $proxyConnectionId;
+
     protected $loop;
 
     protected $serverAddress;
@@ -28,9 +30,10 @@ abstract class TunnelClient implements TunnelClientInterface
      */
     protected $serverConnector;
 
-    public function __construct(TunnelInterface $tunnel, $serverAddress, LoopInterface $loop)
+    public function __construct(TunnelInterface $tunnel, $proxyConnectionId, $serverAddress, LoopInterface $loop)
     {
         $this->tunnel = $tunnel;
+        $this->proxyConnectionId = $proxyConnectionId;
         $this->serverAddress = $serverAddress;
         $this->loop = $loop;
     }
@@ -45,7 +48,9 @@ abstract class TunnelClient implements TunnelClientInterface
     public function handleServerConnection(ConnectionInterface $connection)
     {
         $this->tunnel->setConnection($connection); //sets tunnel connection for the tunnel
-        $connection->write(new Spike('register_proxy', $this->tunnel->toArray()));
+        $connection->write(new Spike('register_proxy', $this->tunnel->toArray(), [
+            'Proxy-Connection-ID' => $this->proxyConnectionId
+        ]));
 
         $parser = new SpikeParser();
         $connection->on('data', function($data) use($parser, $connection){

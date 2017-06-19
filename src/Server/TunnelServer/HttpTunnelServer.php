@@ -9,7 +9,6 @@ use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7;
 use React\Socket\ConnectionInterface;
 use Spike\Parser\HttpHeaderParser;
-use Spike\Protocol\Spike;
 
 class HttpTunnelServer extends TunnelServer
 {
