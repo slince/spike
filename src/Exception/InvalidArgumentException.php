@@ -5,7 +5,7 @@
  */
 namespace Spike\Exception;
 
-class InvalidArgumentException extends \InvalidArgumentException
+class InvalidArgumentException extends RuntimeException
 {
 
 }

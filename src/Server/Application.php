@@ -74,18 +74,7 @@ class Application extends BaseApplication implements SubscriberInterface
     public function getEvents()
     {
         return [
-            EventStore::CONNECTION_ERROR => 'onConnectionError'
         ];
-    }
-
-    public function onConnectionError(Event $event)
-    {
-        $exception = $event->getArgument('exception');
-        $connection = $event->getArgument('connection');
-        if ($exception instanceof MissingProxyClientException) {
-            $response = $this->createErrorResponse();
-            $connection->write(Psr7\str($response));
-        }
     }
 
     /**

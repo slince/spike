@@ -12,6 +12,7 @@ use React\Socket\Server as Socket;
 use Slince\Event\Dispatcher;
 use Slince\Event\Event;
 use Spike\Exception\InvalidArgumentException;
+use Spike\Exception\RuntimeException;
 use Spike\Parser\SpikeParser;
 use Spike\Protocol\Spike;
 use Spike\Protocol\SpikeInterface;
@@ -54,11 +55,6 @@ class Server
      * @var TunnelServerInterface[]
      */
     protected $tunnelServers = [];
-
-    /**
-     * @var ConnectionInterface
-     */
-    protected $controlConnections = [];
 
     /**
      * @var Client[]
@@ -104,16 +100,27 @@ class Server
         $parser = new SpikeParser();
         $connection->on('data', function($data) use($parser, $connection){
             $parser->pushIncoming($data);
-            $messages = $parser->parse();
-            foreach ($messages as $message) {
-                echo $message, PHP_EOL,PHP_EOL;
-                $message = Spike::fromString($message);
-                $this->dispatcher->dispatch(new Event(EventStore::RECEIVE_MESSAGE, $this, [
-                    'message' => $message,
-                    'connection' => $connection
+            try {
+                $messages = $parser->parse();
+                foreach ($messages as $message) {
+                    echo $message, PHP_EOL, PHP_EOL;
+                    $message = Spike::fromString($message);
+                    $this->dispatcher->dispatch(new Event(EventStore::RECEIVE_MESSAGE, $this, [
+                        'message' => $message,
+                        'connection' => $connection
+                    ]));
+                    $this->createMessageHandler($message, $connection)->handle($message);
+                }
+            } catch (RuntimeException $exception) {
+                $this->dispatcher->dispatch(new Event(EventStore::CONNECTION_ERROR, $this, [
+                    'connection' => $connection,
+                    'exception' => $exception
                 ]));
-                $this->createMessageHandler($message, $connection)->handle($message);
+                $connection->end('Bad message');
             }
+        });
+        $connection->on('end', function(){
+            echo 'client close';
         });
     }
 
