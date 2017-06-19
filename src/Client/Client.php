@@ -221,6 +221,7 @@ class Client
     public function createTunnelClient(TunnelInterface $tunnel, $proxyConnectionId)
     {
         $tunnelClient = new TcpTunnelClient($tunnel, $proxyConnectionId, $this->serverAddress, $this->loop);
+        $tunnelClient->run();
         $this->tunnelClients[] = $tunnelClient;
         return $tunnelClient;
     }

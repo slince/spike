@@ -72,6 +72,7 @@ abstract class TunnelServer implements TunnelServerInterface
         $this->controlConnection->write(new Spike('request_proxy', $this->tunnel->toArray(), [
             'Proxy-Connection-ID' => $proxyConnection->getId()
         ]));
+        echo 'request_proxy';
         $proxyConnection->getConnection()->removeAllListeners();
         $proxyConnection->pause();
     }

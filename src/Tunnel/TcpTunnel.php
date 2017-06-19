@@ -5,8 +5,6 @@
  */
 namespace Spike\Tunnel;
 
-use React\Socket\ConnectionInterface;
-
 class TcpTunnel extends Tunnel
 {
     /**
@@ -14,10 +12,10 @@ class TcpTunnel extends Tunnel
      */
     protected $host;
 
-    public function __construct($serverPort, $host, ConnectionInterface $controlConnection = null)
+    public function __construct($serverPort, $host)
     {
         $this->host = $host;
-        parent::__construct($serverPort, $controlConnection);
+        parent::__construct($serverPort);
     }
 
     /**

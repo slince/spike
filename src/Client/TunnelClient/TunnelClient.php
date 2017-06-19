@@ -15,20 +15,41 @@ use Spike\Protocol\Spike;
 
 abstract class TunnelClient implements TunnelClientInterface
 {
+    /**
+     * @var TunnelInterface
+     */
     protected $tunnel;
 
-    protected $proxyConnectionId;
-
+    /**
+     * @var LoopInterface
+     */
     protected $loop;
 
+    /**
+     * @var string
+     */
     protected $serverAddress;
-
-    protected $localConnector;
 
     /**
      * @var Connector
      */
     protected $serverConnector;
+
+    /**
+     * The tunnel connection
+     * @var ConnectionInterface
+     */
+    protected $tunnelConnection;
+
+    /**
+     * @var string
+     */
+    protected $proxyConnectionId;
+
+    /**
+     * @var string
+     */
+    protected $initBuffer;
 
     public function __construct(TunnelInterface $tunnel, $proxyConnectionId, $serverAddress, LoopInterface $loop)
     {
@@ -40,14 +61,14 @@ abstract class TunnelClient implements TunnelClientInterface
 
     public function run()
     {
-        $this->serverConnector = new Connector($this->loop);
-        $this->serverConnector->connect($this->serverAddress)
+        $serverConnector = new Connector($this->loop);
+        $serverConnector->connect($this->serverAddress)
             ->then([$this, 'handleServerConnection']);
     }
 
     public function handleServerConnection(ConnectionInterface $connection)
     {
-        $this->tunnel->setConnection($connection); //sets tunnel connection for the tunnel
+        $this->tunnelConnection = $connection;
         $connection->write(new Spike('register_proxy', $this->tunnel->toArray(), [
             'Proxy-Connection-ID' => $this->proxyConnectionId
         ]));
@@ -61,7 +82,7 @@ abstract class TunnelClient implements TunnelClientInterface
                 $connection->removeAllListeners('data');
                 $message = Spike::fromString($protocol);
                 if ($message->getAction() == 'start_proxy') {
-                    $this->tunnel->pushBuffer($parser->getRestData());
+                    $this->initBuffer = $parser->getRestData()
                     if ($this->tunnel instanceof HttpTunnel) {
                         $localAddress = $this->tunnel->getLocalHost($this->tunnel->getProxyHost());
                     }  else {
@@ -75,8 +96,8 @@ abstract class TunnelClient implements TunnelClientInterface
 
     protected function createLocalConnector($address)
     {
-        $this->localConnector = new Connector($this->loop);
-        $this->localConnector->connect($address)->then([$this, 'handleLocalConnection']);
+        $localConnector = new Connector($this->loop);
+        $localConnector->connect($address)->then([$this, 'handleLocalConnection']);
     }
 
     /**
