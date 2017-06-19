@@ -5,7 +5,6 @@
  */
 namespace Spike\Server\TunnelServer;
 
-use React\Socket\ConnectionInterface;
 use Spike\Protocol\Spike;
 
 class TcpTunnelServer extends TunnelServer

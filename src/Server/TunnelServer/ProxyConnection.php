@@ -49,6 +49,14 @@ class ProxyConnection
     }
 
     /**
+     * @param string $initBuffer
+     */
+    public function setInitBuffer($initBuffer)
+    {
+        $this->initBuffer = $initBuffer;
+    }
+
+    /**
      * @return string
      */
     public function getInitBuffer()

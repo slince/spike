@@ -12,10 +12,10 @@ use Spike\Parser\HttpHeaderParser;
 
 class HttpTunnelServer extends TunnelServer
 {
-    public function handleProxyConnection(ConnectionInterface $proxyConnection)
+    public function handleProxyConnection(ProxyConnection $proxyConnection)
     {
         $parser = new HttpHeaderParser();
-        $proxyConnection->on('data', function($data) use ($parser, $proxyConnection){
+        $proxyConnection->getConnection()->on('data', function($data) use ($parser, $proxyConnection){
             $parser->pushIncoming($data);
             $message = $parser->parseFirst();
             echo $message;
@@ -25,12 +25,12 @@ class HttpTunnelServer extends TunnelServer
                 if ($this->tunnel->supportProxyHost($host)) {
                     $this->tunnel->setProxyHost($host);
                     $httpMessage = $message . $parser->getRestData();
-                    $this->tunnel->pushBuffer($httpMessage);
+                    $proxyConnection->setInitBuffer($httpMessage);
                     parent::handleProxyConnection($proxyConnection);
                 } else {
                     $body = sprintf('The host "%s" was not bound.', $host);
                     $response = $this->makeErrorResponse(404, $body);
-                    $proxyConnection->end(Psr7\str($response));
+                    $proxyConnection->getConnection()->end(Psr7\str($response));
                 }
             }
         });

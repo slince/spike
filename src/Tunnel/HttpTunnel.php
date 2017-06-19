@@ -54,7 +54,7 @@ class HttpTunnel extends Tunnel
      */
     public function supportProxyHost($host)
     {
-        return in_array($host, $this->proxyHosts);
+        return isset($this->proxyHosts[$host]);
     }
 
     /**

@@ -12,7 +12,7 @@ use Spike\Exception\InvalidArgumentException;
 use Spike\Protocol\Spike;
 use Spike\Tunnel\TunnelInterface;
 
-class TunnelServer implements TunnelServerInterface
+abstract class TunnelServer implements TunnelServerInterface
 {
     /**
      * @var ConnectionInterface
@@ -56,22 +56,24 @@ class TunnelServer implements TunnelServerInterface
      */
     public function run()
     {
-        $this->socket->on('connection', [$this, 'handleProxyConnection']);
+        $this->socket->on('connection', function($connection){
+            $proxyConnection = new ProxyConnection($connection);
+            $this->proxyConnections[] = $proxyConnection;
+            $this->handleProxyConnection($proxyConnection);
+        });
     }
 
     /**
      * Handles the proxy connection
-     * @param ConnectionInterface $connection
+     * @param ProxyConnection $proxyConnection
      */
-    public function handleProxyConnection(ConnectionInterface $connection)
+    public function handleProxyConnection(ProxyConnection $proxyConnection)
     {
-        $proxyConnection = new ProxyConnection($connection);
-        $this->proxyConnections[] = $proxyConnection;
         $this->controlConnection->write(new Spike('request_proxy', $this->tunnel->toArray(), [
             'Proxy-Connection-ID' => $proxyConnection->getId()
         ]));
-        $connection->removeAllListeners();
-        $connection->pause();
+        $proxyConnection->getConnection()->removeAllListeners();
+        $proxyConnection->pause();
     }
 
     /**
