@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 use Spike\Client\Application;
-use Spike\Configuration;
+use Spike\Client\Configuration;
 use Symfony\Component\Console\Input\ArgvInput;
 
 date_default_timezone_set('prc');
@@ -16,7 +16,7 @@ $input = new ArgvInput();
 if (true === $input->hasParameterOption(['--config'], true)) {
     $configFile = $input->getParameterOption('--config');
 } else {
-    $configFile = $configuration->getDefaultClientConfigFile();
+    $configFile = $configuration->getDefaultConfigFile();
 }
 file_exists($configFile) && $configuration->load($configFile);
 

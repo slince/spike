@@ -5,6 +5,7 @@
         "level": "info"
     },
     "auth": {
+        "type": "simple_password",
         "username": "spike",
         "password": "spike"
     }

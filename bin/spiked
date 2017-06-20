@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 use Spike\Server\Application;
-use Spike\Configuration;
+use Spike\Server\Configuration;
 use Symfony\Component\Console\Input\ArgvInput;
 
 foreach ([__DIR__ . '/../../../vendor/autoload.php'
@@ -15,7 +15,7 @@ $input = new ArgvInput();
 if (true === $input->hasParameterOption(['--config'], true)) {
     $configFile = $input->getParameterOption('--config');
 } else {
-    $configFile = $configuration->getDefaultServerConfigFile();
+    $configFile = $configuration->getDefaultConfigFile();
 }
 file_exists($configFile) && $configuration->load($configFile);
 
