@@ -12,11 +12,23 @@ use Spike\Protocol\Spike;
 
 class AuthResponseHandler extends MessageHandler
 {
+    /**
+     * {@inheritdoc}
+     */
     public function handle(SpikeInterface $message)
     {
-        $clientInfo = $message->getBody();
-        $this->client->setClientId($clientInfo['id']);
-        $this->transferTunnels();
+        if ($message->getHeader('Code') != 0) {
+            $this->getDispatcher()->dispatch(new Event(EventStore::AUTH_ERROR, $this->client, [
+                'message' => $message
+            ]));
+        } else {
+            $this->getDispatcher()->dispatch(new Event(EventStore::AUTH_ERROR, $this->client, [
+                'message' => $message
+            ]));
+            $clientInfo = $message->getBody();
+            $this->client->setClientId($clientInfo['id']);
+            $this->transferTunnels();
+        }
     }
 
     /**

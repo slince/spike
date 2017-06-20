@@ -13,8 +13,16 @@ class AuthHandler extends MessageHandler
 {
     public function handle(SpikeInterface $message)
     {
-        $client = new Client($message->getBody(), $this->connection);
-        $this->server->getClients()->add($client);
-        $this->connection->write(new Spike('auth_response', $client->toArray()));
+        $auth = $message->getBody();
+        if ($this->server->getAuthentication()->verify($auth)) {
+            $client = new Client($message->getBody(), $this->connection);
+            $this->server->getClients()->add($client);
+            $response = new Spike('auth_response', $client->toArray());
+        } else {
+            $response = new Spike('auth_response', $auth, [
+                'Code' =>  200
+            ]);
+        }
+        $this->connection->write($response);
     }
 }

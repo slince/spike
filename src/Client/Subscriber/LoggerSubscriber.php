@@ -29,12 +29,9 @@ class LoggerSubscriber extends Subscriber
     {
         return [
             EventStore::CLIENT_RUN => 'onClientRun',
-            EventStore::ACCEPT_CONNECTION => 'onAcceptConnection',
             EventStore::SOCKET_ERROR => 'onSocketError',
             EventStore::CONNECTION_ERROR => 'onConnectionError',
             EventStore::CONNECT_TO_SERVER => 'onConnectToServer',
-            EventStore::RECEIVE_PROXY_REQUEST => 'onReceiveProxyRequest',
-            EventStore::SEND_PROXY_RESPONSE => 'onSendProxyResponse',
         ];
     }
 
@@ -42,16 +39,6 @@ class LoggerSubscriber extends Subscriber
     public function onClientRun(Event $event)
     {
         $this->logger->info("The client is running ...");
-    }
-
-    public function onAcceptConnection(Event $event)
-    {
-        $this->logger->info("Accepted a new connection.");
-    }
-
-    public function onReceiveMessage(Event $event)
-    {
-        $this->logger->info("Received a message.");
     }
 
     public function onSocketError(Event $event)
@@ -67,15 +54,5 @@ class LoggerSubscriber extends Subscriber
     public function onConnectToServer(Event $event)
     {
         $this->logger->info("The client has connected to the server.");
-    }
-
-    public function onReceiveProxyRequest()
-    {
-        $this->logger->info("Receives a proxy request.");
-    }
-
-    public function onSendProxyResponse(Event $event)
-    {
-        $this->logger->info("Sends a proxy response.");
     }
 }

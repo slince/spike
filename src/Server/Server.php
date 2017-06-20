@@ -11,6 +11,7 @@ use React\Socket\ConnectionInterface;
 use React\Socket\Server as Socket;
 use Slince\Event\Dispatcher;
 use Slince\Event\Event;
+use Spike\Authentication\AuthenticationInterface;
 use Spike\Exception\InvalidArgumentException;
 use Spike\Exception\RuntimeException;
 use Spike\Parser\SpikeParser;
@@ -37,6 +38,12 @@ class Server
     protected $port;
 
     /**
+     * The auth information
+     * @var AuthenticationInterface
+     */
+    protected $authentication;
+
+    /**
      * @var LoopInterface
      */
     protected $loop;
@@ -61,9 +68,10 @@ class Server
      */
     protected $clients;
 
-    public function __construct($address, LoopInterface $loop = null, Dispatcher $dispatcher = null)
+    public function __construct($address, AuthenticationInterface $authentication, LoopInterface $loop = null, Dispatcher $dispatcher = null)
     {
         list($this->host, $this->port) = Utility::parseAddress($address);
+        $this->authentication = $authentication;
         $this->loop = $loop ?: LoopFactory::create();
         $this->socket = new Socket($address, $this->loop);
         $this->dispatcher = $dispatcher ?: new Dispatcher();
@@ -197,6 +205,15 @@ class Server
     public function getPort()
     {
         return $this->port;
+    }
+
+    /**
+     * Gets the authentication
+     * @return AuthenticationInterface
+     */
+    public function getAuthentication()
+    {
+        return $this->authentication;
     }
 
     /**

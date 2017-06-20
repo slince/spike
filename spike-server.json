@@ -3,5 +3,9 @@
     "log": {
         "file": "./server.log",
         "level": "info"
+    },
+    "auth": {
+        "username": "spike",
+        "password": "spike"
     }
 }

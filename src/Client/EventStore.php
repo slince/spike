@@ -49,19 +49,45 @@ final class EventStore
      */
     const RECEIVE_MESSAGE = 'receive_message';
 
+    /**
+     * Fires when the registration tunnel fails
+     * @var string
+     */
     const REGISTER_TUNNEL_ERROR = 'register_tunnel_error';
 
+    /**
+     * Fires when the registration tunnel success
+     * @var string
+     */
     const REGISTER_TUNNEL_SUCCESS = 'register_tunnel_success';
 
     /**
-     * Fires when client receives message
+     * Fires when client receives a "request_proxy"  message
      * @var string
      */
-    const RECEIVE_PROXY_REQUEST = 'receive_proxy_request';
+    const REQUEST_PROXY = 'request_proxy';
 
     /**
-     * Fires when client sends a request response message
+     * Fires when client sends a "register_proxy" message
      * @var string
      */
-    const SEND_PROXY_RESPONSE = 'send_proxy_response';
+    const REGISTER_PROXY = 'register_proxy';
+
+    /**
+     * Fires when client receives a "start_proxy"  message
+     * @var string
+     */
+    const START_PROXY = 'start_proxy';
+
+    /**
+     * Fires when client authentication fails
+     * @var string
+     */
+    const AUTH_ERROR = 'auth_error';
+
+    /**
+     * Fires when client authentication success
+     * @var string
+     */
+    const AUTH_SUCCESS = 'auth_success';
 }
