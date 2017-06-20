@@ -9,7 +9,6 @@ use Spike\Application as BaseApplication;
 use Slince\Event\SubscriberInterface;
 use Spike\Client\Command\ShowProxyHostsCommand;
 use Spike\Client\Subscriber\LoggerSubscriber;
-use Spike\Configuration;
 use Spike\Logger\Logger;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -43,8 +42,8 @@ class Application extends BaseApplication implements SubscriberInterface
     {
         parent::__construct($configuration,static::NAME, static::VERSION);
         $this->client = new Client(
-            $this->configuration->getServerAddress(),
-            $this->configuration->getTunnels(),
+            $configuration->getServerAddress(),
+            $configuration->getTunnels(),
             null,
             $this->dispatcher
         );

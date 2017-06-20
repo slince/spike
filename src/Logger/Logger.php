@@ -6,7 +6,7 @@
 namespace Spike\Logger;
 
 use Monolog\Logger as Monologer;
-use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class Logger extends Monologer
 {
@@ -23,11 +23,11 @@ class Logger extends Monologer
     protected $level;
 
     /**
-     * @var ConsoleOutput
+     * @var OutputInterface
      */
     protected $output;
 
-    public function __construct($level, $file, ConsoleOutput $output)
+    public function __construct($level, $file, OutputInterface $output)
     {
         $this->level = $level;
         $this->file = $file;;

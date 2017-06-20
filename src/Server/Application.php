@@ -7,11 +7,7 @@ namespace Spike\Server;
 
 use Spike\Application as BaseApplication;
 use GuzzleHttp\Psr7\Response;
-use GuzzleHttp\Psr7;
-use Slince\Event\Event;
 use Slince\Event\SubscriberInterface;
-use Spike\Configuration;
-use Spike\Server\Exception\MissingProxyClientException;
 use Spike\Server\Subscriber\LoggerSubscriber;
 use Spike\Logger\Logger;
 use Symfony\Component\Console\Input\InputInterface;
@@ -38,7 +34,7 @@ class Application extends BaseApplication implements SubscriberInterface
     public function __construct(Configuration $configuration)
     {
         parent::__construct($configuration,static::NAME, static::VERSION);
-        $this->server = new Server($this->configuration->getAddress(), null, $this->dispatcher);
+        $this->server = new Server($configuration->getAddress(), $configuration->getAuthentication(), null, $this->dispatcher);
     }
 
     public function doRun(InputInterface $input, OutputInterface $output)

@@ -5,10 +5,10 @@
  */
 namespace Spike\Server;
 
-use Monolog\Logger;
 use Spike\Authentication\AuthenticationInterface;
 use Spike\Exception\InvalidArgumentException;
 use Spike\Configuration as BaseConfiguration;
+use Spike\Authentication;
 
 class Configuration extends BaseConfiguration
 {
@@ -41,7 +41,11 @@ class Configuration extends BaseConfiguration
     public function getAuthentication()
     {
         $type = isset($this['auth']['type']) ? $this['auth']['type'] : 'simple_password';
-        switch () {
+        switch ($type) {
+            default:
+                $authentication = new Authentication\PasswordAuthentication($this['auth']);
+                break;
         }
+        return $authentication;
     }
 }

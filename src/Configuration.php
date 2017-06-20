@@ -10,7 +10,6 @@ use Slince\Config\Config;
 
 class Configuration  extends Config
 {
-
     /**
      * @return array
      */
