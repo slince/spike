@@ -11,6 +11,9 @@ use Spike\Tunnel\TunnelFactory;
 
 class RegisterTunnelHandler extends MessageHandler
 {
+    /**
+     * {@inheritdoc}
+     */
     public function handle(SpikeInterface $message)
     {
         $tunnel = TunnelFactory::fromArray($message->getBody());

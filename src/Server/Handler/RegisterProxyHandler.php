@@ -12,6 +12,9 @@ use Spike\Server\TunnelServer\TunnelServerInterface;
 
 class RegisterProxyHandler extends MessageHandler
 {
+    /**
+     * {@inheritdoc}
+     */
     public function handle(SpikeInterface $message)
     {
         $tunnelServer = $this->findTunnelServer($message->getBody());
@@ -20,16 +23,19 @@ class RegisterProxyHandler extends MessageHandler
     }
 
     /**
-     * @param $info
+     * Finds the tunnel server of the tunnel
+     * @param array $tunnelInfo
      * @return TunnelServerInterface
      */
-    protected function findTunnelServer($info)
+    protected function findTunnelServer($tunnelInfo)
     {
-        foreach ($this->server->getTunnelServers() as $tunnelServer) {
-            if ($tunnelServer->getTunnel()->match($info)) {
-                return $tunnelServer;
-            }
+        $tunnelServer = $this->server->getTunnelServers()
+            ->filter(function(TunnelServerInterface $tunnelServer) use ($tunnelInfo){
+                return $tunnelServer->getTunnel()->match($tunnelInfo);
+            })->first();
+        if (!$tunnelServer) {
+            throw new BadRequestException("Can not find the tunnel server");
         }
-        throw new BadRequestException("Can not find the tunnel server");
+        return $tunnelServer;
     }
 }

@@ -57,7 +57,7 @@ class Server
     protected $tunnelServers = [];
 
     /**
-     * @var Client[]
+     * @var ClientCollection
      */
     protected $clients;
 
@@ -67,6 +67,8 @@ class Server
         $this->loop = $loop ?: LoopFactory::create();
         $this->socket = new Socket($address, $this->loop);
         $this->dispatcher = $dispatcher ?: new Dispatcher();
+        $this->clients = new ClientCollection();
+        $this->tunnelServers  = new TunnelServerCollection();
     }
 
     /**
@@ -119,8 +121,20 @@ class Server
                 $connection->end('Bad message');
             }
         });
-        $connection->on('end', function(){
-            echo 'client close';
+        //When client be closed
+        $connection->on('end', function() use ($connection){
+            $client = $this->clients->findByConnection($connection);
+            $tunnelServers = $this->tunnelServers->filterByControlConnection($connection);
+            $this->dispatcher->dispatch(new Event(EventStore::CLIENT_CLOSE, $this, [
+                'client' => $client,
+                'tunnelServers' => $tunnelServers
+            ]));
+            $this->clients->removeElement($client); //Removes the client
+            foreach ($tunnelServers as $tunnelServer) {
+                //Close the tunnel server and removes it
+                $tunnelServer->close();
+                $this->tunnelServers->removeElement($tunnelServer);
+            }
         });
     }
 
@@ -137,7 +151,7 @@ class Server
             $tunnelServer = new TunnelServer\TcpTunnelServer($this, $controlConnection, $tunnel, $this->loop);
         }
         $tunnelServer->run();
-        $this->tunnelServers[] = $tunnelServer;
+        $this->tunnelServers->add($tunnelServer);
     }
 
     /**
@@ -151,7 +165,7 @@ class Server
 
     /**
      * Gets all clients
-     * @return Client[]
+     * @return ClientCollection
      */
     public function getClients()
     {
@@ -159,17 +173,8 @@ class Server
     }
 
     /**
-     * Adds a client
-     * @param Client $client
-     */
-    public function addClient(Client $client)
-    {
-        $this->clients[] = $client;
-    }
-
-    /**
      * Gets all tunnel server
-     * @return TunnelServerInterface[]
+     * @return TunnelServerCollection
      */
     public function getTunnelServers()
     {

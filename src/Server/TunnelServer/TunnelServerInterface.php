@@ -6,7 +6,7 @@
 namespace Spike\Server\TunnelServer;
 
 use React\Socket\ConnectionInterface;
-use Spike\Protocol\Spike;
+use Spike\Protocol\SpikeInterface;
 use Spike\Tunnel\TunnelInterface;
 
 interface TunnelServerInterface
@@ -26,12 +26,17 @@ interface TunnelServerInterface
     /**
      * Registers the tunnel connection
      * @param ConnectionInterface $connection
-     * @param Spike $spike
+     * @param SpikeInterface $message
      */
-    public function registerTunnelConnection(ConnectionInterface $connection, Spike $spike);
+    public function registerTunnelConnection(ConnectionInterface $connection, SpikeInterface $message);
 
     /**
      * Run the server
      */
     public function run();
+
+    /**
+     * Close the server
+     */
+    public function close();
 }

@@ -8,43 +8,43 @@ namespace Spike\Client;
 final class EventStore
 {
     /**
-     * Emit when the client begin run
+     * Fires when the client begin run
      * @var string
      */
     const CLIENT_RUN = 'client_run';
 
     /**
-     * Emit when the client connect to a server
+     * Fires when the client connect to a server
      * @var string
      */
     const CONNECT_TO_SERVER =  'connect_to_server';
 
     /**
-     * Emit when server socket has error
+     * Fires when server socket has error
      * @var string
      */
     const SOCKET_ERROR = 'socket_error';
 
     /**
-     * Emit when client registers array of tunnels to the server
+     * Fires when client registers array of tunnels to the server
      * @var string
      */
     const REGISTER_TUNNELS = 'register_tunnels';
 
     /**
-     * Emit when client accepts a new connection
+     * Fires when client accepts a new connection
      * @var string
      */
     const ACCEPT_CONNECTION = 'accept_connection';
 
     /**
-     * Emit when connection error
+     * Fires when connection error
      * @var string
      */
     const CONNECTION_ERROR = 'connection_error';
 
     /**
-     * Emit when client receive message
+     * Fires when client receive message
      * @var string
      */
     const RECEIVE_MESSAGE = 'receive_message';
@@ -54,13 +54,13 @@ final class EventStore
     const REGISTER_TUNNEL_SUCCESS = 'register_tunnel_success';
 
     /**
-     * Emit when client receives message
+     * Fires when client receives message
      * @var string
      */
     const RECEIVE_PROXY_REQUEST = 'receive_proxy_request';
 
     /**
-     * Emit when client sends a request response message
+     * Fires when client sends a request response message
      * @var string
      */
     const SEND_PROXY_RESPONSE = 'send_proxy_response';

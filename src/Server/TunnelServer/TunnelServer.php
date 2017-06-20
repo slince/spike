@@ -71,6 +71,26 @@ class TunnelServer implements TunnelServerInterface
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function close()
+    {
+        $this->closeAllProxyConnections();
+        $this->socket->close();
+        $this->proxyConnections = null;
+    }
+
+    /**
+     * Close all proxy connections
+     */
+    protected function closeAllProxyConnections()
+    {
+        foreach ($this->proxyConnections as $proxyConnection) {
+            $proxyConnection->getConnection()->end('The tunnel server has been closed');
+        }
+    }
+
+    /**
      * Handles the proxy connection
      * @param ProxyConnection $proxyConnection
      */
@@ -84,6 +104,7 @@ class TunnelServer implements TunnelServerInterface
     }
 
     /**
+     * Registers tunnel connection
      * @param ConnectionInterface $tunnelConnection
      * @param Spike $message
      */

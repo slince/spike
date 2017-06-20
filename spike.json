@@ -3,7 +3,7 @@
     "tunnels": [
         {
             "protocol": "http",
-            "serverPort": "8049",
+            "serverPort": "8087",
             "proxyHosts": {
                 "www.lazy.com": "www.baidu.com",
                 "www.spike.com": "127.0.0.1:6666"
@@ -11,7 +11,7 @@
         },
         {
             "protocol": "tcp",
-            "serverPort": "8488",
+            "serverPort": "8086",
             "host": "127.0.0.1:3306"
         }
     ],

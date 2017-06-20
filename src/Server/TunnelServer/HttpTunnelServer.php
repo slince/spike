@@ -11,6 +11,9 @@ use Spike\Parser\HttpHeaderParser;
 
 class HttpTunnelServer extends TunnelServer
 {
+    /**
+     * {@inheritdoc}
+     */
     public function handleProxyConnection(ProxyConnection $proxyConnection)
     {
         $parser = new HttpHeaderParser();
@@ -35,11 +38,27 @@ class HttpTunnelServer extends TunnelServer
         });
     }
 
+    /**
+     * Make an error psr7 response
+     * @param int $code
+     * @param string $message
+     * @return Response
+     */
     protected function makeErrorResponse($code, $message)
     {
         $message = $message ?: 'Proxy error';
         return new Response($code, [
             'Content-Length' => strlen($message)
         ], $message);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function closeAllProxyConnections()
+    {
+        foreach ($this->proxyConnections as $proxyConnection) {
+            $proxyConnection->getConnection()->end($this->makeErrorResponse(500, 'The tunnel server has been closed'));
+        }
     }
 }

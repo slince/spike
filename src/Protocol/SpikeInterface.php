@@ -72,7 +72,7 @@ interface SpikeInterface
 
     /**
      * Gets the body of the protocol
-     * @return string
+     * @return mixed
      */
     public function getBody();
 
