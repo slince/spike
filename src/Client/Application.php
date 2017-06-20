@@ -44,6 +44,7 @@ class Application extends BaseApplication implements SubscriberInterface
         $this->client = new Client(
             $configuration->getServerAddress(),
             $configuration->getTunnels(),
+            $configuration->get('auth') ?: [],
             null,
             $this->dispatcher
         );

@@ -5,6 +5,8 @@
  */
 namespace Spike\Authentication;
 
+use Spike\Exception\InvalidArgumentException;
+
 class PasswordAuthentication implements AuthenticationInterface
 {
     protected $auth;
@@ -16,6 +18,9 @@ class PasswordAuthentication implements AuthenticationInterface
 
     public function verify($auth)
     {
+        if (!isset($auth['username']) || !isset($auth['password'])) {
+            throw new InvalidArgumentException("Invalid arguments");
+        }
         return ($this->auth['username']  == $auth['username'])
             && (!isset($this->auth['password']) || $this->auth['password'] == $auth['username']);
     }

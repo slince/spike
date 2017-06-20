@@ -70,9 +70,12 @@ class Client
      */
     protected $tunnels = [];
 
-    public function __construct($serverAddress, $tunnels, LoopInterface $loop = null, Dispatcher $dispatcher = null)
+    protected $auth;
+
+    public function __construct($serverAddress, $tunnels, $auth, LoopInterface $loop = null, Dispatcher $dispatcher = null)
     {
         $this->serverAddress = $serverAddress;
+        $this->auth = $auth;
         $this->dispatcher = $dispatcher ?: new Dispatcher();
         $this->loop = $loop ?: LoopFactory::create();
         $this->connector = new Connector($this->loop);
@@ -145,12 +148,10 @@ class Client
      */
     protected function requestAuth(ConnectionInterface $connection)
     {
-        $authInfo = [
+        $authInfo = array_replace([
             'os' => PHP_OS,
-            'username' => '',
-            'password' => '',
             'version' => '',
-        ];
+        ], $this->auth);
         $connection->write(new Spike('auth', $authInfo));
     }
 

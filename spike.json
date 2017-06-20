@@ -18,5 +18,9 @@
     "log": {
         "file": "./client.log",
         "level": "info"
+    },
+    "auth": {
+        "username": "spike",
+        "password": "spike"
     }
 }
