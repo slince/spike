@@ -17,8 +17,8 @@ class ClientCollection extends ArrayCollection
      */
     public function findByConnection(ConnectionInterface $connection)
     {
-        return parent::filter(function($element) use ($connection){
-            return $element->getConnection() === $connection;
+        return parent::filter(function(Client $client) use ($connection){
+            return $client->getControlConnection() === $connection;
         })->first();
     }
 
@@ -29,8 +29,8 @@ class ClientCollection extends ArrayCollection
      */
     public function findById($id)
     {
-        return parent::filter(function($element) use ($id){
-            return $element->getId() === $id;
+        return parent::filter(function(Client $client) use ($id){
+            return $client->getId() === $id;
         })->first();
     }
 }

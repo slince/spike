@@ -10,6 +10,7 @@ use React\Socket\ConnectionInterface;
 use React\Socket\Server as Socket;
 use Spike\Exception\InvalidArgumentException;
 use Spike\Protocol\Spike;
+use Spike\Protocol\SpikeInterface;
 use Spike\Server\Server;
 use Spike\Tunnel\TunnelInterface;
 
@@ -24,6 +25,7 @@ class TunnelServer implements TunnelServerInterface
      * @var ProxyConnection[]
      */
     protected $proxyConnections = [];
+
     /**
      * @var ConnectionInterface[]
      */
@@ -106,9 +108,9 @@ class TunnelServer implements TunnelServerInterface
     /**
      * Registers tunnel connection
      * @param ConnectionInterface $tunnelConnection
-     * @param Spike $message
+     * @param SpikeInterface $message
      */
-    public function registerTunnelConnection(ConnectionInterface $tunnelConnection, Spike $message)
+    public function registerTunnelConnection(ConnectionInterface $tunnelConnection, SpikeInterface $message)
     {
         $this->tunnelConnections[] = $tunnelConnection;
         $proxyConnection = $this->findProxyConnection($message->getHeader('Proxy-Connection-ID'));
@@ -129,6 +131,7 @@ class TunnelServer implements TunnelServerInterface
     }
 
     /**
+     * Finds the connection by id
      * @param  string $connectionId
      * @return ProxyConnection
      */
@@ -152,7 +155,6 @@ class TunnelServer implements TunnelServerInterface
     }
 
     /**
-     *
      * {@inheritdoc}
      */
     public function getControlConnection()
