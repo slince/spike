@@ -14,11 +14,16 @@ use Spike\Protocol\Spike;
 use Spike\Protocol\SpikeInterface;
 use Spike\Server\EventStore;
 use Spike\Server\Server;
+use Spike\Server\TunnelServer\Timer\ReviewProxyConnection;
+use Spike\Timer\UseTimerTrait;
 use Spike\Tunnel\TunnelInterface;
 use Slince\Event\Dispatcher;
+use Spike\Timer\TimerInterface;
 
 abstract class TunnelServer implements TunnelServerInterface
 {
+    use UseTimerTrait;
+
     /**
      * @var ConnectionInterface
      */
@@ -49,6 +54,11 @@ abstract class TunnelServer implements TunnelServerInterface
      */
     protected $loop;
 
+    /**
+     * @var TimerInterface[]
+     */
+    protected $timers;
+
     public function __construct(Server $server, ConnectionInterface $controlConnection, TunnelInterface $tunnel, LoopInterface $loop)
     {
         $this->server = $server;
@@ -69,7 +79,11 @@ abstract class TunnelServer implements TunnelServerInterface
             $this->proxyConnections->add($proxyConnection);
             $this->handleProxyConnection($proxyConnection);
         });
-        $this->loop->addPeriodicTimer(2 * 1, [$this, 'handleProxyConnectionTimeout']);
+        //Creates defaults timers
+        $this->timers = $this->getDefaultTimers();
+        foreach ($this->timers as $timer) {
+            $this->addTimer($timer);
+        }
     }
 
     /**
@@ -86,33 +100,18 @@ abstract class TunnelServer implements TunnelServerInterface
      */
     public function close()
     {
+        //Close all proxy connection
         foreach ($this->proxyConnections as $proxyConnection) {
             $this->closeProxyConnection($proxyConnection, 'The tunnel server has been closed');
         }
+        //Cancel all timers
+        foreach ($this->timers as $timer) {
+            $timer->cancel();
+        }
         $this->proxyConnections = null;
+        $this->timers = null;
         $this->socket->close();
     }
-
-    /**
-     * Close the connection if it does not respond for more than 60 seconds
-     */
-    public function handleProxyConnectionTimeout()
-    {
-        var_dump(count($this->proxyConnections));
-        foreach ($this->proxyConnections as $key => $proxyConnection) {
-            if ($proxyConnection->getWaitingDuration() > 60) {
-                $this->closeProxyConnection($proxyConnection, 'Waiting for more than 60 seconds without responding');
-                $this->proxyConnections->remove($key);
-            }
-        }
-    }
-
-    /**
-     * Close the given proxy connection
-     * @param ProxyConnection $proxyConnection
-     * @param string $message
-     */
-    abstract protected function closeProxyConnection(ProxyConnection $proxyConnection, $message);
 
     /**
      * Handles the proxy connection
@@ -185,6 +184,17 @@ abstract class TunnelServer implements TunnelServerInterface
     protected function getListenAddress()
     {
         return "{$this->server->getHost()}:{$this->tunnel->getServerPort()}";
+    }
+
+    /**
+     * Creates default timers
+     * @return TimerInterface[]
+     */
+    protected function getDefaultTimers()
+    {
+        return [
+            new ReviewProxyConnection($this)
+        ];
     }
 
     /**

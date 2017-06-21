@@ -6,7 +6,6 @@
 namespace Spike\Server\TunnelServer;
 
 use React\Socket\ConnectionInterface;
-use React\Stream\DuplexStreamInterface;
 
 class ProxyConnection
 {
@@ -37,6 +36,11 @@ class ProxyConnection
         $this->initBuffer = $initBuffer;
         $this->id = spl_object_hash($connection);
         $this->createAt = microtime(true);
+    }
+
+    public function __call($name, $arguments)
+    {
+        return call_user_func_array([$this->connection, $name], $arguments);
     }
 
     /**

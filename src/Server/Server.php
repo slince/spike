@@ -68,6 +68,8 @@ class Server
      */
     protected $clients;
 
+    protected $timers = [];
+
     public function __construct($address, AuthenticationInterface $authentication, LoopInterface $loop = null, Dispatcher $dispatcher = null)
     {
         list($this->host, $this->port) = Utility::parseAddress($address);
@@ -98,6 +100,7 @@ class Server
         });
         //Emit the event
         $this->dispatcher->dispatch(EventStore::SERVER_RUN);
+        $this->timers[] = $this->loop->addPeriodicTimer(60 *  3, [$this, 'handleClientTimeout']);
         $this->loop->run();
     }
 
@@ -135,6 +138,9 @@ class Server
         });
     }
 
+    /**
+     * Handles the client timeout
+     */
     public function handleClientTimeout()
     {
         foreach ($this->clients as $client) {
