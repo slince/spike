@@ -14,8 +14,7 @@ use React\EventLoop\Timer\TimerInterface as ReactTimer;
 interface TimerInterface
 {
     /**
-     * Determine whether the time is periodic
-     *
+     * Checks whether the time is periodic
      * @return bool
      */
     public function isPeriodic();
@@ -26,10 +25,20 @@ interface TimerInterface
      */
     public function getInterval();
 
-
+    /**
+     * Cancels the timer
+     */
     public function cancel();
 
+    /**
+     * activates the timer
+     * @param LoopInterface $loop
+     * @param ReactTimer $timer
+     */
     public function activate(LoopInterface $loop, ReactTimer $timer);
 
+    /**
+     * Invokes the timer
+     */
     public function __invoke();
 }

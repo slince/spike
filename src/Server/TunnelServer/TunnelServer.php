@@ -127,7 +127,7 @@ abstract class TunnelServer implements TunnelServerInterface
         $this->getDispatcher()->dispatch(new Event(EventStore::REQUEST_PROXY, $this, [
             'message' => $requestProxyMessage
         ]));
-        $proxyConnection->getConnection()->removeAllListeners();
+        $proxyConnection->removeAllListeners();
         $proxyConnection->pause();
     }
 
@@ -151,7 +151,7 @@ abstract class TunnelServer implements TunnelServerInterface
         ]));
         //Resumes the proxy connection
         $proxyConnection->resume();
-        $proxyConnection->getConnection()->pipe($tunnelConnection);
+        $proxyConnection->pipe($tunnelConnection);
         $tunnelConnection->pipe($proxyConnection->getConnection());
         $tunnelConnection->write($proxyConnection->getInitBuffer());
 
@@ -163,14 +163,14 @@ abstract class TunnelServer implements TunnelServerInterface
             echo 'proxy end';
             $this->proxyConnections->removeElement($proxyConnection);
         };
-        $proxyConnection->getConnection()->on('close', $handleProxyConnectionClose);
-        $proxyConnection->getConnection()->on('error', $handleProxyConnectionClose);
+        $proxyConnection->on('close', $handleProxyConnectionClose);
+        $proxyConnection->on('error', $handleProxyConnectionClose);
 
         //Handles tunnel connection close
         $handleTunnelConnectionClose = function () use ($proxyConnection, &$handleProxyConnectionClose) {
-            $proxyConnection->getConnection()->removeListener('close', $handleProxyConnectionClose);
-            $proxyConnection->getConnection()->removeListener('error', $handleProxyConnectionClose);
-            $proxyConnection->getConnection()->end();
+            $proxyConnection->removeListener('close', $handleProxyConnectionClose);
+            $proxyConnection->removeListener('error', $handleProxyConnectionClose);
+            $proxyConnection->end();
             echo 'tunnel end';
         };
         $tunnelConnection->on('close', $handleTunnelConnectionClose);

@@ -18,6 +18,8 @@ use Spike\Parser\SpikeParser;
 use Spike\Protocol\Spike;
 use Spike\Protocol\SpikeInterface;
 use Spike\Server\Handler\HandlerInterface;
+use Spike\Server\Timer\ReviewClient;
+use Spike\Timer\UseTimerTrait;
 use Spike\Tunnel\HttpTunnel;
 use Spike\Tunnel\TunnelInterface;
 use Spike\Server\TunnelServer\TunnelServerInterface;
@@ -25,6 +27,8 @@ use Spike\Utility;
 
 class Server
 {
+    use UseTimerTrait;
+
     /**
      * The server host
      * @var string
@@ -100,7 +104,10 @@ class Server
         });
         //Emit the event
         $this->dispatcher->dispatch(EventStore::SERVER_RUN);
-        $this->timers[] = $this->loop->addPeriodicTimer(60 *  3, [$this, 'handleClientTimeout']);
+        $this->timers = $this->getDefaultTimers();
+        foreach ($this->timers as $timer) {
+            $this->addTimer($timer);
+        }
         $this->loop->run();
     }
 
@@ -139,22 +146,10 @@ class Server
     }
 
     /**
-     * Handles the client timeout
-     */
-    public function handleClientTimeout()
-    {
-        foreach ($this->clients as $client) {
-            if ($client->getSilentDuration() > 60 * 5) {
-                $this->closeClient($client);
-            }
-        }
-    }
-
-    /**
      * Close the given client
      * @param Client $client
      */
-    protected function closeClient(Client $client)
+    public function closeClient(Client $client)
     {
         $tunnelServers = $this->tunnelServers->filterByControlConnection($client->getControlConnection());
         $this->dispatcher->dispatch(new Event(EventStore::CLIENT_CLOSE, $this, [
@@ -222,6 +217,15 @@ class Server
     }
 
     /**
+     * Gets the loop instance
+     * @return LoopInterface
+     */
+    public function getLoop()
+    {
+        return $this->loop;
+    }
+
+    /**
      * Gets the server port
      * @return int
      */
@@ -263,5 +267,12 @@ class Server
                 ));
         }
         return $handler;
+    }
+
+    protected function getDefaultTimers()
+    {
+        return [
+            new ReviewClient($this)
+        ];
     }
 }

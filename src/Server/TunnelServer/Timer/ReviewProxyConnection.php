@@ -7,8 +7,6 @@ namespace Spike\Server\TunnelServer\Timer;
 
 class ReviewProxyConnection extends PeriodicTimer
 {
-    protected $interval = 1 * 2;
-
     public function __invoke()
     {
         var_dump(count($this->tunnelServer->getProxyConnections()));
@@ -18,5 +16,10 @@ class ReviewProxyConnection extends PeriodicTimer
                 $this->tunnelServer->getProxyConnections()->remove($key);
             }
         }
+    }
+
+    public function getInterval()
+    {
+        return 1 * 2;
     }
 }

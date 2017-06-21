@@ -7,8 +7,11 @@ namespace Spike\Timer;
 
 abstract class PeriodicTimer extends Timer
 {
-    public function __construct()
+    /**
+     * {@inheritdoc}
+     */
+    final public function isPeriodic()
     {
-        $this->periodic = true;
+        return true;
     }
 }

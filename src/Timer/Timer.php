@@ -11,46 +11,27 @@ use React\EventLoop\Timer\TimerInterface as ReactTimer;
 abstract class Timer implements TimerInterface
 {
     /**
-     * @param int|float $interval
-     */
-    protected $interval;
-
-    protected $periodic;
-
-    /**
      * @var LoopInterface
      */
     protected $loop;
 
+    /**
+     * @var ReactTimer
+     */
     protected $reactTimer;
 
     /**
-     * @return int|float
+     * {@inheritdoc}
      */
-    public function getInterval()
-    {
-        return $this->interval;
-    }
-
-    /**
-     * @param int|float $interval
-     */
-    public function setInterval($interval)
-    {
-        $this->interval = $interval;
-    }
-
-    public function isPeriodic()
-    {
-        return $this->periodic;
-    }
-
     public function activate(LoopInterface $loop, ReactTimer $timer)
     {
         $this->loop = $loop;
         $this->reactTimer = $timer;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function cancel()
     {
         $this->loop->cancelTimer($this->reactTimer);

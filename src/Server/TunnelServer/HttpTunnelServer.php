@@ -32,7 +32,7 @@ class HttpTunnelServer extends TunnelServer
                 } else {
                     $body = sprintf('The host "%s" was not bound.', $host);
                     $response = $this->makeErrorResponse(404, $body);
-                    $proxyConnection->getConnection()->end(Psr7\str($response));
+                    $proxyConnection->end(Psr7\str($response));
                 }
             }
         });
@@ -57,6 +57,6 @@ class HttpTunnelServer extends TunnelServer
      */
     public function closeProxyConnection(ProxyConnection $proxyConnection, $message = null)
     {
-        $proxyConnection->getConnection()->end($this->makeErrorResponse(500, $message ?: 'Timeout'));
+        $proxyConnection->end($this->makeErrorResponse(500, $message ?: 'Timeout'));
     }
 }

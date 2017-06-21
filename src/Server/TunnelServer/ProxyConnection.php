@@ -7,6 +7,14 @@ namespace Spike\Server\TunnelServer;
 
 use React\Socket\ConnectionInterface;
 
+/**
+ * @method write($data)
+ * @method on($eventName, callable $listener)
+ * @method pipe($dst, array $options = []);
+ * @method removeListener($eventName, callable $listener);
+ * @method removeAllListeners($eventName = null);
+ * @method end($data = null);
+ */
 class ProxyConnection
 {
     /**

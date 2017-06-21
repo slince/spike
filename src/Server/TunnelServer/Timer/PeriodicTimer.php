@@ -15,7 +15,6 @@ abstract class PeriodicTimer extends BasePeriodicTimer
     public function __construct(TunnelServerInterface $tunnelServer)
     {
         $this->tunnelServer = $tunnelServer;
-        parent::__construct();
     }
 
     /**
