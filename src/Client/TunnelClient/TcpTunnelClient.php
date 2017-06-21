@@ -14,5 +14,29 @@ class TcpTunnelClient extends TunnelClient
         $localConnection->pipe($this->tunnelConnection);
         $this->tunnelConnection->pipe($localConnection);
         $localConnection->write($this->initBuffer);
+
+        $localConnection->on('end', function(){
+            var_dump('local end');
+        });
+
+        //Handles the local connection close
+        $handleLocalConnectionClose = function() use (&$handleTunnelConnectionClose){
+            var_dump('local close');
+            $this->tunnelConnection->removeListener('close', $handleTunnelConnectionClose);
+            $this->tunnelConnection->removeListener('error', $handleTunnelConnectionClose);
+            $this->tunnelConnection->end();
+        };
+        $localConnection->on('close', $handleLocalConnectionClose);
+        $localConnection->on('error', $handleLocalConnectionClose);
+
+        //Handles the tunnel connection close
+        $handleTunnelConnectionClose = function() use ($localConnection, &$handleLocalConnectionClose){
+            var_dump('tunnel close');
+            $localConnection->removeListener('close', $handleLocalConnectionClose);
+            $localConnection->removeListener('error', $handleLocalConnectionClose);
+            $localConnection->end();
+        };
+        $this->tunnelConnection->on('close', $handleTunnelConnectionClose);
+        $this->tunnelConnection->on('error', $handleTunnelConnectionClose);
     }
 }

@@ -25,14 +25,9 @@ abstract class TunnelServer implements TunnelServerInterface
     protected $controlConnection;
 
     /**
-     * @var ProxyConnection[]
+     * @var ProxyConnectionCollection
      */
-    protected $proxyConnections = [];
-
-    /**
-     * @var ConnectionInterface[]
-     */
-    protected $tunnelConnections = [];
+    protected $proxyConnections;
 
     /**
      * @var Socket
@@ -49,13 +44,19 @@ abstract class TunnelServer implements TunnelServerInterface
      */
     protected $server;
 
+    /**
+     * @var LoopInterface
+     */
+    protected $loop;
+
     public function __construct(Server $server, ConnectionInterface $controlConnection, TunnelInterface $tunnel, LoopInterface $loop)
     {
         $this->server = $server;
         $this->controlConnection = $controlConnection;
         $this->tunnel = $tunnel;
+        $this->loop = $loop;
         $this->socket = new Socket($this->getListenAddress(), $loop);
-        $loop->addPeriodicTimer(60 * 1, [$this, 'handleProxyConnectionTimeout']);
+        $this->proxyConnections = new ProxyConnectionCollection();
     }
 
     /**
@@ -65,9 +66,10 @@ abstract class TunnelServer implements TunnelServerInterface
     {
         $this->socket->on('connection', function($connection){
             $proxyConnection = new ProxyConnection($connection);
-            $this->proxyConnections[] = $proxyConnection;
+            $this->proxyConnections->add($proxyConnection);
             $this->handleProxyConnection($proxyConnection);
         });
+        $this->loop->addPeriodicTimer(2 * 1, [$this, 'handleProxyConnectionTimeout']);
     }
 
     /**
@@ -96,10 +98,11 @@ abstract class TunnelServer implements TunnelServerInterface
      */
     public function handleProxyConnectionTimeout()
     {
+        var_dump(count($this->proxyConnections));
         foreach ($this->proxyConnections as $key => $proxyConnection) {
             if ($proxyConnection->getWaitingDuration() > 60) {
                 $this->closeProxyConnection($proxyConnection, 'Waiting for more than 60 seconds without responding');
-                unset($this->proxyConnections[$key]);
+                $this->proxyConnections->remove($key);
             }
         }
     }
@@ -136,10 +139,10 @@ abstract class TunnelServer implements TunnelServerInterface
      */
     public function registerTunnelConnection(ConnectionInterface $tunnelConnection, SpikeInterface $message)
     {
-        $this->tunnelConnections[] = $tunnelConnection;
-        $proxyConnection = $this->findProxyConnection($message->getHeader('Proxy-Connection-ID'));
-        if (!$proxyConnection) {
-            throw new InvalidArgumentException("Cannot find proxy connection");
+        $connectionId = $message->getHeader('Proxy-Connection-ID');
+        $proxyConnection = $this->proxyConnections->findById($connectionId);
+        if (is_null($proxyConnection)) {
+            throw new InvalidArgumentException(sprintf('Cannot find the proxy connection "%s"', $connectionId));
         }
         $startProxyMessage = new Spike('start_proxy');
         $tunnelConnection->write($startProxyMessage);
@@ -152,27 +155,27 @@ abstract class TunnelServer implements TunnelServerInterface
         $proxyConnection->getConnection()->pipe($tunnelConnection);
         $tunnelConnection->pipe($proxyConnection->getConnection());
         $tunnelConnection->write($proxyConnection->getInitBuffer());
-        $proxyConnection->getConnection()->on('close', function () use ($tunnelConnection) {
-            $tunnelConnection->end();
-        });
-        $tunnelConnection->on('close', function () use ($proxyConnection) {
-            $proxyConnection->getConnection()->end();
-        });
-    }
 
-    /**
-     * Finds the connection by id
-     * @param  string $connectionId
-     * @return ProxyConnection
-     */
-    protected function findProxyConnection($connectionId)
-    {
-        foreach ($this->proxyConnections as $proxyConnection) {
-            if ($proxyConnection->getId() == $connectionId) {
-                return $proxyConnection;
-            }
-        }
-        throw new InvalidArgumentException(sprintf('Cannot find the proxy connection "%s"', $connectionId));
+        //Handles proxy connection close
+        $handleProxyConnectionClose = function() use ($tunnelConnection, $proxyConnection, &$handleTunnelConnectionClose){
+            $tunnelConnection->removeListener('close', $handleTunnelConnectionClose);
+            $tunnelConnection->removeListener('error', $handleTunnelConnectionClose);
+            $tunnelConnection->end();
+            echo 'proxy end';
+            $this->proxyConnections->removeElement($proxyConnection);
+        };
+        $proxyConnection->getConnection()->on('close', $handleProxyConnectionClose);
+        $proxyConnection->getConnection()->on('error', $handleProxyConnectionClose);
+
+        //Handles tunnel connection close
+        $handleTunnelConnectionClose = function () use ($proxyConnection, &$handleProxyConnectionClose) {
+            $proxyConnection->getConnection()->removeListener('close', $handleProxyConnectionClose);
+            $proxyConnection->getConnection()->removeListener('error', $handleProxyConnectionClose);
+            $proxyConnection->getConnection()->end();
+            echo 'tunnel end';
+        };
+        $tunnelConnection->on('close', $handleTunnelConnectionClose);
+        $tunnelConnection->on('error', $handleTunnelConnectionClose);
     }
 
     /**
