@@ -131,18 +131,36 @@ class Server
         //When client be closed
         $connection->on('end', function() use ($connection){
             $client = $this->clients->findByConnection($connection);
-            $tunnelServers = $this->tunnelServers->filterByControlConnection($connection);
-            $this->dispatcher->dispatch(new Event(EventStore::CLIENT_CLOSE, $this, [
-                'client' => $client,
-                'tunnelServers' => $tunnelServers
-            ]));
-            $this->clients->removeElement($client); //Removes the client
-            foreach ($tunnelServers as $tunnelServer) {
-                //Close the tunnel server and removes it
-                $tunnelServer->close();
-                $this->tunnelServers->removeElement($tunnelServer);
-            }
+            $this->closeClient($client);
         });
+    }
+
+    public function handleClientTimeout()
+    {
+        foreach ($this->clients as $client) {
+            if ($client->getSilentDuration() > 60 * 5) {
+                $this->closeClient($client);
+            }
+        }
+    }
+
+    /**
+     * Close the given client
+     * @param Client $client
+     */
+    protected function closeClient(Client $client)
+    {
+        $tunnelServers = $this->tunnelServers->filterByControlConnection($client->getControlConnection());
+        $this->dispatcher->dispatch(new Event(EventStore::CLIENT_CLOSE, $this, [
+            'client' => $client,
+            'tunnelServers' => $tunnelServers
+        ]));
+        foreach ($tunnelServers as $tunnelServer) {
+            //Close the tunnel server and removes it
+            $tunnelServer->close();
+            $this->tunnelServers->removeElement($tunnelServer);
+        }
+        $this->clients->removeElement($client); //Removes the client
     }
 
     /**
