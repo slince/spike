@@ -88,10 +88,10 @@ class ProxyConnection
     }
 
     /**
-     * Gets the waiting time of the connection
+     * Gets the waiting duration of the connection
      * @return float
      */
-    public function getWaitingTime()
+    public function getWaitingDuration()
     {
         return microtime(true) - $this->createAt;
     }

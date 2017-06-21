@@ -26,6 +26,11 @@ class Client
      */
     protected $controlConnection;
 
+    /**
+     * @var float
+     */
+    protected $lastActiveAt;
+
     public function __construct($info, ConnectionInterface $controlConnection)
     {
         $this->info = $info;
@@ -67,6 +72,24 @@ class Client
     public function getInfo()
     {
         return $this->info;
+    }
+
+    /**
+     * Sets the last active time
+     * @param float $lastActiveAt
+     */
+    public function setLastActiveAt($lastActiveAt)
+    {
+        $this->lastActiveAt = $lastActiveAt;
+    }
+
+    /**
+     * Gets silent duration
+     * @return float
+     */
+    public function getSilentDuration()
+    {
+        return microtime(true) - $this->lastActiveAt;
     }
 
     /**

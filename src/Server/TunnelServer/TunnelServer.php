@@ -84,19 +84,32 @@ abstract class TunnelServer implements TunnelServerInterface
      */
     public function close()
     {
-        $this->closeAllProxyConnections();
+        foreach ($this->proxyConnections as $proxyConnection) {
+            $this->closeProxyConnection($proxyConnection, 'The tunnel server has been closed');
+        }
+        $this->proxyConnections = null;
         $this->socket->close();
     }
 
     /**
-     * Close all proxy connections
-     */
-    abstract  protected function closeAllProxyConnections();
-
-    /**
      * Close the connection if it does not respond for more than 60 seconds
      */
-    abstract public function handleProxyConnectionTimeout();
+    public function handleProxyConnectionTimeout()
+    {
+        foreach ($this->proxyConnections as $key => $proxyConnection) {
+            if ($proxyConnection->getWaitingDuration() > 60) {
+                $this->closeProxyConnection($proxyConnection, 'Waiting for more than 60 seconds without responding');
+                unset($this->proxyConnections[$key]);
+            }
+        }
+    }
+
+    /**
+     * Close the given proxy connection
+     * @param ProxyConnection $proxyConnection
+     * @param string $message
+     */
+    abstract protected function closeProxyConnection(ProxyConnection $proxyConnection, $message);
 
     /**
      * Handles the proxy connection
