@@ -14,11 +14,13 @@ use Slince\Event\Event;
 use Spike\Authentication\AuthenticationInterface;
 use Spike\Exception\InvalidArgumentException;
 use Spike\Exception\RuntimeException;
+use Spike\Logger\Logger;
 use Spike\Parser\SpikeParser;
 use Spike\Protocol\Spike;
 use Spike\Protocol\SpikeInterface;
 use Spike\Server\Handler\HandlerInterface;
 use Spike\Server\Timer\ReviewClient;
+use Spike\Timer\MemoryRecord;
 use Spike\Timer\TimerInterface;
 use Spike\Timer\UseTimerTrait;
 use Spike\Tunnel\HttpTunnel;
@@ -75,15 +77,24 @@ class Server
 
     protected $timers = [];
 
-    public function __construct($address, AuthenticationInterface $authentication, LoopInterface $loop = null, Dispatcher $dispatcher = null)
-    {
+    /**
+     * @var Logger
+     */
+    protected $logger;
+
+    public function __construct(
+        $address,
+        AuthenticationInterface $authentication,
+        LoopInterface $loop = null,
+        Dispatcher $dispatcher = null
+    ) {
         list($this->host, $this->port) = Utility::parseAddress($address);
         $this->authentication = $authentication;
         $this->loop = $loop ?: LoopFactory::create();
         $this->socket = new Socket($address, $this->loop);
         $this->dispatcher = $dispatcher ?: new Dispatcher();
         $this->clients = new ClientCollection();
-        $this->tunnelServers  = new TunnelServerCollection();
+        $this->tunnelServers = new TunnelServerCollection();
     }
 
     /**
@@ -227,6 +238,24 @@ class Server
     }
 
     /**
+     * Sets a logger
+     * @param Logger $logger
+     */
+    public function setLogger($logger)
+    {
+        $this->logger = $logger;
+    }
+
+    /**
+     * Gets the logger
+     * @return Logger
+     */
+    public function getLogger()
+    {
+        return $this->logger;
+    }
+
+    /**
      * Gets the server port
      * @return int
      */
@@ -277,7 +306,8 @@ class Server
     protected function getDefaultTimers()
     {
         return [
-            new ReviewClient($this)
+            new ReviewClient($this),
+            new MemoryRecord($this->logger)
         ];
     }
 }

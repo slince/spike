@@ -60,6 +60,7 @@ class Application extends BaseApplication implements SubscriberInterface
             $this->getConfiguration()->getLogFile(),
             $this->output
         );
+        $this->client->setLogger($this->logger);
         $commandName = $input->getFirstArgument();
         if ($commandName) {
             $exitCode = parent::doRun($input, $output);

@@ -34,7 +34,12 @@ class Application extends BaseApplication implements SubscriberInterface
     public function __construct(Configuration $configuration)
     {
         parent::__construct($configuration,static::NAME, static::VERSION);
-        $this->server = new Server($configuration->getAddress(), $configuration->getAuthentication(), null, $this->dispatcher);
+        $this->server = new Server(
+            $configuration->getAddress(),
+            $configuration->getAuthentication(),
+            null,
+            $this->dispatcher
+        );
     }
 
     public function doRun(InputInterface $input, OutputInterface $output)
@@ -47,6 +52,7 @@ class Application extends BaseApplication implements SubscriberInterface
             $this->getConfiguration()->getLogFile(),
             $this->output
         );
+        $this->server->setLogger($this->logger);
         $commandName = $input->getFirstArgument();
         if ($commandName) {
             $exitCode = parent::doRun($input, $output);

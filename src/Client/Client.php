@@ -11,6 +11,10 @@ use React\Socket\ConnectionInterface;
 use React\Socket\Connector;
 use Slince\Event\Dispatcher;
 use Slince\Event\Event;
+use Spike\Logger\Logger;
+use Spike\Timer\MemoryRecord;
+use Spike\Timer\TimerInterface;
+use Spike\Timer\UseTimerTrait;
 use Spike\Tunnel\TunnelFactory;
 use Spike\Tunnel\TunnelInterface;
 use Spike\Client\TunnelClient\TcpTunnelClient;
@@ -24,6 +28,8 @@ use Spike\Protocol\SpikeInterface;
 
 class Client
 {
+    use UseTimerTrait;
+
     /**
      * @var LoopInterface
      */
@@ -76,6 +82,16 @@ class Client
      */
     protected $auth;
 
+    /**
+     * @var Logger
+     */
+    protected $logger;
+
+    /**
+     * @var TimerInterface[]
+     */
+    protected $timers;
+
     public function __construct($serverAddress, $tunnels, $auth, LoopInterface $loop = null, Dispatcher $dispatcher = null)
     {
         $this->serverAddress = $serverAddress;
@@ -123,6 +139,10 @@ class Client
             $this->handleControlConnection($connection);
         });
         $this->dispatcher->dispatch(EventStore::CLIENT_RUN);
+        $this->timers = $this->getDefaultTimers();
+        foreach ($this->timers as $timer) {
+            $this->addTimer($timer);
+        }
         $this->loop->run();
     }
 
@@ -206,6 +226,33 @@ class Client
     }
 
     /**
+     * Sets a logger
+     * @param Logger $logger
+     */
+    public function setLogger($logger)
+    {
+        $this->logger = $logger;
+    }
+
+    /**
+     * Gets the logger
+     * @return Logger
+     */
+    public function getLogger()
+    {
+        return $this->logger;
+    }
+
+    /**
+     * Gets the loop instance
+     * @return LoopInterface
+     */
+    public function getLoop()
+    {
+        return $this->loop;
+    }
+
+    /**
      * Finds the matching tunnel
      * @param array $tunnelInfo
      * @throws RuntimeException
@@ -259,5 +306,16 @@ class Client
                 ));
         }
         return $handler;
+    }
+
+    /**
+     * Creates default timers
+     * @return TimerInterface[]
+     */
+    protected function getDefaultTimers()
+    {
+        return [
+            new MemoryRecord($this->logger)
+        ];
     }
 }
