@@ -5,7 +5,6 @@
  */
 namespace Spike\Server\TunnelServer\Timer;
 
-use Spike\Server\TunnelServer\TunnelServer;
 use Spike\Server\TunnelServer\TunnelServerInterface;
 use Spike\Timer\PeriodicTimer as BasePeriodicTimer;
 

@@ -9,6 +9,6 @@ abstract class PeriodicTimer extends Timer
 {
     public function __construct()
     {
-        $this->periodic = false;
+        $this->periodic = true;
     }
 }

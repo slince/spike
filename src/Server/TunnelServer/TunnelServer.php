@@ -208,6 +208,22 @@ abstract class TunnelServer implements TunnelServerInterface
     /**
      * {@inheritdoc}
      */
+    public function getLoop()
+    {
+        return $this->loop;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getProxyConnections()
+    {
+        return $this->proxyConnections;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getTunnel()
     {
         return $this->tunnel;

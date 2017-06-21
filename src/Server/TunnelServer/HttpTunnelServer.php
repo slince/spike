@@ -55,8 +55,8 @@ class HttpTunnelServer extends TunnelServer
     /**
      * {@inheritdoc}
      */
-    protected function closeProxyConnection(ProxyConnection $proxyConnection, $message)
+    public function closeProxyConnection(ProxyConnection $proxyConnection, $message = null)
     {
-        $proxyConnection->getConnection()->end($this->makeErrorResponse(500, $message));
+        $proxyConnection->getConnection()->end($this->makeErrorResponse(500, $message ?: 'Timeout'));
     }
 }

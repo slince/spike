@@ -10,8 +10,8 @@ class TcpTunnelServer extends TunnelServer
     /**
      * {@inheritdoc}
      */
-    protected function closeProxyConnection(ProxyConnection $proxyConnection, $message)
+    public function closeProxyConnection(ProxyConnection $proxyConnection, $message = null)
     {
-        $proxyConnection->getConnection()->end("Timeout");
+        $proxyConnection->getConnection()->end($message ?: "Timeout");
     }
 }
