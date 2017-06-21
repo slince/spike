@@ -7,8 +7,9 @@ namespace Spike\Server\Handler;
 
 use Spike\Exception\BadRequestException;
 use Spike\Protocol\SpikeInterface;
-use Spike\Protocol\Spike;
 use Spike\Server\TunnelServer\TunnelServerInterface;
+use Slince\Event\Event;
+use Spike\Server\EventStore;
 
 class RegisterProxyHandler extends MessageHandler
 {
@@ -17,6 +18,10 @@ class RegisterProxyHandler extends MessageHandler
      */
     public function handle(SpikeInterface $message)
     {
+        //Fires 'register_proxy' event
+        $this->getDispatcher()->dispatch(new Event(EventStore::REGISTER_PROXY, $this, [
+            'message' => $message
+        ]));
         $tunnelServer = $this->findTunnelServer($message->getBody());
         $this->connection->removeAllListeners();
         $tunnelServer->registerTunnelConnection($this->connection, $message);

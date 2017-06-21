@@ -113,7 +113,6 @@ class Server
             try {
                 $messages = $parser->parse();
                 foreach ($messages as $message) {
-                    echo $message, PHP_EOL, PHP_EOL;
                     $message = Spike::fromString($message);
                     $this->dispatcher->dispatch(new Event(EventStore::RECEIVE_MESSAGE, $this, [
                         'message' => $message,

@@ -28,6 +28,7 @@ class LoggerSubscriber extends Subscriber
         return [
             EventStore::SERVER_RUN => 'onServerRun',
             EventStore::ACCEPT_CONNECTION => 'onAcceptConnection',
+            EventStore::RECEIVE_MESSAGE => 'onReceiveMessage',
             EventStore::SOCKET_ERROR => 'onSocketError',
             EventStore::CONNECTION_ERROR => 'onConnectionError',
         ];
@@ -40,12 +41,12 @@ class LoggerSubscriber extends Subscriber
 
     public function onAcceptConnection(Event $event)
     {
-        $this->logger->info('Accepted a new connection.');
+        $this->logger->info('Accepted a connection.');
     }
 
     public function onReceiveMessage(Event $event)
     {
-        $this->logger->info('Received a new message.');
+        $this->logger->info("Received a message:\r\n" . $event->getArgument('message'));
     }
 
     public function onSocketError(Event $event)

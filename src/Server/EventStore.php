@@ -32,22 +32,28 @@ final class EventStore
     const CONNECTION_ERROR = 'connection_error';
 
     /**
-     * Fires when server receive message
+     * Fires when the server receives message
      * @var string
      */
     const RECEIVE_MESSAGE = 'receive_message';
 
     /**
-     * Fires when the server send a proxy request to a proxy client
+     * Fires when the server sends a "request_proxy" message to a proxy client
      * @var string
      */
     const REQUEST_PROXY = 'request_proxy';
 
     /**
-     * Fires when the server receive a register proxy message
+     * Fires when the server receives a "register_proxy" message
      * @var string
      */
-    const RECEIVE_REGISTER_PROXY = 'receive_register_proxy';
+    const REGISTER_PROXY = 'register_proxy';
+
+    /**
+     * Fires when the server sends a "start_proxy" message
+     * @var string
+     */
+    const START_PROXY = 'start_proxy';
 
     /**
      * Fires when the client is disconnected
