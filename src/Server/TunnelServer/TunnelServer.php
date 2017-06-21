@@ -17,7 +17,7 @@ use Spike\Server\Server;
 use Spike\Tunnel\TunnelInterface;
 use Slince\Event\Dispatcher;
 
-class TunnelServer implements TunnelServerInterface
+abstract class TunnelServer implements TunnelServerInterface
 {
     /**
      * @var ConnectionInterface
@@ -33,11 +33,6 @@ class TunnelServer implements TunnelServerInterface
      * @var ConnectionInterface[]
      */
     protected $tunnelConnections = [];
-
-    /**
-     * @var LoopInterface
-     */
-    protected $loop;
 
     /**
      * @var Socket
@@ -59,8 +54,8 @@ class TunnelServer implements TunnelServerInterface
         $this->server = $server;
         $this->controlConnection = $controlConnection;
         $this->tunnel = $tunnel;
-        $this->loop = $loop;
         $this->socket = new Socket($this->getListenAddress(), $loop);
+        $loop->addPeriodicTimer(60 * 1, [$this, 'handleProxyConnectionTimeout']);
     }
 
     /**
@@ -91,18 +86,17 @@ class TunnelServer implements TunnelServerInterface
     {
         $this->closeAllProxyConnections();
         $this->socket->close();
-        $this->proxyConnections = null;
     }
 
     /**
      * Close all proxy connections
      */
-    protected function closeAllProxyConnections()
-    {
-        foreach ($this->proxyConnections as $proxyConnection) {
-            $proxyConnection->getConnection()->end('The tunnel server has been closed');
-        }
-    }
+    abstract  protected function closeAllProxyConnections();
+
+    /**
+     * Close the connection if it does not respond for more than 60 seconds
+     */
+    abstract public function handleProxyConnectionTimeout();
 
     /**
      * Handles the proxy connection
@@ -140,6 +134,7 @@ class TunnelServer implements TunnelServerInterface
         $this->getDispatcher()->dispatch(new Event(EventStore::REQUEST_PROXY, $this, [
             'message' => $startProxyMessage
         ]));
+        //Resumes the proxy connection
         $proxyConnection->resume();
         $proxyConnection->getConnection()->pipe($tunnelConnection);
         $tunnelConnection->pipe($proxyConnection->getConnection());

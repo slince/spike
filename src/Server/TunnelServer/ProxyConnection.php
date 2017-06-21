@@ -25,11 +25,18 @@ class ProxyConnection
      */
     protected $id;
 
+    /**
+     * The create time
+     * @var int
+     */
+    protected $createAt;
+
     public function __construct(ConnectionInterface $connection, $initBuffer = '')
     {
         $this->connection =  $connection;
         $this->initBuffer = $initBuffer;
         $this->id = spl_object_hash($connection);
+        $this->createAt = microtime(true);
     }
 
     /**
@@ -64,13 +71,28 @@ class ProxyConnection
         return $this->initBuffer;
     }
 
+    /**
+     * Pauses the connection
+     */
     public function pause()
     {
         $this->connection->pause();
     }
 
+    /**
+     * Resumes the connection
+     */
     public function resume()
     {
         $this->connection->resume();
+    }
+
+    /**
+     * Gets the waiting time of the connection
+     * @return float
+     */
+    public function getWaitingTime()
+    {
+        return microtime(true) - $this->createAt;
     }
 }

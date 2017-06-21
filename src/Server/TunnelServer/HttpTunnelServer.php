@@ -61,4 +61,17 @@ class HttpTunnelServer extends TunnelServer
             $proxyConnection->getConnection()->end($this->makeErrorResponse(500, 'The tunnel server has been closed'));
         }
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function handleProxyConnectionTimeout()
+    {
+        foreach ($this->proxyConnections as $key=> $proxyConnection) {
+            if ($proxyConnection->getWaitingTime() > 60) {
+                $proxyConnection->getConnection()->end($this->makeErrorResponse(500, 'Waiting for more than 60 seconds without responding'));
+                unset($this->proxyConnections[$key]);
+            }
+        }
+    }
 }
