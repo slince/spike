@@ -25,6 +25,7 @@ class TcpTunnelClient extends TunnelClient
             $this->tunnelConnection->removeListener('close', $handleTunnelConnectionClose);
             $this->tunnelConnection->removeListener('error', $handleTunnelConnectionClose);
             $this->tunnelConnection->end();
+            $this->client->getTunnelClients()->removeElement($this);
         };
         $localConnection->on('close', $handleLocalConnectionClose);
         $localConnection->on('error', $handleLocalConnectionClose);
@@ -35,6 +36,7 @@ class TcpTunnelClient extends TunnelClient
             $localConnection->removeListener('close', $handleLocalConnectionClose);
             $localConnection->removeListener('error', $handleLocalConnectionClose);
             $localConnection->end();
+            $this->client->getTunnelClients()->removeElement($this);
         };
         $this->tunnelConnection->on('close', $handleTunnelConnectionClose);
         $this->tunnelConnection->on('error', $handleTunnelConnectionClose);

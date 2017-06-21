@@ -8,6 +8,7 @@ namespace Spike\Client\TunnelClient;
 use React\EventLoop\LoopInterface;
 use React\Socket\ConnectionInterface;
 use React\Socket\Connector;
+use Spike\Client\Client;
 use Spike\Tunnel\HttpTunnel;
 use Spike\Tunnel\TunnelInterface;
 use Spike\Parser\SpikeParser;
@@ -31,15 +32,16 @@ abstract class TunnelClient implements TunnelClientInterface
     protected $serverAddress;
 
     /**
-     * @var Connector
-     */
-    protected $serverConnector;
-
-    /**
      * The tunnel connection
      * @var ConnectionInterface
      */
     protected $tunnelConnection;
+
+    /**
+     * The local connection
+     * @var ConnectionInterface
+     */
+    protected $localConnection;
 
     /**
      * @var string
@@ -51,14 +53,20 @@ abstract class TunnelClient implements TunnelClientInterface
      */
     protected $initBuffer;
 
-    public function __construct(TunnelInterface $tunnel, $proxyConnectionId, $serverAddress, LoopInterface $loop)
+    protected $client;
+
+    public function __construct(Client $client, TunnelInterface $tunnel, $proxyConnectionId, $serverAddress, LoopInterface $loop)
     {
+        $this->client = $client;
         $this->tunnel = $tunnel;
         $this->proxyConnectionId = $proxyConnectionId;
         $this->serverAddress = $serverAddress;
         $this->loop = $loop;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function run()
     {
         $serverConnector = new Connector($this->loop);
@@ -66,6 +74,10 @@ abstract class TunnelClient implements TunnelClientInterface
             ->then([$this, 'handleServerConnection']);
     }
 
+    /**
+     * Handles the server connection
+     * @param ConnectionInterface $connection
+     */
     public function handleServerConnection(ConnectionInterface $connection)
     {
         $this->tunnelConnection = $connection;

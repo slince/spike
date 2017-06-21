@@ -70,6 +70,10 @@ class Client
      */
     protected $tunnels = [];
 
+    /**
+     * Auth info
+     * @var array
+     */
     protected $auth;
 
     public function __construct($serverAddress, $tunnels, $auth, LoopInterface $loop = null, Dispatcher $dispatcher = null)
@@ -80,6 +84,7 @@ class Client
         $this->loop = $loop ?: LoopFactory::create();
         $this->connector = new Connector($this->loop);
         $this->tunnels = $this->createTunnels($tunnels);
+        $this->tunnelClients = new TunnelClientCollection();
     }
 
     /**
@@ -166,6 +171,15 @@ class Client
     }
 
     /**
+     * Gets all tunnel clients
+     * @return TunnelClientCollection
+     */
+    public function getTunnelClients()
+    {
+        return $this->tunnelClients;
+    }
+
+    /**
      * Gets all tunnels
      * @return TunnelInterface[]
      */
@@ -192,15 +206,6 @@ class Client
     }
 
     /**
-     * Gets all tunnel clients
-     * @return TunnelClient[]
-     */
-    public function getTunnelClients()
-    {
-        return $this->tunnelClients;
-    }
-
-    /**
      * Finds the matching tunnel
      * @param array $tunnelInfo
      * @throws RuntimeException
@@ -224,9 +229,9 @@ class Client
      */
     public function createTunnelClient(TunnelInterface $tunnel, $proxyConnectionId)
     {
-        $tunnelClient = new TcpTunnelClient($tunnel, $proxyConnectionId, $this->serverAddress, $this->loop);
+        $tunnelClient = new TcpTunnelClient($this, $tunnel, $proxyConnectionId, $this->serverAddress, $this->loop);
         $tunnelClient->run();
-        $this->tunnelClients[] = $tunnelClient;
+        $this->tunnelClients->add($tunnelClient);
         return $tunnelClient;
     }
 

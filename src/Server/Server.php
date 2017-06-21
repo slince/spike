@@ -19,6 +19,7 @@ use Spike\Protocol\Spike;
 use Spike\Protocol\SpikeInterface;
 use Spike\Server\Handler\HandlerInterface;
 use Spike\Server\Timer\ReviewClient;
+use Spike\Timer\TimerInterface;
 use Spike\Timer\UseTimerTrait;
 use Spike\Tunnel\HttpTunnel;
 use Spike\Tunnel\TunnelInterface;
@@ -269,6 +270,10 @@ class Server
         return $handler;
     }
 
+    /**
+     * Creates default timers
+     * @return TimerInterface[]
+     */
     protected function getDefaultTimers()
     {
         return [

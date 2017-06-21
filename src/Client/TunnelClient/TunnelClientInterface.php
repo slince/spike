@@ -6,7 +6,7 @@
 namespace Spike\Client\TunnelClient;
 
 use React\Socket\ConnectionInterface;
-use Spike\Client\Tunnel\TunnelInterface;
+use Spike\Tunnel\TunnelInterface;
 
 interface TunnelClientInterface
 {
@@ -15,6 +15,11 @@ interface TunnelClientInterface
      * @return TunnelInterface
      */
     public function getTunnel();
+
+    /**
+     * Run the tunnel client
+     */
+    public function run();
 
     /**
      * Handles the local connection
