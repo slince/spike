@@ -54,11 +54,6 @@ abstract class TunnelServer implements TunnelServerInterface
      */
     protected $loop;
 
-    /**
-     * @var TimerInterface[]
-     */
-    protected $timers;
-
     public function __construct(Server $server, ConnectionInterface $controlConnection, TunnelInterface $tunnel, LoopInterface $loop)
     {
         $this->server = $server;
@@ -80,8 +75,7 @@ abstract class TunnelServer implements TunnelServerInterface
             $this->handlePublicConnection($publicConnection);
         });
         //Creates defaults timers
-        $this->timers = $this->getDefaultTimers();
-        foreach ($this->timers as $timer) {
+        foreach ($this->getDefaultTimers() as $timer) {
             $this->addTimer($timer);
         }
     }

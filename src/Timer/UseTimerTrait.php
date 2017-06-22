@@ -9,6 +9,15 @@ use React\EventLoop\LoopInterface;
 
 trait UseTimerTrait
 {
+    /**
+     * @var TimerInterface[]
+     */
+    protected $timers;
+
+    /**
+     * Add one timer
+     * @param TimerInterface $timer
+     */
     public function addTimer(TimerInterface $timer)
     {
         if ($timer->isPeriodic()) {
@@ -17,6 +26,15 @@ trait UseTimerTrait
             $reactTimer = $this->getLoop()->addTimer($timer->getInterval(), $timer);
         }
         $timer->activate($this->getLoop(), $reactTimer);
+        $this->timers[] =  $timer;
+    }
+
+    /**
+     * @return TimerInterface[]
+     */
+    public function getTimers()
+    {
+        return $this->timers;
     }
 
     /**

@@ -7,6 +7,9 @@ namespace Spike\Server\Timer;
 
 class SummaryWatcher extends PeriodicTimer
 {
+    /**
+     * {@inheritdoc}
+     */
     public function __invoke()
     {
         $message = sprintf('Client Total: %s; Tunnel Server: %s',
@@ -16,6 +19,9 @@ class SummaryWatcher extends PeriodicTimer
         $this->server->getLogger()->info($message);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getInterval()
     {
         return 10;

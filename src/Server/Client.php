@@ -67,6 +67,14 @@ class Client
     }
 
     /**
+     * Close the client
+     */
+    public function close()
+    {
+        $this->controlConnection->end();
+    }
+
+    /**
      * Gets the client information
      * @return array
      */

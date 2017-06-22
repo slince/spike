@@ -11,13 +11,14 @@ use Spike\Server\TunnelServer\TunnelServerInterface;
 use Slince\Event\Event;
 use Spike\Server\EventStore;
 
-class RegisterProxyHandler extends MessageHandler
+class RegisterProxyHandler extends RequireAuthHandler
 {
     /**
      * {@inheritdoc}
      */
     public function handle(SpikeInterface $message)
     {
+        parent::handle($message);
         //Fires 'register_proxy' event
         $this->getDispatcher()->dispatch(new Event(EventStore::REGISTER_PROXY, $this, [
             'message' => $message

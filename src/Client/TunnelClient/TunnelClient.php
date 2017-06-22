@@ -71,14 +71,28 @@ abstract class TunnelClient implements TunnelClientInterface
     {
         $serverConnector = new Connector($this->loop);
         $serverConnector->connect($this->serverAddress)
-            ->then([$this, 'handleServerConnection']);
+            ->then([$this, 'handleProxyConnection']);
     }
 
     /**
-     * Handles the server connection
+     * {@inheritdoc}
+     */
+    public function close()
+    {
+        if ($this->localConnection) {
+            $this->localConnection->end();
+        }
+        if ($this->proxyConnection) {
+            $this->proxyConnection->end();
+        }
+        $this->client->getTunnelClients()->removeElement($this);
+    }
+
+    /**
+     * Handles the proxy connection
      * @param ConnectionInterface $connection
      */
-    public function handleServerConnection(ConnectionInterface $connection)
+    public function handleProxyConnection(ConnectionInterface $connection)
     {
         $this->proxyConnection = $connection;
         $connection->write(new Spike('register_proxy', $this->tunnel->toArray(), [

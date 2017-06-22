@@ -9,13 +9,14 @@ use Spike\Protocol\SpikeInterface;
 use Spike\Protocol\Spike;
 use Spike\Tunnel\TunnelFactory;
 
-class RegisterTunnelHandler extends MessageHandler
+class RegisterTunnelHandler extends RequireAuthHandler
 {
     /**
      * {@inheritdoc}
      */
     public function handle(SpikeInterface $message)
     {
+        parent::handle($message);
         $tunnelInfo = $message->getBody();
         $tunnelServer = $this->server->getTunnelServers()->findByTunnelInfo($tunnelInfo);
         if (!$tunnelServer) {

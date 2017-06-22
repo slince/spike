@@ -38,6 +38,12 @@ final class EventStore
     const RECEIVE_MESSAGE = 'receive_message';
 
     /**
+     * Fires when  an unauthorized client iss connected
+     * @var string
+     */
+    const UNAUTHORIZED_CLIENT = 'unauthorized_client';
+
+    /**
      * Fires when the server sends a "request_proxy" message to a proxy client
      * @var string
      */

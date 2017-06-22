@@ -76,8 +76,6 @@ class Server
      */
     protected $clients;
 
-    protected $timers = [];
-
     /**
      * @var Logger
      */
@@ -117,8 +115,7 @@ class Server
         });
         //Emit the event
         $this->dispatcher->dispatch(EventStore::SERVER_RUN);
-        $this->timers = $this->getDefaultTimers();
-        foreach ($this->timers as $timer) {
+        foreach ($this->getDefaultTimers() as $timer) {
             $this->addTimer($timer);
         }
         $this->loop->run();
@@ -174,6 +171,7 @@ class Server
             $tunnelServer->close();
             $this->tunnelServers->removeElement($tunnelServer);
         }
+        $client->close();
         $this->clients->removeElement($client); //Removes the client
     }
 
@@ -285,6 +283,9 @@ class Server
         switch ($message->getAction()) {
             case 'auth':
                 $handler = new Handler\AuthHandler($this, $connection);
+                break;
+            case 'ping':
+                $handler = new Handler\PingHandler($this, $connection);
                 break;
             case 'register_tunnel':
                 $handler = new Handler\RegisterTunnelHandler($this, $connection);

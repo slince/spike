@@ -21,6 +21,8 @@ interface TunnelClientInterface
      */
     public function run();
 
+    public function close();
+
     /**
      * Handles the local connection
      * @param ConnectionInterface $connection

@@ -11,6 +11,7 @@ use React\Socket\ConnectionInterface;
 use React\Socket\Connector;
 use Slince\Event\Dispatcher;
 use Slince\Event\Event;
+use Spike\Client\Timer\Heartbeat;
 use Spike\Logger\Logger;
 use Spike\Timer\MemoryWatcher;
 use Spike\Timer\TimerInterface;
@@ -87,11 +88,6 @@ class Client
      */
     protected $logger;
 
-    /**
-     * @var TimerInterface[]
-     */
-    protected $timers;
-
     public function __construct($serverAddress, $tunnels, $auth, LoopInterface $loop = null, Dispatcher $dispatcher = null)
     {
         $this->serverAddress = $serverAddress;
@@ -127,6 +123,9 @@ class Client
         return $tunnels;
     }
 
+    /**
+     * Run the client
+     */
     public function run()
     {
         $this->connector->connect($this->serverAddress)->then(function(ConnectionInterface $connection){
@@ -139,11 +138,23 @@ class Client
             $this->handleControlConnection($connection);
         });
         $this->dispatcher->dispatch(EventStore::CLIENT_RUN);
-        $this->timers = $this->getDefaultTimers();
-        foreach ($this->timers as $timer) {
+        foreach ($this->getDefaultTimers() as $timer) {
             $this->addTimer($timer);
         }
         $this->loop->run();
+    }
+
+    /**
+     * Close the client
+     */
+    public function close()
+    {
+        foreach ($this->timers as $timer) {
+            $timer->cancel();
+        }
+        foreach ($this->tunnelClients as $tunnelClient) {
+            $tunnelClient->close();
+        }
     }
 
     /**
@@ -164,6 +175,9 @@ class Client
                 ]));
                 $this->createMessageHandler($message, $connection)->handle($message);
             }
+        });
+        $connection->on('close', function(){
+            $this->close();
         });
     }
 
@@ -188,6 +202,7 @@ class Client
     {
         $this->id = $id;
         Spike::setGlobalHeader('Client-ID', $id);
+        $this->addTimer(new Heartbeat($this));
     }
 
     /**
