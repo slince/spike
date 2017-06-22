@@ -66,7 +66,7 @@ class Application extends BaseApplication implements SubscriberInterface
         if ($commandName) {
             $exitCode = parent::doRun($input, $output);
         } else {
-            $exitCode = $this->doRunServer();
+            $exitCode = $this->doRunClient();
         }
         return $exitCode;
     }
@@ -85,6 +85,7 @@ class Application extends BaseApplication implements SubscriberInterface
     public function onAuthError(Event $event)
     {
         $this->output->writeln('Auth error, please checks your config file');
+        $this->client->close();
     }
 
     public function onRegisterTunnelError(Event $event)
@@ -93,12 +94,12 @@ class Application extends BaseApplication implements SubscriberInterface
             $event->getArgument('tunnel'),
             $event->getArgument('errorMessage')
         ));
+        $this->client->close();
     }
-
     /**
-     * Start the server
+     * Start the client
      */
-    protected function doRunServer()
+    protected function doRunClient()
     {
         foreach ($this->getSubscribers() as $subscriber) {
             $this->dispatcher->addSubscriber($subscriber);

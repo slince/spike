@@ -316,8 +316,8 @@ class Client
                 $handler = new Handler\RequestProxyHandler($this, $connection);
                 break;
             default:
-                throw new InvalidArgumentException(sprintf('Cannot find handler for message type: "%s"',
-                    get_class($message)
+                throw new InvalidArgumentException(sprintf('Cannot find handler for the message: "%s"',
+                    $message->getAction()
                 ));
         }
         return $handler;

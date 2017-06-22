@@ -24,20 +24,20 @@ class RegisterTunnelHandler extends RequireAuthHandler
             try {
                 $this->server->createTunnelServer($tunnel, $this->connection);
                 $response = new Spike('register_tunnel_response', $tunnel->toArray(), [
-                    'code' => 0
+                    'Code' => 0
                 ]);
             } catch (\Exception $exception) {
-                $response = new Spike('register_tunnel_response', array_replace($tunnel->toArray(), [
+                $response = new Spike('register_tunnel_response', array_merge($tunnel->toArray(), [
                     'error' => $exception->getMessage()
                 ]), [
-                    'code' => $exception->getCode() ?: 1
+                    'Code' => $exception->getCode() ?: 1
                 ]);
             }
         } else {
-            $response = new Spike('register_tunnel_response', array_replace($tunnelInfo, [
+            $response = new Spike('register_tunnel_response', array_merge($tunnelInfo, [
                 'error' => 'The tunnel has been registered'
             ]), [
-                'code' => 1
+                'Code' => 1
             ]);
         }
         $this->connection->write($response);
