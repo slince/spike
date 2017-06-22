@@ -10,6 +10,9 @@ use Spike\Protocol\SpikeInterface;
 
 class RequestProxyHandler extends MessageHandler
 {
+    /**
+     * {@inheritdoc}
+     */
     public function handle(SpikeInterface $message)
     {
         $tunnelInfo = $message->getBody();

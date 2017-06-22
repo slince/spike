@@ -12,6 +12,9 @@ use Spike\Server\Client;
 
 class AuthHandler extends MessageHandler
 {
+    /**
+     * {@inheritdoc}
+     */
     public function handle(SpikeInterface $message)
     {
         $auth = $message->getBody();

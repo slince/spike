@@ -12,6 +12,9 @@ use Spike\Protocol\SpikeInterface;
 
 class RegisterTunnelResponseHandler extends MessageHandler
 {
+    /**
+     * {@inheritdoc}
+     */
     public function handle(SpikeInterface $message)
     {
         $response = $message->getBody();
