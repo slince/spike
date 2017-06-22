@@ -104,7 +104,6 @@ abstract class TunnelClient implements TunnelClientInterface
             $parser->pushIncoming($data);
             $protocol = $parser->parseFirst();
             if ($protocol) {
-                echo $protocol;
                 $connection->removeAllListeners('data');
                 $message = Spike::fromString($protocol);
                 if ($message->getAction() == 'start_proxy') {
@@ -126,9 +125,7 @@ abstract class TunnelClient implements TunnelClientInterface
      */
     protected function createLocalConnector($address)
     {
-        $localConnector = new Connector($this->loop, [
-            'dns' => false
-        ]);
+        $localConnector = new Connector($this->loop);
         $localConnector->connect($address)->then([$this, 'handleLocalConnection'],
             [$this, 'handleConnectLocalError']
         );
