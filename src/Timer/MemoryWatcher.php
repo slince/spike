@@ -23,6 +23,6 @@ class MemoryWatcher extends PeriodicTimer
 
     public function getInterval()
     {
-        return 5;
+        return 10;
     }
 }

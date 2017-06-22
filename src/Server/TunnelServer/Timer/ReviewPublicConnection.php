@@ -7,9 +7,11 @@ namespace Spike\Server\TunnelServer\Timer;
 
 class ReviewPublicConnection extends PeriodicTimer
 {
+    /**
+     * {@inheritdoc}
+     */
     public function __invoke()
     {
-        var_dump(count($this->tunnelServer->getPublicConnections()));
         foreach ($this->tunnelServer->getPublicConnections() as $key => $publicConnection) {
             if ($publicConnection->getWaitingDuration() > 60) {
                 $this->tunnelServer->closePublicConnection($publicConnection, 'Waiting for more than 60 seconds without responding');
@@ -18,8 +20,11 @@ class ReviewPublicConnection extends PeriodicTimer
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getInterval()
     {
-        return 1 * 2;
+        return  60 * 1;
     }
 }

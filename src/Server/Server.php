@@ -20,6 +20,7 @@ use Spike\Protocol\Spike;
 use Spike\Protocol\SpikeInterface;
 use Spike\Server\Handler\HandlerInterface;
 use Spike\Server\Timer\ReviewClient;
+use Spike\Server\Timer\SummaryWatcher;
 use Spike\Timer\MemoryWatcher;
 use Spike\Timer\TimerInterface;
 use Spike\Timer\UseTimerTrait;
@@ -307,7 +308,8 @@ class Server
     {
         return [
             new ReviewClient($this),
-            new MemoryWatcher($this->logger)
+            new MemoryWatcher($this->logger),
+            new SummaryWatcher($this)
         ];
     }
 }
