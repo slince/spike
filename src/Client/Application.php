@@ -8,6 +8,7 @@ namespace Spike\Client;
 use Slince\Event\Event;
 use Spike\Application as BaseApplication;
 use Slince\Event\SubscriberInterface;
+use Spike\Client\Command\InitCommand;
 use Spike\Client\Command\SpikeCommand;
 use Spike\Client\Command\ShowProxyHostsCommand;
 use Spike\Client\Subscriber\LoggerSubscriber;
@@ -141,6 +142,7 @@ class Application extends BaseApplication implements SubscriberInterface
         return array_merge(parent::getDefaultCommands(), [
             new SpikeCommand($this),
             new ShowProxyHostsCommand($this),
+            new InitCommand($this),
         ]);
     }
 
