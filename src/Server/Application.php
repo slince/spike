@@ -8,6 +8,7 @@ namespace Spike\Server;
 use Spike\Application as BaseApplication;
 use GuzzleHttp\Psr7\Response;
 use Slince\Event\SubscriberInterface;
+use Spike\Server\Command\SpikeCommand;
 use Spike\Server\Subscriber\LoggerSubscriber;
 use Spike\Logger\Logger;
 use Symfony\Component\Console\Input\InputInterface;
@@ -62,10 +63,21 @@ class Application extends BaseApplication implements SubscriberInterface
         return $exitCode;
     }
 
+    protected function doRunServer()
+    {
+        if (true === $this->input->hasParameterOption(array('--help', '-h'), true)) {
+            $command = $this->get('spike');
+            $exitCode = $this->doRunCommand($command, $this->input, $this->output);
+        } else {
+            $exitCode = $this->runServer();
+        }
+        return $exitCode;
+    }
+
     /**
      * Start the server
      */
-    protected function doRunServer()
+    protected function runServer()
     {
         foreach ($this->getSubscribers() as $subscriber) {
             $this->dispatcher->addSubscriber($subscriber);
@@ -92,6 +104,16 @@ class Application extends BaseApplication implements SubscriberInterface
             $this,
             new LoggerSubscriber($this)
         ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getDefaultCommands()
+    {
+        return array_merge(parent::getDefaultCommands(), [
+            new SpikeCommand($this),
+        ]);
     }
 
     /**

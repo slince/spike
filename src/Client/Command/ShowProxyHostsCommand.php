@@ -13,7 +13,7 @@ class ShowProxyHostsCommand extends Command
 {
     public function configure()
     {
-        $this->setName('list-hosts')
+        $this->setName('list-proxy')
             ->setDescription('Lists all supported proxy hosts by the client');
     }
 

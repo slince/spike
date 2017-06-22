@@ -8,9 +8,11 @@ namespace Spike\Client;
 use Slince\Event\Event;
 use Spike\Application as BaseApplication;
 use Slince\Event\SubscriberInterface;
+use Spike\Client\Command\SpikeCommand;
 use Spike\Client\Command\ShowProxyHostsCommand;
 use Spike\Client\Subscriber\LoggerSubscriber;
 use Spike\Logger\Logger;
+use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -51,6 +53,9 @@ class Application extends BaseApplication implements SubscriberInterface
         );
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function doRun(InputInterface $input, OutputInterface $output)
     {
         $this->input = $input;
@@ -67,6 +72,17 @@ class Application extends BaseApplication implements SubscriberInterface
             $exitCode = parent::doRun($input, $output);
         } else {
             $exitCode = $this->doRunClient();
+        }
+        return $exitCode;
+    }
+
+    protected function doRunClient()
+    {
+        if (true === $this->input->hasParameterOption(array('--help', '-h'), true)) {
+            $command = $this->get('spike');
+            $exitCode = $this->doRunCommand($command, $this->input, $this->output);
+        } else {
+            $exitCode = $this->runClient();
         }
         return $exitCode;
     }
@@ -99,7 +115,7 @@ class Application extends BaseApplication implements SubscriberInterface
     /**
      * Start the client
      */
-    protected function doRunClient()
+    protected function runClient()
     {
         foreach ($this->getSubscribers() as $subscriber) {
             $this->dispatcher->addSubscriber($subscriber);
@@ -114,6 +130,7 @@ class Application extends BaseApplication implements SubscriberInterface
     public function getDefaultCommands()
     {
         return array_merge(parent::getDefaultCommands(), [
+            new SpikeCommand($this),
             new ShowProxyHostsCommand($this),
         ]);
     }
@@ -135,12 +152,15 @@ class Application extends BaseApplication implements SubscriberInterface
      */
     protected function getDefaultInputDefinition()
     {
-        $definition = parent::getDefaultInputDefinition();
-        $definition->addOption(new InputOption('config', null, InputOption::VALUE_OPTIONAL,
-            'The configuration file, support json,ini,xml and yaml format'));
-
-        $definition->addOption(new InputOption('address', null, InputOption::VALUE_OPTIONAL,
-            'The server address'));
+        $definition = new InputDefinition([
+            new InputOption('config', null, InputOption::VALUE_OPTIONAL,
+                'The configuration file, support json,ini,xml and yaml format'),
+            new InputOption('address', null, InputOption::VALUE_OPTIONAL,
+                'The server address')
+        ]);
+        $defaultDefinition = parent::getDefaultInputDefinition();
+        $definition->addArguments($defaultDefinition->getArguments());
+        $definition->addOptions($defaultDefinition->getOptions());
         return $definition;
     }
 }
