@@ -155,6 +155,7 @@ class Client
         foreach ($this->tunnelClients as $tunnelClient) {
             $tunnelClient->close();
         }
+        $this->controlConnection->end();
     }
 
     /**
