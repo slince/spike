@@ -31,7 +31,7 @@ class Configuration extends BaseConfiguration
      */
     public function getDefaultConfigFile()
     {
-        return getcwd() . '/' . 'spike-server.json';
+        return getcwd() . '/' . 'spiked.json';
     }
 
     /**

@@ -8,6 +8,7 @@ namespace Spike\Server;
 use Spike\Application as BaseApplication;
 use GuzzleHttp\Psr7\Response;
 use Slince\Event\SubscriberInterface;
+use Spike\Server\Command\InitCommand;
 use Spike\Server\Command\SpikeCommand;
 use Spike\Server\Subscriber\LoggerSubscriber;
 use Spike\Logger\Logger;
@@ -113,6 +114,7 @@ class Application extends BaseApplication implements SubscriberInterface
     {
         return array_merge(parent::getDefaultCommands(), [
             new SpikeCommand($this),
+            new InitCommand($this)
         ]);
     }
 

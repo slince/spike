@@ -3,7 +3,7 @@
  * Spike library
  * @author Tao <taosikai@yeah.net>
  */
-namespace Spike\Client\Command;
+namespace Spike\Server\Command;
 
 use Slince\Config\Config;
 use Symfony\Component\Console\Input\InputDefinition;
@@ -29,7 +29,7 @@ class InitCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $templateConfigFile = __DIR__ . '/../../../spike-template.json';
+        $templateConfigFile = __DIR__ . '/../../../spiked-template.json';
         $config = new Config($templateConfigFile);
         $dstPath = $input->getOption('dir');
         $extension = $input->getOption('format');
@@ -37,7 +37,7 @@ class InitCommand extends Command
             $output->writeln(sprintf('<error>The format "%s" is not supported</error>', $extension));
             return false;
         }
-        if (!$config->dump("{$dstPath}/spike.{$extension}")) {
+        if (!$config->dump("{$dstPath}/spiked.{$extension}")) {
             $output->writeln("Can not create the configuration file");
         }
     }

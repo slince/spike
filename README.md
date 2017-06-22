@@ -10,10 +10,11 @@ Spike is a reverse proxy that help to expose your local server to the internet.
 ### Installation
 
 ```
-composer require spike/spike *@beta
+composer require slince/spike *@beta
 ```
 
 ### Usage
+
 
  
 ### License

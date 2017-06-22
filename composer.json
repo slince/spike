@@ -1,5 +1,5 @@
 {
-    "name": "spike/spike",
+    "name": "slince/spike",
     "description": "A fast reverse proxy that help to expose a local server to the internet",
     "keywords": ["tunnel", "proxy", "reverse proxy", "nat", "expose localhost"],
     "authors": [
@@ -28,6 +28,11 @@
     "autoload": {
         "psr-4": {
           "Spike\\": "./src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+          "Spike\\Tests\\": "./tests"
         }
     },
     "bin": ["./bin/spike", "./bin/spiked"],
