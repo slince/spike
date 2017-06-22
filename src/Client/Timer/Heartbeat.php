@@ -22,6 +22,6 @@ class Heartbeat extends PeriodicTimer
      */
     public function getInterval()
     {
-        return 5 * 1;
+        return 50;
     }
 }

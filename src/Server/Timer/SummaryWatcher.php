@@ -24,6 +24,6 @@ class SummaryWatcher extends PeriodicTimer
      */
     public function getInterval()
     {
-        return 10;
+        return 30;
     }
 }

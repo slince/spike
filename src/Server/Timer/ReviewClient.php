@@ -24,6 +24,6 @@ class ReviewClient extends PeriodicTimer
      */
     public function getInterval()
     {
-        return 30 * 60;
+        return 5 * 60;
     }
 }
