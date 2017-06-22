@@ -33,9 +33,18 @@ class TcpTunnel extends Tunnel
     public function toArray()
     {
         return [
-            'protocol' => 'tcp',
+            'protocol' => $this->getProtocol(),
             'host' => $this->host,
             'serverPort' => $this->serverPort
         ];
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getProtocol()
+    {
+        return 'tcp';
+    }
+
 }

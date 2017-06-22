@@ -21,7 +21,6 @@ abstract class Tunnel implements TunnelInterface
         $this->serverPort = $serverPort;
     }
 
-
     /**
      * {@inheritdoc}
      */

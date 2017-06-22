@@ -54,6 +54,15 @@ class Application extends BaseApplication implements SubscriberInterface
     }
 
     /**
+     * Gets the client instance
+     * @return Client
+     */
+    public function getKernel()
+    {
+        return $this->client;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function doRun(InputInterface $input, OutputInterface $output)
@@ -154,9 +163,7 @@ class Application extends BaseApplication implements SubscriberInterface
     {
         $definition = new InputDefinition([
             new InputOption('config', null, InputOption::VALUE_OPTIONAL,
-                'The configuration file, support json,ini,xml and yaml format'),
-            new InputOption('address', null, InputOption::VALUE_OPTIONAL,
-                'The server address')
+                'The configuration file, support json,ini,xml and yaml format')
         ]);
         $defaultDefinition = parent::getDefaultInputDefinition();
         $definition->addArguments($defaultDefinition->getArguments());

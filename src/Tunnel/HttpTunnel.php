@@ -82,10 +82,18 @@ class HttpTunnel extends Tunnel
     public function toArray()
     {
         return [
-            'protocol' => 'http',
+            'protocol' => $this->getProtocol(),
             'proxyHosts' => $this->proxyHosts,
             'serverPort' => $this->serverPort,
             'proxyHost' => $this->proxyHost,
         ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getProtocol()
+    {
+        return 'http';
     }
 }

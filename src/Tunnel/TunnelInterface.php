@@ -14,6 +14,12 @@ interface TunnelInterface
     public function getServerPort();
 
     /**
+     * Gets the tunnel protocol
+     * @return string
+     */
+    public function getProtocol();
+
+    /**
      * Gets the tunnel info
      * @return array
      */

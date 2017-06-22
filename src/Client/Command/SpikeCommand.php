@@ -53,8 +53,6 @@ class SpikeCommand extends Command
         return new InputDefinition(array(
             new InputOption('config', null, InputOption::VALUE_OPTIONAL,
                 'The configuration file, support json,ini,xml and yaml format'),
-            new InputOption('address', null, InputOption::VALUE_OPTIONAL,
-                'The server address'),
             new InputOption('format', null, InputOption::VALUE_REQUIRED, 'The output format (txt, xml, json, or md)', 'txt'),
             new InputOption('raw', null, InputOption::VALUE_NONE, 'To output raw command help'),
         ));
