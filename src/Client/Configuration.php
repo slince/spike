@@ -12,10 +12,7 @@ class Configuration extends BaseConfiguration
 {
     public function getServerAddress()
     {
-        $address = $this->get('server-address');
-        if (!$address) {
-            throw new InvalidArgumentException("You should provide a server address");
-        }
+        $address = $this->get('server-address', '127.0.0.1:8088');
         return $address;
     }
 

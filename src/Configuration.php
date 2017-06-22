@@ -15,7 +15,7 @@ class Configuration  extends Config
      */
     public function getTunnels()
     {
-        return $this->get('tunnels');
+        return $this->get('tunnels', []);
     }
 
     /**

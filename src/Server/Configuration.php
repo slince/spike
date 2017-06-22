@@ -18,10 +18,7 @@ class Configuration extends BaseConfiguration
      */
     public function getAddress()
     {
-        $address = $this->get('address');
-        if (!$address) {
-            throw new InvalidArgumentException("You should provide a valid address");
-        }
+        $address = $this->get('address', '127.0.0.1:8088');
         return $address;
     }
 
