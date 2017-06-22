@@ -18,10 +18,10 @@ class PasswordAuthentication implements AuthenticationInterface
 
     public function verify($auth)
     {
-        if (!isset($auth['username']) || !isset($auth['password'])) {
+        if (!isset($auth['username'])) {
             throw new InvalidArgumentException("Invalid arguments");
         }
         return ($this->auth['username']  == $auth['username'])
-            && (!isset($this->auth['password']) || $this->auth['password'] == $auth['username']);
+            && (!isset($this->auth['password']) || $this->auth['password'] == $auth['password']);
     }
 }
