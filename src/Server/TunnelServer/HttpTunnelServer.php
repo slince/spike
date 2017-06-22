@@ -14,10 +14,10 @@ class HttpTunnelServer extends TunnelServer
     /**
      * {@inheritdoc}
      */
-    public function handleProxyConnection(ProxyConnection $proxyConnection)
+    public function handlePublicConnection(PublicConnection $publicConnection)
     {
         $parser = new HttpHeaderParser();
-        $proxyConnection->getConnection()->on('data', function($data) use ($parser, $proxyConnection){
+        $publicConnection->getConnection()->on('data', function($data) use ($parser, $publicConnection){
             $parser->pushIncoming($data);
             $message = $parser->parseFirst();
             echo $message;
@@ -27,12 +27,12 @@ class HttpTunnelServer extends TunnelServer
                 if ($this->tunnel->supportProxyHost($host)) {
                     $this->tunnel->setProxyHost($host);
                     $httpMessage = $message . $parser->getRestData();
-                    $proxyConnection->setInitBuffer($httpMessage);
-                    parent::handleProxyConnection($proxyConnection);
+                    $publicConnection->setInitBuffer($httpMessage);
+                    parent::handlePublicConnection($publicConnection);
                 } else {
                     $body = sprintf('The host "%s" was not bound.', $host);
                     $response = $this->makeErrorResponse(404, $body);
-                    $proxyConnection->end(Psr7\str($response));
+                    $publicConnection->end(Psr7\str($response));
                 }
             }
         });
@@ -55,8 +55,8 @@ class HttpTunnelServer extends TunnelServer
     /**
      * {@inheritdoc}
      */
-    public function closeProxyConnection(ProxyConnection $proxyConnection, $message = null)
+    public function closePublicConnection(PublicConnection $publicConnection, $message = null)
     {
-        $proxyConnection->end(Psr7\str($this->makeErrorResponse(500, $message ?: 'Timeout')));
+        $publicConnection->end(Psr7\str($this->makeErrorResponse(500, $message ?: 'Timeout')));
     }
 }

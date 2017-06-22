@@ -29,20 +29,20 @@ interface TunnelServerInterface
      * @param ConnectionInterface $connection
      * @param SpikeInterface $message
      */
-    public function registerTunnelConnection(ConnectionInterface $connection, SpikeInterface $message);
+    public function registerProxyConnection(ConnectionInterface $connection, SpikeInterface $message);
 
     /**
-     * Gets all proxy connection of the tunnel server
-     * @return ProxyConnectionCollection
+     * Gets all public connection of the tunnel server
+     * @return PublicConnectionCollection
      */
-    public function getProxyConnections();
+    public function getPublicConnections();
 
     /**
-     * Close the given proxy connection
-     * @param ProxyConnection $proxyConnection
+     * Close the given public connection
+     * @param PublicConnection $publicConnection
      * @param null $message
      */
-    public function closeProxyConnection(ProxyConnection $proxyConnection, $message = null);
+    public function closePublicConnection(PublicConnection $publicConnection, $message = null);
 
     /**
      * Add one timer

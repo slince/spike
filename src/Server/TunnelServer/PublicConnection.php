@@ -15,7 +15,7 @@ use React\Socket\ConnectionInterface;
  * @method removeAllListeners($eventName = null);
  * @method end($data = null);
  */
-class ProxyConnection
+class PublicConnection
 {
     /**
      * @var ConnectionInterface

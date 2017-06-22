@@ -14,7 +14,7 @@ use Spike\Protocol\Spike;
 use Spike\Protocol\SpikeInterface;
 use Spike\Server\EventStore;
 use Spike\Server\Server;
-use Spike\Server\TunnelServer\Timer\ReviewProxyConnection;
+use Spike\Server\TunnelServer\Timer\ReviewPublicConnection;
 use Spike\Timer\UseTimerTrait;
 use Spike\Tunnel\TunnelInterface;
 use Slince\Event\Dispatcher;
@@ -30,9 +30,9 @@ abstract class TunnelServer implements TunnelServerInterface
     protected $controlConnection;
 
     /**
-     * @var ProxyConnectionCollection
+     * @var PublicConnectionCollection
      */
-    protected $proxyConnections;
+    protected $publicConnections;
 
     /**
      * @var Socket
@@ -66,7 +66,7 @@ abstract class TunnelServer implements TunnelServerInterface
         $this->tunnel = $tunnel;
         $this->loop = $loop;
         $this->socket = new Socket($this->getListenAddress(), $loop);
-        $this->proxyConnections = new ProxyConnectionCollection();
+        $this->publicConnections = new PublicConnectionCollection();
     }
 
     /**
@@ -75,9 +75,9 @@ abstract class TunnelServer implements TunnelServerInterface
     public function run()
     {
         $this->socket->on('connection', function($connection){
-            $proxyConnection = new ProxyConnection($connection);
-            $this->proxyConnections->add($proxyConnection);
-            $this->handleProxyConnection($proxyConnection);
+            $publicConnection = new PublicConnection($connection);
+            $this->publicConnections->add($publicConnection);
+            $this->handlePublicConnection($publicConnection);
         });
         //Creates defaults timers
         $this->timers = $this->getDefaultTimers();
@@ -100,81 +100,81 @@ abstract class TunnelServer implements TunnelServerInterface
      */
     public function close()
     {
-        //Close all proxy connection
-        foreach ($this->proxyConnections as $proxyConnection) {
-            $this->closeProxyConnection($proxyConnection, 'The tunnel server has been closed');
+        //Close all public connection
+        foreach ($this->publicConnections as $publicConnection) {
+            $this->closePublicConnection($publicConnection, 'The tunnel server has been closed');
         }
         //Cancel all timers
         foreach ($this->timers as $timer) {
             $timer->cancel();
         }
-        $this->proxyConnections = null;
+        $this->publicConnections = null;
         $this->timers = null;
         $this->socket->close();
     }
 
     /**
-     * Handles the proxy connection
-     * @param ProxyConnection $proxyConnection
+     * Handles the public connection
+     * @param PublicConnection $publicConnection
      */
-    public function handleProxyConnection(ProxyConnection $proxyConnection)
+    public function handlePublicConnection(PublicConnection $publicConnection)
     {
         $requestProxyMessage = new Spike('request_proxy', $this->tunnel->toArray(), [
-            'Proxy-Connection-ID' => $proxyConnection->getId()
+            'Proxy-Connection-ID' => $publicConnection->getId()
         ]);
         $this->controlConnection->write($requestProxyMessage);
         //Fires 'request_proxy' event
         $this->getDispatcher()->dispatch(new Event(EventStore::REQUEST_PROXY, $this, [
             'message' => $requestProxyMessage
         ]));
-        $proxyConnection->removeAllListeners();
-        $proxyConnection->pause();
+        $publicConnection->removeAllListeners();
+        $publicConnection->pause();
     }
 
     /**
      * Registers tunnel connection
-     * @param ConnectionInterface $tunnelConnection
+     * @param ConnectionInterface $proxyConnection
      * @param SpikeInterface $message
      */
-    public function registerTunnelConnection(ConnectionInterface $tunnelConnection, SpikeInterface $message)
+    public function registerProxyConnection(ConnectionInterface $proxyConnection, SpikeInterface $message)
     {
         $connectionId = $message->getHeader('Proxy-Connection-ID');
-        $proxyConnection = $this->proxyConnections->findById($connectionId);
-        if (is_null($proxyConnection)) {
-            throw new InvalidArgumentException(sprintf('Cannot find the proxy connection "%s"', $connectionId));
+        $publicConnection = $this->publicConnections->findById($connectionId);
+        if (is_null($publicConnection)) {
+            throw new InvalidArgumentException(sprintf('Cannot find the public connection "%s"', $connectionId));
         }
         $startProxyMessage = new Spike('start_proxy');
-        $tunnelConnection->write($startProxyMessage);
+        $proxyConnection->write($startProxyMessage);
         //Fires 'start_proxy' event
         $this->getDispatcher()->dispatch(new Event(EventStore::REQUEST_PROXY, $this, [
             'message' => $startProxyMessage
         ]));
-        //Resumes the proxy connection
-        $proxyConnection->resume();
-        $proxyConnection->pipe($tunnelConnection);
-        $tunnelConnection->pipe($proxyConnection->getConnection());
-        $tunnelConnection->write($proxyConnection->getInitBuffer());
+        //Resumes the public connection
+        $publicConnection->resume();
+        $publicConnection->pipe($proxyConnection);
+        $proxyConnection->pipe($publicConnection->getConnection());
+        $proxyConnection->write($publicConnection->getInitBuffer());
 
-        //Handles proxy connection close
-        $handleProxyConnectionClose = function() use ($tunnelConnection, $proxyConnection, &$handleTunnelConnectionClose){
-            $tunnelConnection->removeListener('close', $handleTunnelConnectionClose);
-            $tunnelConnection->removeListener('error', $handleTunnelConnectionClose);
-            $tunnelConnection->end();
-            echo 'proxy end';
-            $this->proxyConnections->removeElement($proxyConnection);
-        };
-        $proxyConnection->on('close', $handleProxyConnectionClose);
-        $proxyConnection->on('error', $handleProxyConnectionClose);
-
-        //Handles tunnel connection close
-        $handleTunnelConnectionClose = function () use ($proxyConnection, &$handleProxyConnectionClose) {
+        //Handles public connection close
+        $handlePublicConnectionClose = function() use ($proxyConnection, $publicConnection, &$handleProxyConnectionClose){
             $proxyConnection->removeListener('close', $handleProxyConnectionClose);
             $proxyConnection->removeListener('error', $handleProxyConnectionClose);
             $proxyConnection->end();
+            echo 'proxy end';
+            $this->publicConnections->removeElement($publicConnection);
+        };
+        $publicConnection->on('close', $handlePublicConnectionClose);
+        $publicConnection->on('error', $handlePublicConnectionClose);
+
+        //Handles tunnel connection close
+        $handleProxyConnectionClose = function () use ($publicConnection, &$handlePublicConnectionClose) {
+            $publicConnection->removeListener('close', $handlePublicConnectionClose);
+            $publicConnection->removeListener('error', $handlePublicConnectionClose);
+            $publicConnection->end();
             echo 'tunnel end';
         };
-        $tunnelConnection->on('close', $handleTunnelConnectionClose);
-        $tunnelConnection->on('error', $handleTunnelConnectionClose);
+        $proxyConnection->on('close', $handleProxyConnectionClose);
+        $proxyConnection->on('error', $handleProxyConnectionClose);
     }
 
     /**
@@ -193,7 +193,7 @@ abstract class TunnelServer implements TunnelServerInterface
     protected function getDefaultTimers()
     {
         return [
-            new ReviewProxyConnection($this)
+            new ReviewPublicConnection($this)
         ];
     }
 
@@ -216,9 +216,9 @@ abstract class TunnelServer implements TunnelServerInterface
     /**
      * {@inheritdoc}
      */
-    public function getProxyConnections()
+    public function getPublicConnections()
     {
-        return $this->proxyConnections;
+        return $this->publicConnections;
     }
 
     /**

@@ -7,18 +7,18 @@ namespace Spike\Server\TunnelServer;
 
 use Doctrine\Common\Collections\ArrayCollection;
 
-class ProxyConnectionCollection extends ArrayCollection
+class PublicConnectionCollection extends ArrayCollection
 {
     /**
      * Finds the connection by its id
      * @param string $id
-     * @return ProxyConnection
+     * @return PublicConnection
      */
     public function findById($id)
     {
-        foreach ($this as $proxyConnection) {
-            if ($proxyConnection->getId() == $id) {
-                return $proxyConnection;
+        foreach ($this as $publicConnection) {
+            if ($publicConnection->getId() == $id) {
+                return $publicConnection;
             }
         }
         return null;

@@ -51,9 +51,9 @@ class Client
     protected $controlConnection;
 
     /**
-     * @var TunnelClient[]
+     * @var TunnelClientCollection
      */
-    protected $tunnelClients = [];
+    protected $tunnelClients;
 
     /**
      * @var string

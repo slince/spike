@@ -24,7 +24,7 @@ class RegisterProxyHandler extends MessageHandler
         ]));
         $tunnelServer = $this->findTunnelServer($message->getBody());
         $this->connection->removeAllListeners();
-        $tunnelServer->registerTunnelConnection($this->connection, $message);
+        $tunnelServer->registerProxyConnection($this->connection, $message);
     }
 
     /**
