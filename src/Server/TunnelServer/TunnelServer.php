@@ -132,7 +132,7 @@ abstract class TunnelServer implements TunnelServerInterface
     }
 
     /**
-     * Registers tunnel connection
+     * Registers proxy connection
      * @param ConnectionInterface $proxyConnection
      * @param SpikeInterface $message
      */
@@ -166,7 +166,7 @@ abstract class TunnelServer implements TunnelServerInterface
         $publicConnection->on('close', $handlePublicConnectionClose);
         $publicConnection->on('error', $handlePublicConnectionClose);
 
-        //Handles tunnel connection close
+        //Handles proxy connection close
         $handleProxyConnectionClose = function () use ($publicConnection, &$handlePublicConnectionClose) {
             $publicConnection->removeListener('close', $handlePublicConnectionClose);
             $publicConnection->removeListener('error', $handlePublicConnectionClose);

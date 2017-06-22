@@ -25,7 +25,7 @@ interface TunnelServerInterface
     public function getControlConnection();
 
     /**
-     * Registers the tunnel connection
+     * Registers the proxy connection
      * @param ConnectionInterface $connection
      * @param SpikeInterface $message
      */

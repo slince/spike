@@ -11,8 +11,8 @@ class TcpTunnelClient extends TunnelClient
 {
     public function handleLocalConnection(ConnectionInterface $localConnection)
     {
-        $localConnection->pipe($this->tunnelConnection);
-        $this->tunnelConnection->pipe($localConnection);
+        $localConnection->pipe($this->proxyConnection);
+        $this->proxyConnection->pipe($localConnection);
         $localConnection->write($this->initBuffer);
 
         $localConnection->on('end', function(){
@@ -20,25 +20,25 @@ class TcpTunnelClient extends TunnelClient
         });
 
         //Handles the local connection close
-        $handleLocalConnectionClose = function() use (&$handleTunnelConnectionClose){
+        $handleLocalConnectionClose = function() use (&$handleProxyConnectionClose){
             var_dump('local close');
-            $this->tunnelConnection->removeListener('close', $handleTunnelConnectionClose);
-            $this->tunnelConnection->removeListener('error', $handleTunnelConnectionClose);
-            $this->tunnelConnection->end();
+            $this->proxyConnection->removeListener('close', $handleProxyConnectionClose);
+            $this->proxyConnection->removeListener('error', $handleProxyConnectionClose);
+            $this->proxyConnection->end();
             $this->client->getTunnelClients()->removeElement($this);
         };
         $localConnection->on('close', $handleLocalConnectionClose);
         $localConnection->on('error', $handleLocalConnectionClose);
 
-        //Handles the tunnel connection close
-        $handleTunnelConnectionClose = function() use ($localConnection, &$handleLocalConnectionClose){
+        //Handles the proxy connection close
+        $handleProxyConnectionClose = function() use ($localConnection, &$handleLocalConnectionClose){
             var_dump('tunnel close');
             $localConnection->removeListener('close', $handleLocalConnectionClose);
             $localConnection->removeListener('error', $handleLocalConnectionClose);
             $localConnection->end();
             $this->client->getTunnelClients()->removeElement($this);
         };
-        $this->tunnelConnection->on('close', $handleTunnelConnectionClose);
-        $this->tunnelConnection->on('error', $handleTunnelConnectionClose);
+        $this->proxyConnection->on('close', $handleProxyConnectionClose);
+        $this->proxyConnection->on('error', $handleProxyConnectionClose);
     }
 }

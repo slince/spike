@@ -32,10 +32,10 @@ abstract class TunnelClient implements TunnelClientInterface
     protected $serverAddress;
 
     /**
-     * The tunnel connection
+     * The proxy connection
      * @var ConnectionInterface
      */
-    protected $tunnelConnection;
+    protected $proxyConnection;
 
     /**
      * The local connection
@@ -80,7 +80,7 @@ abstract class TunnelClient implements TunnelClientInterface
      */
     public function handleServerConnection(ConnectionInterface $connection)
     {
-        $this->tunnelConnection = $connection;
+        $this->proxyConnection = $connection;
         $connection->write(new Spike('register_proxy', $this->tunnel->toArray(), [
             'Proxy-Connection-ID' => $this->proxyConnectionId
         ]));
