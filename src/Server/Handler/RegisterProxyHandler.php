@@ -22,25 +22,11 @@ class RegisterProxyHandler extends MessageHandler
         $this->getDispatcher()->dispatch(new Event(EventStore::REGISTER_PROXY, $this, [
             'message' => $message
         ]));
-        $tunnelServer = $this->findTunnelServer($message->getBody());
-        $this->connection->removeAllListeners();
-        $tunnelServer->registerProxyConnection($this->connection, $message);
-    }
-
-    /**
-     * Finds the tunnel server of the tunnel
-     * @param array $tunnelInfo
-     * @return TunnelServerInterface
-     */
-    protected function findTunnelServer($tunnelInfo)
-    {
-        $tunnelServer = $this->server->getTunnelServers()
-            ->filter(function(TunnelServerInterface $tunnelServer) use ($tunnelInfo){
-                return $tunnelServer->getTunnel()->match($tunnelInfo);
-            })->first();
+        $tunnelServer = $this->server->getTunnelServers()->findByTunnelInfo($message->getBody());
         if (!$tunnelServer) {
             throw new BadRequestException("Can not find the tunnel server");
         }
-        return $tunnelServer;
+        $this->connection->removeAllListeners();
+        $tunnelServer->registerProxyConnection($this->connection, $message);
     }
 }

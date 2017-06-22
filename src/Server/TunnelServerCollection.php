@@ -21,4 +21,11 @@ class TunnelServerCollection extends ArrayCollection
             return $tunnelServer->getControlConnection() === $connection;
         })->toArray();
     }
+
+    public function findByTunnelInfo($tunnelInfo)
+    {
+        return parent::filter(function(TunnelServerInterface $tunnelServer) use ($tunnelInfo){
+            return $tunnelServer->getTunnel()->match($tunnelInfo);
+        })->first();
+    }
 }

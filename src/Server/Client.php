@@ -35,6 +35,7 @@ class Client
     {
         $this->info = $info;
         $this->controlConnection = $controlConnection;
+        $this->lastActiveAt = microtime(true);
     }
 
     /**

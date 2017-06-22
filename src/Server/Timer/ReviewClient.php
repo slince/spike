@@ -7,6 +7,9 @@ namespace Spike\Server\Timer;
 
 class ReviewClient extends PeriodicTimer
 {
+    /**
+     * {@inheritdoc}
+     */
     public function __invoke()
     {
         foreach ($this->server->getClients() as $client) {
@@ -16,6 +19,9 @@ class ReviewClient extends PeriodicTimer
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getInterval()
     {
         return 30 * 60;

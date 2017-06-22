@@ -16,17 +16,27 @@ class RegisterTunnelHandler extends MessageHandler
      */
     public function handle(SpikeInterface $message)
     {
-        $tunnel = TunnelFactory::fromArray($message->getBody());
-        try {
-            $this->server->createTunnelServer($tunnel, $this->connection);
-            $response = new Spike('register_tunnel_response', $tunnel->toArray(), [
-                'code' => 0
-            ]);
-        } catch (\Exception $exception) {
-            $response = new Spike('register_tunnel_response', array_replace($tunnel->toArray(), [
-                'error' => $exception->getMessage()
+        $tunnelInfo = $message->getBody();
+        $tunnelServer = $this->server->getTunnelServers()->findByTunnelInfo($tunnelInfo);
+        if (!$tunnelServer) {
+            $tunnel = TunnelFactory::fromArray($tunnelInfo);
+            try {
+                $this->server->createTunnelServer($tunnel, $this->connection);
+                $response = new Spike('register_tunnel_response', $tunnel->toArray(), [
+                    'code' => 0
+                ]);
+            } catch (\Exception $exception) {
+                $response = new Spike('register_tunnel_response', array_replace($tunnel->toArray(), [
+                    'error' => $exception->getMessage()
+                ]), [
+                    'code' => $exception->getCode() ?: 1
+                ]);
+            }
+        } else {
+            $response = new Spike('register_tunnel_response', array_replace($tunnelInfo, [
+                'error' => 'The tunnel has been registered'
             ]), [
-                'code' => $exception->getCode() ?: 1
+                'code' => 1
             ]);
         }
         $this->connection->write($response);
