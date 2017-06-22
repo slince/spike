@@ -37,4 +37,12 @@ abstract class Tunnel implements TunnelInterface
     {
         return $this->getServerPort() == $info['serverPort'];
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function __toString()
+    {
+        return json_encode($this->toArray());
+    }
 }

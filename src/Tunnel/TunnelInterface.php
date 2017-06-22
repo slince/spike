@@ -20,6 +20,12 @@ interface TunnelInterface
     public function toArray();
 
     /**
+     * Get the summary of the tunnel
+     * @return string
+     */
+    public function __toString();
+
+    /**
      * Checks whether the tunnel match the info
      * @param array $info
      * @return boolean

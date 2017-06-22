@@ -5,6 +5,7 @@
  */
 namespace Spike\Client;
 
+use Slince\Event\Event;
 use Spike\Application as BaseApplication;
 use Slince\Event\SubscriberInterface;
 use Spike\Client\Command\ShowProxyHostsCommand;
@@ -70,11 +71,28 @@ class Application extends BaseApplication implements SubscriberInterface
         return $exitCode;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getEvents()
     {
         return [
-//            EventStore::CONNECTION_ERROR => 'onConnectionError'
+            EventStore::AUTH_ERROR => 'onAuthError',
+            EventStore::REGISTER_TUNNEL_ERROR => 'onRegisterTunnelError',
         ];
+    }
+
+    public function onAuthError(Event $event)
+    {
+        $this->output->writeln('Auth error, please checks your config file');
+    }
+
+    public function onRegisterTunnelError(Event $event)
+    {
+        $this->output->writeln(sprintf('Registers the tunnel "%s" error, message: %s',
+            $event->getArgument('tunnel'),
+            $event->getArgument('errorMessage')
+        ));
     }
 
     /**

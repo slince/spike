@@ -22,7 +22,7 @@ class AuthResponseHandler extends MessageHandler
                 'message' => $message
             ]));
         } else {
-            $this->getDispatcher()->dispatch(new Event(EventStore::AUTH_ERROR, $this->client, [
+            $this->getDispatcher()->dispatch(new Event(EventStore::AUTH_SUCCESS, $this->client, [
                 'message' => $message
             ]));
             $clientInfo = $message->getBody();

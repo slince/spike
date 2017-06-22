@@ -19,13 +19,13 @@ class RegisterTunnelResponseHandler extends MessageHandler
     {
         $response = $message->getBody();
         $tunnel = $this->client->findTunnel($response);
-        if ($message->getHeader('code') == 0) {
+        if ($message->getHeader('code') === 0) {
             $event = new Event(EventStore::REGISTER_TUNNEL_SUCCESS, $this->client, [
-                'tunnelInfo' => $tunnel
+                'tunnel' => $tunnel
             ]);
         } else {
             $event = new Event(EventStore::REGISTER_TUNNEL_ERROR, $this->client, [
-                'tunnelInfo' => $tunnel,
+                'tunnel' => $tunnel,
                 'errorMessage' => $response['error']
             ]);
         }
