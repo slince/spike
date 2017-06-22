@@ -16,10 +16,9 @@ use Spike\Logger\Logger;
 use Spike\Timer\MemoryWatcher;
 use Spike\Timer\TimerInterface;
 use Spike\Timer\UseTimerTrait;
+use Spike\Tunnel\HttpTunnel;
 use Spike\Tunnel\TunnelFactory;
 use Spike\Tunnel\TunnelInterface;
-use Spike\Client\TunnelClient\TcpTunnelClient;
-use Spike\Client\TunnelClient\TunnelClient;
 use Spike\Client\TunnelClient\TunnelClientInterface;
 use Spike\Exception\InvalidArgumentException;
 use Spike\Exception\RuntimeException;
@@ -292,7 +291,11 @@ class Client
      */
     public function createTunnelClient(TunnelInterface $tunnel, $proxyConnectionId)
     {
-        $tunnelClient = new TcpTunnelClient($this, $tunnel, $proxyConnectionId, $this->serverAddress, $this->loop);
+        if ($tunnel instanceof HttpTunnel) {
+            $tunnelClient = new TunnelClient\HttpTunnelClient($this, $tunnel, $proxyConnectionId, $this->serverAddress, $this->loop);
+        } else {
+            $tunnelClient = new TunnelClient\TcpTunnelClient($this, $tunnel, $proxyConnectionId, $this->serverAddress, $this->loop);
+        }
         $tunnelClient->run();
         $this->tunnelClients->add($tunnelClient);
         return $tunnelClient;

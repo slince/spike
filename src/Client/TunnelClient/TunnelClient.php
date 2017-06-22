@@ -120,10 +120,48 @@ abstract class TunnelClient implements TunnelClientInterface
         });
     }
 
+    /**
+     * Connect the local server
+     * @param string $address
+     */
     protected function createLocalConnector($address)
     {
-        $localConnector = new Connector($this->loop);
-        $localConnector->connect($address)->then([$this, 'handleLocalConnection']);
+        $localConnector = new Connector($this->loop, [
+            'dns' => false
+        ]);
+        $localConnector->connect($address)->then([$this, 'handleLocalConnection'],
+            [$this, 'handleConnectLocalError']
+        );
+    }
+
+    /**
+     * Handles connect local error
+     */
+    abstract protected function handleConnectLocalError(\Exception $exception);
+
+    /**
+     * {@inheritdoc}
+     */
+    public function handleLocalConnection(ConnectionInterface $localConnection)
+    {
+        $this->localConnection = $localConnection;
+        $localConnection->pipe($this->proxyConnection);
+        $this->proxyConnection->pipe($localConnection);
+        $localConnection->write($this->initBuffer);
+
+        //Handles the local connection close
+        $handleLocalConnectionClose = function(){
+            $this->close();
+        };
+        $localConnection->on('close', $handleLocalConnectionClose);
+        $localConnection->on('error', $handleLocalConnectionClose);
+
+        //Handles the proxy connection close
+        $handleProxyConnectionClose = function(){
+            $this->close();
+        };
+        $this->proxyConnection->on('close', $handleProxyConnectionClose);
+        $this->proxyConnection->on('error', $handleProxyConnectionClose);
     }
 
     /**
