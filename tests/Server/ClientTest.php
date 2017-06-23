@@ -30,4 +30,14 @@ class ClientTest extends TestCase
         $client->setLastActiveAt(microtime(true));
         $this->assertLessThan(1, $client->getSilentDuration());
     }
+
+    public function testControlConnection()
+    {
+        $client = new Client([
+            'OS' => 'win'
+        ], $this->createMock(ConnectionInterface::class));
+        $connection = $client->getControlConnection();
+        $client->setControlConnection($this->createMock(ConnectionInterface::class));
+        $this->assertFalse($connection === $client->getControlConnection());
+    }
 }
