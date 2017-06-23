@@ -90,7 +90,6 @@ class Server
         list($this->host, $this->port) = Utility::parseAddress($address);
         $this->authentication = $authentication;
         $this->loop = $loop ?: LoopFactory::create();
-        $this->socket = new Socket($address, $this->loop);
         $this->dispatcher = $dispatcher ?: new Dispatcher();
         $this->clients = new ClientCollection();
         $this->tunnelServers = new TunnelServerCollection();
@@ -101,6 +100,7 @@ class Server
      */
     public function run()
     {
+        $this->socket = new Socket("{$this->host}:{$this->port}", $this->loop);
         $this->socket->on('connection', function(ConnectionInterface $connection){
             //Emit the event
             $this->dispatcher->dispatch(new Event(EventStore::ACCEPT_CONNECTION, $this, [
