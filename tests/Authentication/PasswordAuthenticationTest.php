@@ -3,6 +3,7 @@ namespace Spike\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Spike\Authentication\PasswordAuthentication;
+use Spike\Exception\InvalidArgumentException;
 
 class PasswordAuthenticationTest extends TestCase
 {
@@ -47,5 +48,16 @@ class PasswordAuthenticationTest extends TestCase
         $this->assertFalse($authenticator->verify([
             'username' => 'baz',
         ]));
+    }
+
+    public function testBad()
+    {
+        $authenticator = $this->create([
+            'username' => 'foo',
+        ]);
+        $this->expectException(InvalidArgumentException::class);
+        $authenticator->verify([
+
+        ]);
     }
 }

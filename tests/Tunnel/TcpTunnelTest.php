@@ -4,7 +4,7 @@ namespace Spike\Tests\Tunnel;
 use PHPUnit\Framework\TestCase;
 use Spike\Tunnel\TcpTunnel;
 
-class TunnelTest extends TestCase
+class TcpTunnelTest extends TestCase
 {
     public function testConstruct()
     {

@@ -10,9 +10,10 @@ use React\EventLoop\LoopInterface;
 trait UseTimerTrait
 {
     /**
+     * Array of timers
      * @var TimerInterface[]
      */
-    protected $timers;
+    protected $timers =  [];
 
     /**
      * Add one timer
@@ -30,6 +31,7 @@ trait UseTimerTrait
     }
 
     /**
+     * Returns all timers
      * @return TimerInterface[]
      */
     public function getTimers()
@@ -38,7 +40,8 @@ trait UseTimerTrait
     }
 
     /**
+     * Gets the loop instance
      * @return LoopInterface
      */
-    abstract function getLoop();
+    abstract public function getLoop();
 }
