@@ -60,7 +60,6 @@ abstract class TunnelServer implements TunnelServerInterface
         $this->controlConnection = $controlConnection;
         $this->tunnel = $tunnel;
         $this->loop = $loop;
-        $this->socket = new Socket($this->getListenAddress(), $loop);
         $this->publicConnections = new PublicConnectionCollection();
     }
 
@@ -69,6 +68,7 @@ abstract class TunnelServer implements TunnelServerInterface
      */
     public function run()
     {
+        $this->socket = new Socket($this->getListenAddress(), $this->loop);
         $this->socket->on('connection', function($connection){
             $publicConnection = new PublicConnection($connection);
             $this->publicConnections->add($publicConnection);

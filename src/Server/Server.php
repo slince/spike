@@ -179,6 +179,7 @@ class Server
      * Creates a tunnel server for the tunnel
      * @param TunnelInterface $tunnel
      * @param ConnectionInterface $controlConnection
+     * @return TunnelServerInterface
      */
     public function createTunnelServer(TunnelInterface $tunnel, ConnectionInterface $controlConnection)
     {
@@ -187,8 +188,8 @@ class Server
         } else {
             $tunnelServer = new TunnelServer\TcpTunnelServer($this, $controlConnection, $tunnel, $this->loop);
         }
-        $tunnelServer->run();
         $this->tunnelServers->add($tunnelServer);
+        return $tunnelServer;
     }
 
     /**

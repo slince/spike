@@ -43,4 +43,13 @@ class TestCase extends BaseTestCase
     {
         return $this->loop ?: ($this->loop = Factory::create());
     }
+
+    public function getTunnelServerMock()
+    {
+        return $this->getMockBuilder(ConnectionInterface::class)
+            ->setMethods(['run'])
+            ->getMock()
+            ->method('run')
+            ->will($this->returnSelf());
+    }
 }

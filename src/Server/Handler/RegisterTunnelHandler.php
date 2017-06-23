@@ -22,10 +22,11 @@ class RegisterTunnelHandler extends RequireAuthHandler
         if (!$tunnelServer) {
             $tunnel = TunnelFactory::fromArray($tunnelInfo);
             try {
-                $this->server->createTunnelServer($tunnel, $this->connection);
+                $tunnelServer = $this->server->createTunnelServer($tunnel, $this->connection);
                 $response = new Spike('register_tunnel_response', $tunnel->toArray(), [
                     'Code' => 0
                 ]);
+                $tunnelServer->run();
             } catch (\Exception $exception) {
                 $response = new Spike('register_tunnel_response', array_merge($tunnel->toArray(), [
                     'error' => $exception->getMessage()

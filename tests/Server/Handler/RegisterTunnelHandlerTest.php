@@ -8,6 +8,8 @@ use Spike\Tests\TestCase;
 
 class RegisterTunnelHandlerTest extends TestCase
 {
+    protected $server;
+
     public function testHandle()
     {
         $client = new Client([
@@ -38,5 +40,13 @@ class RegisterTunnelHandlerTest extends TestCase
         $this->assertCount(2, $server->getTunnelServers());
         $handler->handle($message2);
         $this->assertCount(2, $server->getTunnelServers());
+        $this->server = $server;
+    }
+
+    public function tearDown()
+    {
+        foreach ($this->server->getClients() as $client) {
+            $this->server->closeClient($client);
+        }
     }
 }
