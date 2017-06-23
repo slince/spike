@@ -21,7 +21,7 @@ class TestCase extends BaseTestCase
     {
         return $this->getMockBuilder(Server::class)
             ->setConstructorArgs([
-                '0.0.0.0:8088',
+                '127.0.0.1:8088',
                 new PasswordAuthentication([
                     'username' => 'foo',
                     'password' => 'bar'

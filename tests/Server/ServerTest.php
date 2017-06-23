@@ -17,7 +17,7 @@ class ServerTest extends TestCase
         $this->assertInstanceOf(Dispatcher::class, $server->getDispatcher());
         $this->assertCount(0, $server->getClients());
         $this->assertCount(0, $server->getTunnelServers());
-        $this->assertEquals('0.0.0.0', $server->getHost());
+        $this->assertEquals('127.0.0.1', $server->getHost());
         $this->assertEquals('8088', $server->getPort());
         $this->assertInstanceOf(LoopInterface::class, $server->getLoop());
         $this->assertNull($server->getLogger());
