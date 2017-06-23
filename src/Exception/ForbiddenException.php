@@ -5,7 +5,6 @@
  */
 namespace Spike\Exception;
 
-class BadRequestException extends RuntimeException
+class ForbiddenException extends RuntimeException
 {
-
 }

@@ -6,6 +6,7 @@
 namespace Spike\Server\Handler;
 
 use Slince\Event\Event;
+use Spike\Exception\ForbiddenException;
 use Spike\Server\Client;
 use Spike\Protocol\SpikeInterface;
 use Spike\Server\EventStore;
@@ -29,6 +30,7 @@ class RequireAuthHandler extends MessageHandler
                 'connection' => $this->connection
             ]));
             $this->connection->close();
+            throw new ForbiddenException();
         }
         $this->client = $client;
     }

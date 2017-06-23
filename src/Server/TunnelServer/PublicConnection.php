@@ -14,6 +14,8 @@ use React\Socket\ConnectionInterface;
  * @method removeListener($eventName, callable $listener);
  * @method removeAllListeners($eventName = null);
  * @method end($data = null);
+ * @method pause();
+ * @method resume();
  */
 class PublicConnection
 {
@@ -81,22 +83,6 @@ class PublicConnection
     public function getInitBuffer()
     {
         return $this->initBuffer;
-    }
-
-    /**
-     * Pauses the connection
-     */
-    public function pause()
-    {
-        $this->connection->pause();
-    }
-
-    /**
-     * Resumes the connection
-     */
-    public function resume()
-    {
-        $this->connection->resume();
     }
 
     /**

@@ -35,4 +35,13 @@ abstract class MessageHandler implements HandlerInterface
     {
         return $this->server->getDispatcher();
     }
+
+    /**
+     * Gets the server instance
+     * @return Server
+     */
+    public function getServer()
+    {
+        return $this->server;
+    }
 }
