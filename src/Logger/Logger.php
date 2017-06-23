@@ -42,4 +42,13 @@ class Logger extends Monologer
             new ConsoleHandler($this->output, $this->level),
         ];
     }
+
+    /**
+     * Gets the log level
+     * @return int|string
+     */
+    public function getLevel()
+    {
+        return $this->level;
+    }
 }
