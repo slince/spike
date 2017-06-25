@@ -5,7 +5,11 @@ use PHPUnit\Framework\TestCase as BaseTestCase;
 use React\EventLoop\Factory;
 use React\Socket\ConnectionInterface;
 use Spike\Authentication\PasswordAuthentication;
+use Spike\Logger\Logger;
 use Spike\Server\Server;
+use Spike\Tests\Server\Fixtures\Stub\ServerStub;
+use Spike\Tests\Stub\LoggerStub;
+use Symfony\Component\Console\Output\StreamOutput;
 
 class TestCase extends BaseTestCase
 {
@@ -15,6 +19,12 @@ class TestCase extends BaseTestCase
     {
         $this->loop && $this->loop->stop();
         $this->loop =  null;
+    }
+
+    public function getServerStub($config = [])
+    {
+        $config['loop'] = $this->getLoop();
+        return new ServerStub($config);
     }
 
     public function getServerMock($config = [])
@@ -39,6 +49,11 @@ class TestCase extends BaseTestCase
         return $this->getMockBuilder(ConnectionInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
+    }
+
+    public function getLoggerStub($level = 200)
+    {
+        return new LoggerStub($level);
     }
 
     public function getLoop()

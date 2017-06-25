@@ -51,4 +51,20 @@ class Logger extends Monologer
     {
         return $this->level;
     }
+
+    /**
+     * @return string
+     */
+    public function getFile()
+    {
+        return $this->file;
+    }
+
+    /**
+     * @return OutputInterface
+     */
+    public function getOutput()
+    {
+        return $this->output;
+    }
 }
