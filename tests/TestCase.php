@@ -44,6 +44,11 @@ class TestCase extends BaseTestCase
             ->getMock();
     }
 
+    public function getClientMock()
+    {
+
+    }
+
     public function getConnectionMock()
     {
         return $this->getMockBuilder(ConnectionInterface::class)
