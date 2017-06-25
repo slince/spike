@@ -17,12 +17,13 @@ class RequireAuthHandlerTest extends TestCase
         ], $this->getConnectionMock());
         $server = $this->getServerMock();
         $server->getClients()->add($client);
-
         $handler = new RequireAuthHandler($server, $this->getConnectionMock());
         $message = new Spike('ping', null, [
             'Client-ID' => $client->getId()
         ]);
+        $this->assertNull($handler->getClient());
         $handler->handle($message);
+        $this->assertEquals($client, $handler->getClient());
     }
 
     public function testForbidden()

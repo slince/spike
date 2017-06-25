@@ -27,23 +27,35 @@ class InitCommandTest extends TestCase
         $this->assertFileExists("{$dir}/spiked.json");
     }
 
-    public function testFormat()
+    public function testFormatYaml()
     {
         $command = new InitCommand($this->getApplicationMock());
         $commandTester = new CommandTester($command);
         $dir = sys_get_temp_dir();
+
+        if (!class_exists('Symfony\Component\Yaml\Yaml')) {
+            $this->markTestSkipped();
+        }
         $commandTester->execute([
             '--dir' => $dir,
             '--format' => 'yaml'
         ]);
         $this->assertFileExists("{$dir}/spiked.yaml");
+    }
 
-        if (class_exists('LSS\Array2XML')) {
-            $commandTester->execute([
-                '--dir' => $dir,
-                '--format' => 'xml'
-            ]);
-            $this->assertFileExists("{$dir}/spiked.xml");
+    public function testFormatXml()
+    {
+        $command = new InitCommand($this->getApplicationMock());
+        $commandTester = new CommandTester($command);
+        $dir = sys_get_temp_dir();
+
+        if (!class_exists('LSS\Array2XML')) {
+            $this->markTestSkipped();
         }
+        $commandTester->execute([
+            '--dir' => $dir,
+            '--format' => 'xml'
+        ]);
+        $this->assertFileExists("{$dir}/spiked.xml");
     }
 }

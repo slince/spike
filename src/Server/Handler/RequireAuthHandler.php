@@ -34,4 +34,13 @@ class RequireAuthHandler extends MessageHandler
         }
         $this->client = $client;
     }
+
+    /**
+     * Gets the authorized client
+     * @return Client
+     */
+    public function getClient()
+    {
+        return $this->client;
+    }
 }

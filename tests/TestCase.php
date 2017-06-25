@@ -17,17 +17,19 @@ class TestCase extends BaseTestCase
         $this->loop =  null;
     }
 
-    public function getServerMock()
+    public function getServerMock($config = [])
     {
+        $defaults = [
+            'address' => '127.0.0.1:8088',
+            'authentication' => new PasswordAuthentication([
+                'username' => 'foo',
+                'password' => 'bar'
+            ]),
+            'loop' => $this->getLoop()
+        ];
+        $config = array_merge($defaults, $config);
         return $this->getMockBuilder(Server::class)
-            ->setConstructorArgs([
-                '127.0.0.1:8088',
-                new PasswordAuthentication([
-                    'username' => 'foo',
-                    'password' => 'bar'
-                ]),
-                $this->getLoop()
-            ])
+            ->setConstructorArgs(array_values($config))
             ->setMethods(null)
             ->getMock();
     }

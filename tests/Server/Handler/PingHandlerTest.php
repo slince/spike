@@ -22,6 +22,7 @@ class PingHandlerTest extends TestCase
         $message = new Spike('ping', null, [
             'Client-ID' => $client->getId()
         ]);
+        $this->assertGreaterThan($duration, $client->getSilentDuration());
         $handler->handle($message);
         $this->assertGreaterThan($client->getSilentDuration(), $duration);
     }
