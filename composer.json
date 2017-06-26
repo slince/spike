@@ -18,7 +18,6 @@
         "slince/event": "^1.0",
         "slince/di": "^2.0",
         "slince/config": "^1.0",
-        "zendframework/zend-diactoros": "^1.0",
         "symfony/console": "^3.0",
         "monolog/monolog": "^1.0"
     },
