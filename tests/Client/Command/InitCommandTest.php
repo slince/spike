@@ -51,7 +51,7 @@ class InitCommandTest extends TestCase
         $command = new InitCommand($this->getApplicationMock());
         $commandTester = new CommandTester($command);
         $commandTester->execute([
-            '--dir' => 'foo://a/'
+            '--dir' => preg_match('/win/i', PHP_OS) ? 'foo://a/' :  '/dev/null'
         ]);
         $this->assertContains('Can not create the configuration file', $commandTester->getDisplay());
     }
