@@ -4,14 +4,14 @@ use Spike\Client\Application;
 use Spike\Client\Configuration;
 use Symfony\Component\Console\Input\ArgvInput;
 
-date_default_timezone_set('prc');
-foreach ([__DIR__ . '/../../../vendor/autoload.php'
-     , __DIR__ . '/../vendor/autoload.php'] as $autoloadFile) {
+foreach ([__DIR__ . '/../../../vendor/autoload.php',
+             __DIR__ . '/../vendor/autoload.php'] as $autoloadFile) {
     if (is_file($autoloadFile)) {
         include $autoloadFile;
+        break;
     }
 }
-$configuration  = new Configuration();
+$configuration = new Configuration();
 $input = new ArgvInput();
 if (true === $input->hasParameterOption(['--config'], true)) {
     $configFile = $input->getParameterOption('--config');

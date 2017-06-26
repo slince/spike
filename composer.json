@@ -34,6 +34,6 @@
           "Spike\\Tests\\": "./tests"
         }
     },
-    "bin": ["./bin/spike", "./bin/spiked"],
+    "bin": ["bin/spike", "bin/spiked"],
     "minimum-stability": "stable"
 }
