@@ -11,6 +11,9 @@ use Spike\Client\EventStore;
 use Spike\Logger\Logger;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * @codeCoverageIgnore
+ */
 class LoggerSubscriber extends Subscriber
 {
     /**

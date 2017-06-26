@@ -5,6 +5,7 @@ use PHPUnit\Framework\TestCase as BaseTestCase;
 use React\EventLoop\Factory;
 use React\Socket\ConnectionInterface;
 use Spike\Authentication\PasswordAuthentication;
+use Spike\Client\TunnelClient\TcpTunnelClient;
 use Spike\Server\Server;
 use Spike\Server\TunnelServer\TcpTunnelServer;
 use Spike\Tests\Stub\ServerStub;
@@ -66,6 +67,24 @@ class TestCase extends BaseTestCase
     public function getLoop()
     {
         return $this->loop ?: ($this->loop = Factory::create());
+    }
+
+    public function getTunnelClientMock()
+    {
+        return $this->getMockBuilder(TcpTunnelClient::class)
+            ->setConstructorArgs([
+                $this->getClientStub(),
+                TunnelFactory::fromArray([
+                    'protocol' => 'tcp',
+                    'serverPort' => 8086,
+                    'host' => '127.0.0.1:3306'
+                ]),
+                'foo-connection-id',
+                '127.0.0.1:8088',
+                $this->getLoop()
+            ])
+            ->setMethods(['run', 'registerProxyConnection'])
+            ->getMock();
     }
 
     public function getTunnelServerMock()

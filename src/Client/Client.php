@@ -115,6 +115,7 @@ class Client
 
     /**
      * Run the client
+     * @codeCoverageIgnore
      */
     public function run()
     {
@@ -136,6 +137,7 @@ class Client
 
     /**
      * Close the client
+     * @codeCoverageIgnore
      */
     public function close()
     {
@@ -151,6 +153,7 @@ class Client
     /**
      * Handles the control connection
      * @param ConnectionInterface $connection
+     * @codeCoverageIgnore
      */
     protected function handleControlConnection(ConnectionInterface $connection)
     {
@@ -175,6 +178,7 @@ class Client
     /**
      * Request for auth
      * @param ConnectionInterface $connection
+     * @codeCoverageIgnore
      */
     protected function requestAuth(ConnectionInterface $connection)
     {
@@ -197,6 +201,7 @@ class Client
     /**
      * Sets the client id
      * @param string $id
+     * @codeCoverageIgnore
      */
     public function setClientId($id)
     {
@@ -290,6 +295,7 @@ class Client
      * @param SpikeInterface $message
      * @param ConnectionInterface $connection
      * @return Handler\HandlerInterface
+     * @codeCoverageIgnore
      */
     protected function createMessageHandler(SpikeInterface $message, ConnectionInterface $connection)
     {
@@ -314,6 +320,7 @@ class Client
     /**
      * Creates default timers
      * @return TimerInterface[]
+     * @codeCoverageIgnore
      */
     protected function getDefaultTimers()
     {

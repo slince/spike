@@ -8,6 +8,9 @@ namespace Spike\Client\Subscriber;
 use Slince\Event\SubscriberInterface;
 use Spike\Client\Application;
 
+/**
+ * @codeCoverageIgnore
+ */
 abstract class Subscriber implements SubscriberInterface
 {
     /**

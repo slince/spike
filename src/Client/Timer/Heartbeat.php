@@ -7,6 +7,9 @@ namespace Spike\Client\Timer;
 
 use Spike\Protocol\Spike;
 
+/**
+ * @codeCoverageIgnore
+ */
 class Heartbeat extends PeriodicTimer
 {
     /**

@@ -5,7 +5,9 @@
  */
 namespace Spike\Client\TunnelClient;
 
-
+/**
+ * @codeCoverageIgnore
+ */
 class TcpTunnelClient extends TunnelClient
 {
     /**

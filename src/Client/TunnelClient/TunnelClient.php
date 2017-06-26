@@ -66,6 +66,7 @@ abstract class TunnelClient implements TunnelClientInterface
 
     /**
      * {@inheritdoc}
+     * @codeCoverageIgnore
      */
     public function run()
     {
@@ -76,6 +77,7 @@ abstract class TunnelClient implements TunnelClientInterface
 
     /**
      * {@inheritdoc}
+     * @codeCoverageIgnore
      */
     public function close()
     {
@@ -91,6 +93,7 @@ abstract class TunnelClient implements TunnelClientInterface
     /**
      * Handles the proxy connection
      * @param ConnectionInterface $connection
+     * @codeCoverageIgnore
      */
     public function handleProxyConnection(ConnectionInterface $connection)
     {
@@ -122,6 +125,7 @@ abstract class TunnelClient implements TunnelClientInterface
     /**
      * Connect the local server
      * @param string $address
+     * @codeCoverageIgnore
      */
     protected function createLocalConnector($address)
     {
@@ -138,6 +142,7 @@ abstract class TunnelClient implements TunnelClientInterface
 
     /**
      * {@inheritdoc}
+     * @codeCoverageIgnore
      */
     public function handleLocalConnection(ConnectionInterface $localConnection)
     {

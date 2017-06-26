@@ -18,5 +18,8 @@ class TcpTunnelServerTest extends TestCase
         $this->assertEquals($tunnel, $tunnelServer->getTunnel());
         $this->assertEquals($this->getLoop(), $tunnelServer->getLoop());
         $this->assertEquals($server->getDispatcher(), $tunnelServer->getDispatcher());
+
+        $this->assertEquals($connection, $tunnelServer->getControlConnection());
+        $this->assertNull($tunnelServer->getSocket());
     }
 }

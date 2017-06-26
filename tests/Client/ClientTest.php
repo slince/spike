@@ -17,5 +17,7 @@ class ClientTest extends TestCase
         $this->assertNull($client->getLogger());
         $client->setLogger($this->getLoggerStub());
         $this->assertInstanceOf(Logger::class, $client->getLogger());
+        $this->assertNull($client->getControlConnection());
+        $this->assertCount(0, $client->getTunnelClients());
     }
 }

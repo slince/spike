@@ -8,6 +8,9 @@ namespace Spike\Client\TunnelClient;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7;
 
+/**
+ * @codeCoverageIgnore
+ */
 class HttpTunnelClient extends TunnelClient
 {
     /**

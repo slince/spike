@@ -74,6 +74,7 @@ class Application extends BaseApplication implements SubscriberInterface
 
     /**
      * {@inheritdoc}
+     * @codeCoverageIgnore
      */
     public function doRun(InputInterface $input, OutputInterface $output)
     {
@@ -95,6 +96,9 @@ class Application extends BaseApplication implements SubscriberInterface
         return $exitCode;
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function doRunClient()
     {
         if (true === $this->input->hasParameterOption(array('--help', '-h'), true)) {
@@ -104,6 +108,19 @@ class Application extends BaseApplication implements SubscriberInterface
             $exitCode = $this->runClient();
         }
         return $exitCode;
+    }
+
+    /**
+     * Start the client
+     * @codeCoverageIgnore
+     */
+    protected function runClient()
+    {
+        foreach ($this->getSubscribers() as $subscriber) {
+            $this->dispatcher->addSubscriber($subscriber);
+        }
+        $this->client->run();
+        return 0;
     }
 
     /**
@@ -117,12 +134,18 @@ class Application extends BaseApplication implements SubscriberInterface
         ];
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function onAuthError(Event $event)
     {
         $this->output->writeln('Auth error, please checks your config file');
         $this->client->close();
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function onRegisterTunnelError(Event $event)
     {
         $this->output->writeln(sprintf('Registers the tunnel "%s" error, message: %s',
@@ -130,17 +153,6 @@ class Application extends BaseApplication implements SubscriberInterface
             $event->getArgument('errorMessage')
         ));
         $this->client->close();
-    }
-    /**
-     * Start the client
-     */
-    protected function runClient()
-    {
-        foreach ($this->getSubscribers() as $subscriber) {
-            $this->dispatcher->addSubscriber($subscriber);
-        }
-        $this->client->run();
-        return 0;
     }
 
     /**

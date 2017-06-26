@@ -8,6 +8,9 @@ namespace Spike\Client\Timer;
 use Spike\Client\Client;
 use Spike\Timer\PeriodicTimer as BasePeriodicTimer;
 
+/**
+ * @codeCoverageIgnore
+ */
 abstract class PeriodicTimer extends BasePeriodicTimer
 {
     /**

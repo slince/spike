@@ -5,6 +5,9 @@
  */
 namespace Spike\Server\TunnelServer\Timer;
 
+/**
+ * @codeCoverageIgnore
+ */
 class ReviewPublicConnection extends PeriodicTimer
 {
     /**

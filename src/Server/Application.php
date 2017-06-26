@@ -68,6 +68,9 @@ class Application extends BaseApplication implements SubscriberInterface
         return $exitCode;
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function doRunServer()
     {
         if (true === $this->input->hasParameterOption(array('--help', '-h'), true)) {
@@ -81,6 +84,7 @@ class Application extends BaseApplication implements SubscriberInterface
 
     /**
      * Start the server
+     * @codeCoverageIgnore
      */
     protected function runServer()
     {
