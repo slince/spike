@@ -12,7 +12,7 @@ Spike是一个可以用来将你的内网服务暴露在公网的快速的反向
 通过composer安装
 
 ```bash
-composer require slince/spike *@beta
+composer global require slince/spike *@beta
 ```
 
 > 服务器与本地都需要执行此命令安装
