@@ -70,7 +70,6 @@ abstract class TunnelServer implements TunnelServerInterface
     {
         $this->socket = new Socket($this->getListenAddress(), $this->loop);
         $this->socket->on('connection', function($connection){
-            var_dump($connection);
             $publicConnection = new PublicConnection($connection);
             $this->publicConnections->add($publicConnection);
             $this->handlePublicConnection($publicConnection);
@@ -105,7 +104,7 @@ abstract class TunnelServer implements TunnelServerInterface
         }
         $this->publicConnections = null;
         $this->timers = null;
-        $this->socket->close();
+        $this->socket && $this->socket->close();
     }
 
     /**

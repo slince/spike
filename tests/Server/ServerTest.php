@@ -49,7 +49,7 @@ class ServerTest extends TestCase
         $tunnel = new HttpTunnel(8086, [
             'www.foo.com' => '127.0.0.1:8090'
         ]);
-        $server->createTunnelServer($tunnel, $connection)->run();
+        $server->createTunnelServer($tunnel, $connection);
         $this->assertCount(1, $server->getTunnelServers());
         $server->closeClient($client);
         $this->assertCount(0, $server->getClients());

@@ -7,7 +7,7 @@ namespace Spike\Client\Handler;
 
 use Slince\Event\Event;
 use Spike\Client\EventStore;
-use Spike\Client\Tunnel\TunnelFactory;
+use Spike\Exception\InvalidArgumentException;
 use Spike\Protocol\SpikeInterface;
 
 class RegisterTunnelResponseHandler extends MessageHandler
@@ -18,7 +18,10 @@ class RegisterTunnelResponseHandler extends MessageHandler
     public function handle(SpikeInterface $message)
     {
         $response = $message->getBody();
-        $tunnel = $this->client->findTunnel($response);
+        $tunnel = $this->client->getTunnels()->findByInfo($response);
+        if (!$tunnel) {
+            throw new InvalidArgumentException('Can not find the matching tunnel');
+        }
         if ($message->getHeader('Code') == 0) {
             $event = new Event(EventStore::REGISTER_TUNNEL_SUCCESS, $this->client, [
                 'tunnel' => $tunnel

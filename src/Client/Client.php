@@ -71,8 +71,8 @@ class Client
     protected $id;
 
     /**
-     * Tunnels
-     * @var TunnelInterface
+     * Tunnels collection
+     * @var TunnelCollection
      */
     protected $tunnels = [];
 
@@ -99,18 +99,9 @@ class Client
     }
 
     /**
-     * Checks whether the client is authorized
-     * @return bool
-     */
-    public function isAuthorized()
-    {
-        return !empty($this->id);
-    }
-
-    /**
      * Creates array of tunnels
      * @param array $data
-     * @return TunnelInterface[]
+     * @return TunnelCollection
      */
     protected function createTunnels($data)
     {
@@ -119,7 +110,7 @@ class Client
             $tunnel = TunnelFactory::fromArray($info);
             $tunnels[] = $tunnel;
         }
-        return $tunnels;
+        return new TunnelCollection($tunnels);
     }
 
     /**
@@ -154,7 +145,7 @@ class Client
         foreach ($this->tunnelClients as $tunnelClient) {
             $tunnelClient->close();
         }
-        $this->controlConnection->end();
+        $this->controlConnection && $this->controlConnection->end();
     }
 
     /**
@@ -195,6 +186,15 @@ class Client
     }
 
     /**
+     * Gets the client id
+     * @return string
+     */
+    public function getClientId()
+    {
+        return $this->id;
+    }
+
+    /**
      * Sets the client id
      * @param string $id
      */
@@ -216,7 +216,7 @@ class Client
 
     /**
      * Gets all tunnels
-     * @return TunnelInterface[]
+     * @return TunnelCollection
      */
     public function getTunnels()
     {
@@ -265,22 +265,6 @@ class Client
     public function getLoop()
     {
         return $this->loop;
-    }
-
-    /**
-     * Finds the matching tunnel
-     * @param array $tunnelInfo
-     * @throws RuntimeException
-     * @return false|TunnelInterface
-     */
-    public function findTunnel($tunnelInfo)
-    {
-        foreach ($this->tunnels as $tunnel) {
-            if ($tunnel->match($tunnelInfo)) {
-                return $tunnel;
-            }
-        }
-        return false;
     }
 
     /**

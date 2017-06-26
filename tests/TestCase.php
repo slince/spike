@@ -7,7 +7,8 @@ use React\Socket\ConnectionInterface;
 use Spike\Authentication\PasswordAuthentication;
 use Spike\Logger\Logger;
 use Spike\Server\Server;
-use Spike\Tests\Server\Fixtures\Stub\ServerStub;
+use Spike\Tests\Stub\ServerStub;
+use Spike\Tests\Stub\ClientStub;
 use Spike\Tests\Stub\LoggerStub;
 use Symfony\Component\Console\Output\StreamOutput;
 
@@ -44,9 +45,10 @@ class TestCase extends BaseTestCase
             ->getMock();
     }
 
-    public function getClientMock()
+    public function getClientStub()
     {
-
+        $config['loop'] = $this->getLoop();
+        return new ClientStub($config);
     }
 
     public function getConnectionMock()
