@@ -48,6 +48,9 @@ class PublicConnection
         $this->createAt = microtime(true);
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function __call($name, $arguments)
     {
         return call_user_func_array([$this->connection, $name], $arguments);

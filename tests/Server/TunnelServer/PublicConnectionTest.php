@@ -15,5 +15,8 @@ class PublicConnectionTest extends TestCase
         $this->assertEquals($publicConnection->getId(), $publicConnection->getId());
         $this->assertInstanceOf(ConnectionInterface::class, $publicConnection->getConnection());
         $this->assertGreaterThan(0, $publicConnection->getWaitingDuration());
+
+        $publicConnection->setInitBuffer('foo');
+        $this->assertEquals('foo', $publicConnection->getInitBuffer());
     }
 }

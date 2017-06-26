@@ -10,11 +10,13 @@ class MemoryWatcherTest extends TestCase
 {
     public function testConstruct()
     {
-        $file = tempnam(sys_get_temp_dir(), 'tmp_');
-        $stream = fopen('php://memory', 'a+');
-        $output = new StreamOutput($stream);
-        $logger = new Logger(200, $file, $output);
+        $watcher = new MemoryWatcher($this->getLoggerStub());
+        $this->assertEquals(60, $watcher->getInterval());
+    }
 
+    public function testExecute()
+    {
+        $logger = $this->getLoggerStub();
         $timer = $this->getMockBuilder(MemoryWatcher::class)
             ->setMethods(['getInterval'])
             ->setConstructorArgs([$logger])
@@ -26,9 +28,9 @@ class MemoryWatcherTest extends TestCase
             $timer->cancel();
         }));
         $this->loop->run();
+        $stream = $logger->getOutput()->getStream();
         fseek($stream, 0);
         $this->assertContains('Memory usage', stream_get_contents($stream));
-        $this->assertContains('Memory usage', file_get_contents($file));
-        @unlink($file);
+        $this->assertContains('Memory usage', file_get_contents($logger->getFile()));
     }
 }

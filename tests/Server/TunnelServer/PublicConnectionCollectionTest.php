@@ -14,5 +14,6 @@ class PublicConnectionCollectionTest extends TestCase
         $publicConnection = new PublicConnection($this->getConnectionMock(), 'init buffer');
         $collection->add($publicConnection);
         $this->assertEquals($publicConnection, $collection->findById($publicConnection->getId()));
+        $this->assertNull($collection->findById('not-exists'));
     }
 }

@@ -1,0 +1,7 @@
+{
+    "timezone": "Asia/prc",
+    "log": {
+        "file": "/access.log",
+        "level": "warning"
+    }
+}

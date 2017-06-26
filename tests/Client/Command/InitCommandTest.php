@@ -8,12 +8,19 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 class InitCommandTest extends TestCase
 {
+
     protected function getApplicationMock()
     {
         return $this->getMockBuilder(Application::class)
             ->setMethods(null)
             ->disableOriginalConstructor()
             ->getMock();
+    }
+
+    public function testClient()
+    {
+        $command = new InitCommand($this->getApplicationMock());
+        $this->assertInstanceOf(Application::class, $command->getClient());
     }
 
     public function testExecute()
@@ -25,6 +32,28 @@ class InitCommandTest extends TestCase
             '--dir' => $dir
         ]);
         $this->assertFileExists("{$dir}/spike.json");
+    }
+
+    public function testExecuteUnsupportedFormat()
+    {
+        $command = new InitCommand($this->getApplicationMock());
+        $commandTester = new CommandTester($command);
+        $dir = sys_get_temp_dir();
+        $commandTester->execute([
+            '--dir' => $dir,
+            '--format' => 'foo'
+        ]);
+        $this->assertContains('The format "foo" is not supported', $commandTester->getDisplay());
+    }
+
+    public function testExecuteDumpError()
+    {
+        $command = new InitCommand($this->getApplicationMock());
+        $commandTester = new CommandTester($command);
+        $commandTester->execute([
+            '--dir' => 'foo://a/'
+        ]);
+        $this->assertContains('Can not create the configuration file', $commandTester->getDisplay());
     }
 
     public function testFormatYaml()

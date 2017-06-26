@@ -44,6 +44,10 @@ class Application extends BaseApplication implements SubscriberInterface
         );
     }
 
+    /**
+     * {@inheritdoc}
+     * @codeCoverageIgnore
+     */
     public function doRun(InputInterface $input, OutputInterface $output)
     {
         $this->input = $input;

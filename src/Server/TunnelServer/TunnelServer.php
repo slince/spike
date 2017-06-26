@@ -65,6 +65,7 @@ abstract class TunnelServer implements TunnelServerInterface
 
     /**
      * {@inheritdoc}
+     * @codeCoverageIgnore
      */
     public function run()
     {
@@ -110,6 +111,7 @@ abstract class TunnelServer implements TunnelServerInterface
     /**
      * Handles the public connection
      * @param PublicConnection $publicConnection
+     * @codeCoverageIgnore
      */
     public function handlePublicConnection(PublicConnection $publicConnection)
     {
@@ -129,6 +131,7 @@ abstract class TunnelServer implements TunnelServerInterface
      * Registers proxy connection
      * @param ConnectionInterface $proxyConnection
      * @param SpikeInterface $message
+     * @codeCoverageIgnore
      */
     public function registerProxyConnection(ConnectionInterface $proxyConnection, SpikeInterface $message)
     {

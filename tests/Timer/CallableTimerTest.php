@@ -31,4 +31,13 @@ class CallableTimerTest extends TestCase
         usleep(0.2);
         $this->assertEquals('foo', $foo);
     }
+
+    public function testSetter()
+    {
+        $timer = new CallableTimer(0.1, function(){
+        });
+        $this->assertEquals(0.1, $timer->getInterval());
+        $timer->setInterval(0.2);
+        $this->assertEquals(0.2, $timer->getInterval());
+    }
 }

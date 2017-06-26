@@ -55,6 +55,15 @@ class Application extends BaseApplication implements SubscriberInterface
     }
 
     /**
+     * Sets the client for the application
+     * @param Client $client
+     */
+    public function setKernel(Client $client)
+    {
+        $this->client = $client;
+    }
+
+    /**
      * Gets the client instance
      * @return Client
      */

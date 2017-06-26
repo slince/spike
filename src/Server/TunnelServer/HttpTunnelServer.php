@@ -9,6 +9,9 @@ use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7;
 use Spike\Parser\HttpHeaderParser;
 
+/**
+ * @codeCoverageIgnore
+ */
 class HttpTunnelServer extends TunnelServer
 {
     /**

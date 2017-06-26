@@ -5,6 +5,9 @@
  */
 namespace Spike\Server\TunnelServer;
 
+/**
+ * @codeCoverageIgnore
+ */
 class TcpTunnelServer extends TunnelServer
 {
     /**

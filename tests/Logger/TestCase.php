@@ -1,7 +1,7 @@
 <?php
 namespace Spike\Tests\Logger;
 
-use PHPUnit\Framework\TestCase as BaseTestCase;
+use Spike\Tests\TestCase as BaseTestCase;
 use Monolog\Logger;
 
 class TestCase extends BaseTestCase

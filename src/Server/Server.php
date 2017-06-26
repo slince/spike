@@ -97,6 +97,7 @@ class Server
 
     /**
      * Run the server
+     * @codeCoverageIgnore
      */
     public function run()
     {
@@ -124,6 +125,7 @@ class Server
     /**
      * Handles control connection
      * @param ConnectionInterface $connection
+     * @codeCoverageIgnore
      */
     protected function handleControlConnection(ConnectionInterface $connection)
     {
@@ -278,6 +280,7 @@ class Server
      * @param SpikeInterface $message
      * @param ConnectionInterface $connection
      * @return HandlerInterface
+     * @codeCoverageIgnore
      */
     protected function createMessageHandler($message, $connection)
     {
@@ -305,6 +308,7 @@ class Server
     /**
      * Creates default timers
      * @return TimerInterface[]
+     * @codeCoverageIgnore
      */
     protected function getDefaultTimers()
     {

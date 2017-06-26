@@ -42,6 +42,6 @@ class Configuration  extends Config
      */
     public function getLogLevel()
     {
-        return $this->get('log.level', Logger::INFO);
+        return  isset($this['log']['level']) ? $this['log']['level']: 'info';
     }
 }
