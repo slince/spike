@@ -16,6 +16,12 @@ class InitCommandTest extends TestCase
             ->getMock();
     }
 
+    public function testClient()
+    {
+        $command = new InitCommand($this->getApplicationMock());
+        $this->assertInstanceOf(Application::class, $command->getServer());
+    }
+
     public function testExecute()
     {
         $command = new InitCommand($this->getApplicationMock());
@@ -25,6 +31,28 @@ class InitCommandTest extends TestCase
             '--dir' => $dir
         ]);
         $this->assertFileExists("{$dir}/spiked.json");
+    }
+
+    public function testExecuteUnsupportedFormat()
+    {
+        $command = new InitCommand($this->getApplicationMock());
+        $commandTester = new CommandTester($command);
+        $dir = sys_get_temp_dir();
+        $commandTester->execute([
+            '--dir' => $dir,
+            '--format' => 'foo'
+        ]);
+        $this->assertContains('The format "foo" is not supported', $commandTester->getDisplay());
+    }
+
+    public function testExecuteDumpError()
+    {
+        $command = new InitCommand($this->getApplicationMock());
+        $commandTester = new CommandTester($command);
+        $commandTester->execute([
+            '--dir' => preg_match('/win/i', PHP_OS) ? 'foo://a/' :  '/dev/null'
+        ]);
+        $this->assertContains('Can not create the configuration file', $commandTester->getDisplay());
     }
 
     public function testFormatYaml()

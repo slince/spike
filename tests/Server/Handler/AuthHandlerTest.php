@@ -20,14 +20,32 @@ class AuthHandlerTest extends TestCase
         $handler->handle($message);
         $this->assertEquals($server, $handler->getServer());
         $this->assertCount(1, $server->getClients());
+    }
 
+    public function testHandleWrongPassword()
+    {
         $message = new Spike('auth', [
             'os' => PHP_OS,
             'version' => '',
             'username' => 'foo',
             'password' => 'baz'
         ]);
+        $server = $this->getServerMock();
+        $handler = new AuthHandler($server, $this->getConnectionMock());
         $handler->handle($message);
-        $this->assertCount(1, $server->getClients());
+        $this->assertCount(0, $server->getClients());
+
+    }
+    public function testHandleMissingUsername()
+    {
+        $message = new Spike('auth', [
+            'os' => PHP_OS,
+            'version' => '',
+            'password' => 'baz'
+        ]);
+        $server = $this->getServerMock();
+        $handler = new AuthHandler($server, $this->getConnectionMock());
+        $handler->handle($message);
+        $this->assertCount(0, $server->getClients());
     }
 }

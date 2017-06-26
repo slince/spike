@@ -8,6 +8,15 @@ use Spike\Timer\CallableTimer;
 
 class ReviewClientTest extends TestCase
 {
+    public function testGetter()
+    {
+        $server = $this->getServerMock();
+        $timer = new ReviewClient($server);
+        $this->assertEquals($server, $timer->getServer());
+
+        $this->assertGreaterThan(0, $timer->getInterval());
+    }
+
     public function testConstruct()
     {
         $server = $this->getServerMock();

@@ -8,6 +8,12 @@ namespace Spike\Protocol;
 interface SpikeInterface
 {
     /**
+     * The version of protocol
+     * @var string
+     */
+    const VERSION = 1.0;
+
+    /**
      * Creates a protocol from a string
      * @param $string
      * @return SpikeInterface
@@ -19,12 +25,6 @@ interface SpikeInterface
      * @return string
      */
     public function toString();
-
-    /**
-     * The version of protocol
-     * @var string
-     */
-    const VERSION = 1.0;
 
     /**
      * Sets the action of the protocol

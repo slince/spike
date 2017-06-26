@@ -67,9 +67,9 @@ class Server
     protected $socket;
 
     /**
-     * @var TunnelServerInterface[]
+     * @var TunnelServerCollection
      */
-    protected $tunnelServers = [];
+    protected $tunnelServers;
 
     /**
      * @var ClientCollection

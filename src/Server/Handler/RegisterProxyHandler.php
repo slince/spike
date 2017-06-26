@@ -7,7 +7,6 @@ namespace Spike\Server\Handler;
 
 use Spike\Exception\BadRequestException;
 use Spike\Protocol\SpikeInterface;
-use Spike\Server\TunnelServer\TunnelServerInterface;
 use Slince\Event\Event;
 use Spike\Server\EventStore;
 

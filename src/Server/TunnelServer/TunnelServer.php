@@ -175,6 +175,15 @@ abstract class TunnelServer implements TunnelServerInterface
     }
 
     /**
+     * Gets the server
+     * @return Server
+     */
+    public function getServer()
+    {
+        return $this->server;
+    }
+
+    /**
      * Gets the server address to bind
      * @return string
      */
@@ -202,6 +211,7 @@ abstract class TunnelServer implements TunnelServerInterface
     {
         return $this->socket;
     }
+
     /**
      * {@inheritdoc}
      */

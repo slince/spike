@@ -46,6 +46,12 @@ class Client
     protected $connector;
 
     /**
+     * Tunnels collection
+     * @var TunnelCollection
+     */
+    protected $tunnels;
+
+    /**
      * @var ConnectionInterface
      */
     protected $controlConnection;
@@ -69,12 +75,6 @@ class Client
      * @var string
      */
     protected $id;
-
-    /**
-     * Tunnels collection
-     * @var TunnelCollection
-     */
-    protected $tunnels = [];
 
     /**
      * Auth info

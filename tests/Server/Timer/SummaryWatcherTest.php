@@ -7,6 +7,15 @@ use Spike\Timer\CallableTimer;
 
 class SummaryWatcherTest extends TestCase
 {
+    public function testGetter()
+    {
+        $server = $this->getServerMock();
+        $timer = new SummaryWatcher($server);
+        $this->assertEquals($server, $timer->getServer());
+
+        $this->assertGreaterThan(0, $timer->getInterval());
+    }
+
     public function testConstruct()
     {
         $server = $this->getServerMock();

@@ -44,6 +44,7 @@ class InitCommand extends Command
 
     /**
      * {@inheritdoc}
+     * @codeCoverageIgnore
      */
     public function getNativeDefinition()
     {
