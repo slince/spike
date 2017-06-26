@@ -23,7 +23,6 @@ class HttpTunnelServer extends TunnelServer
         $publicConnection->getConnection()->on('data', function($data) use ($parser, $publicConnection){
             $parser->pushIncoming($data);
             $message = $parser->parseFirst();
-            echo $message;
             if ($message) {
                 $psrRequest = Psr7\parse_request($message);
                 $host = $psrRequest->getUri()->getHost();

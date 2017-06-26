@@ -20,10 +20,5 @@ if (true === $input->hasParameterOption(['--config'], true)) {
 }
 file_exists($configFile) && $configuration->load($configFile);
 
-if (true === $input->hasParameterOption(['--address'], true)) {
-    $address = $input->getParameterOption('--address');
-    $address && $configuration->set('server-address', $address);
-}
-
 date_default_timezone_set($configuration->getTimezone());
 (new Application($configuration))->run($input);

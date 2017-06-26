@@ -83,7 +83,7 @@ class Server
 
     public function __construct(
         $address,
-        AuthenticationInterface $authentication,
+        AuthenticationInterface $authentication = null,
         LoopInterface $loop = null,
         Dispatcher $dispatcher = null
     ) {

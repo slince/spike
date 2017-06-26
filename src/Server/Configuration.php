@@ -33,15 +33,21 @@ class Configuration extends BaseConfiguration
 
     /**
      * Gets the authentication
-     * @return AuthenticationInterface
+     * @return AuthenticationInterface|null
      */
     public function getAuthentication()
     {
-        $type = isset($this['auth']['type']) ? $this['auth']['type'] : 'simple_password';
-        switch ($type) {
-            default:
-                $authentication = new Authentication\PasswordAuthentication($this['auth']);
-                break;
+        $auth = $this->get('auth', []);
+        $type = isset($auth['type']) ? $auth['type'] : 'simple_password';
+        unset($auth['type']);
+        if ($auth) {
+            switch ($type) {
+                default:
+                    $authentication = new Authentication\PasswordAuthentication($auth);
+                    break;
+            }
+        } else {
+            $authentication = null;
         }
         return $authentication;
     }

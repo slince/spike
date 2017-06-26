@@ -19,7 +19,9 @@ class AuthHandler extends MessageHandler
     {
         $auth = $message->getBody();
         try{
-            if ($this->server->getAuthentication()->verify($auth)) {
+            if (!$this->server->getAuthentication()
+                || $this->server->getAuthentication()->verify($auth)
+            ) {
                 $client = new Client($message->getBody(), $this->connection);
                 $this->server->getClients()->add($client);
                 $response = new Spike('auth_response', $client->toArray());

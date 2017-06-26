@@ -74,7 +74,7 @@ class Application extends BaseApplication implements SubscriberInterface
     protected function doRunServer()
     {
         if (true === $this->input->hasParameterOption(array('--help', '-h'), true)) {
-            $command = $this->get('spike');
+            $command = $this->get('spiked');
             $exitCode = $this->doRunCommand($command, $this->input, $this->output);
         } else {
             $exitCode = $this->runServer();

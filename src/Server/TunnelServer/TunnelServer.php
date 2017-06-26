@@ -157,7 +157,6 @@ abstract class TunnelServer implements TunnelServerInterface
             $proxyConnection->removeListener('close', $handleProxyConnectionClose);
             $proxyConnection->removeListener('error', $handleProxyConnectionClose);
             $proxyConnection->end();
-            echo 'proxy end';
             $this->publicConnections->removeElement($publicConnection);
         };
         $publicConnection->on('close', $handlePublicConnectionClose);
@@ -168,7 +167,6 @@ abstract class TunnelServer implements TunnelServerInterface
             $publicConnection->removeListener('close', $handlePublicConnectionClose);
             $publicConnection->removeListener('error', $handlePublicConnectionClose);
             $publicConnection->end();
-            echo 'tunnel end';
         };
         $proxyConnection->on('close', $handleProxyConnectionClose);
         $proxyConnection->on('error', $handleProxyConnectionClose);

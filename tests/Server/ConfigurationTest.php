@@ -12,6 +12,6 @@ class ConfigurationTest extends TestCase
         $configuration = new Configuration();
         $this->assertEquals('127.0.0.1:8088', $configuration->getAddress());
         $this->assertContains('spiked.json', $configuration->getDefaultConfigFile());
-        $this->assertInstanceOf(PasswordAuthentication::class, $configuration->getAuthentication());
+        $this->assertNull($configuration->getAuthentication());
     }
 }

@@ -5,8 +5,8 @@
             "protocol": "http",
             "serverPort": "8087",
             "proxyHosts": {
-                "www.lazy.com": "www.laravel-china.org:80",
-                "www.spike.com": "192.168.1.114:8000"
+                "www.foo.com": "127.0.0.1:8000",
+                "www.bar.com": "192.168.1.114:8080"
             }
         },
         {
