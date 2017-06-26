@@ -5,7 +5,7 @@
 [![Latest Stable Version](https://img.shields.io/packagist/v/slince/spike.svg?style=flat-square&label=stable)](https://packagist.org/packages/slince/spike)
 [![Scrutinizer](https://img.shields.io/scrutinizer/g/slince/spike.svg?style=flat-square)](https://scrutinizer-ci.com/g/slince/spike/?branch=master)
 
-Spike是一个可以用来将你的内网服务暴露在公网的快速的反向代理，它是基于[ReactPHP](https://github.com/reactphp)的，采用IO多路复用模型。
+Spike是一个可以用来将你的内网服务暴露在公网的快速的反向代理，基于[ReactPHP](https://github.com/reactphp)，采用IO多路复用模型。
 
 ## 安装
 
@@ -15,7 +15,7 @@ Spike是一个可以用来将你的内网服务暴露在公网的快速的反向
 composer require slince/spike *@beta
 ```
 
-> 服务器与本地机器都需要执行此命令安装
+> 服务器与本地都需要执行此命令安装
 
 
 ## 配置服务端
@@ -103,7 +103,7 @@ spike init -h
     }
 }
 ```
-启动客户端访问"http://www.foo.com:8086";即可将服务代理到本地"127.0.0.1:80";  注意此处需要把"www.foo.com"解析到服务端所在机器上
+启动客户端访问 "http://www.foo.com:8086" , 服务将会被代理到本地"127.0.0.1:80"; 注意此处需要把 "www.foo.com" 解析到服务端所在机器上
 
 - 添加tcp隧道
 
