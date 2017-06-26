@@ -24,7 +24,7 @@ class InitCommandTest extends TestCase
         $commandTester->execute([
             '--dir' => $dir
         ]);
-        $this->assertFileExists("{$dir}/spiked.json");
+        $this->assertFileExists("{$dir}/spike.json");
     }
 
     public function testFormatYaml()
@@ -40,7 +40,7 @@ class InitCommandTest extends TestCase
             '--dir' => $dir,
             '--format' => 'yaml'
         ]);
-        $this->assertFileExists("{$dir}/spiked.yaml");
+        $this->assertFileExists("{$dir}/spike.yaml");
     }
 
     public function testFormatXml()
@@ -56,6 +56,6 @@ class InitCommandTest extends TestCase
             '--dir' => $dir,
             '--format' => 'xml'
         ]);
-        $this->assertFileExists("{$dir}/spiked.xml");
+        $this->assertFileExists("{$dir}/spike.xml");
     }
 }
