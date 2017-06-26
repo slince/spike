@@ -1,7 +1,7 @@
 {
     "name": "slince/spike",
     "description": "A fast reverse proxy that help to expose a local server to the internet",
-    "keywords": ["tunnel", "proxy", "reverse proxy", "nat", "expose localhost"],
+    "keywords": ["tunnel", "proxy", "reverse proxy", "nat", "expose localhost", "reactphp", "http tunnel", "tcp tunnel"],
     "authors": [
         {
           "name": "Tao",
