@@ -51,7 +51,7 @@ class SpikeCommand extends Command
     private function createDefinition()
     {
         return new InputDefinition(array(
-            new InputOption('config', null, InputOption::VALUE_OPTIONAL,
+            new InputOption('config', null, InputOption::VALUE_REQUIRED,
                 'The configuration file, support json,ini,xml and yaml format'),
             new InputOption('format', null, InputOption::VALUE_REQUIRED, 'The output format (txt, xml, json, or md)', 'txt'),
             new InputOption('raw', null, InputOption::VALUE_NONE, 'To output raw command help'),

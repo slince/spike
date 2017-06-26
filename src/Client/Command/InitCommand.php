@@ -68,9 +68,9 @@ class InitCommand extends Command
     private function createDefinition()
     {
         return new InputDefinition(array(
-            new InputOption('format', null, InputOption::VALUE_OPTIONAL,
+            new InputOption('format', null, InputOption::VALUE_REQUIRED,
                 'The configuration file format, support json,ini,xml and yaml', 'json'),
-            new InputOption('dir', null, InputOption::VALUE_OPTIONAL,
+            new InputOption('dir', null, InputOption::VALUE_REQUIRED,
                 'The directory', getcwd()),
         ));
     }
