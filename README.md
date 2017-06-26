@@ -27,7 +27,7 @@ composer global require slince/spike *@beta
 执行下面命令以开启服务
 
 ```bash
-spiked --address 127.0.0.1:8088
+spiked --address=127.0.0.1:8088
 ```
 上述命令可以创建一个基本服务，如果你需要定制更多信息可以基于配置文件服务
 
@@ -39,7 +39,7 @@ spiked --address 127.0.0.1:8088
 执行下面命令创建文件
 
 ```bash
-spiked init --dir /home/conf --format=json
+spiked init --dir=/home/conf --format=json
 ```
 
 使用下面命令查看帮助
@@ -53,7 +53,7 @@ spiked init -h
 - 基于配置文件开启服务
  
 ```bash
- spiked --config /home/conf/spiked.json
+ spiked --config=/home/conf/spiked.json
 ```
 
 ## 配置本地客户端
@@ -65,7 +65,7 @@ spiked init -h
 执行下面命令创建文件
 
 ```bash
-spike init --dir /home/conf --format=json
+spike init --dir=/home/conf --format=json
 ```
 
 使用下面命令查看帮助
@@ -79,7 +79,7 @@ spike init -h
 - 基于配置文件开启服务
  
 ```bash
- spike --config /home/conf/spike.json
+ spike --config=/home/conf/spike.json
 ```
 
 
