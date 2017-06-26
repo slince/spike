@@ -4,7 +4,7 @@ use Spike\Client\Application;
 use Spike\Client\Configuration;
 use Symfony\Component\Console\Input\ArgvInput;
 
-foreach ([__DIR__ . '/../../../vendor/autoload.php',
+foreach ([__DIR__ . '/../../../autoload.php',
              __DIR__ . '/../vendor/autoload.php'] as $autoloadFile) {
     if (is_file($autoloadFile)) {
         include $autoloadFile;
