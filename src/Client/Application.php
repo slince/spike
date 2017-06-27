@@ -49,7 +49,7 @@ class Application extends BaseApplication implements SubscriberInterface
             $configuration->getServerAddress(),
             $configuration->getTunnels(),
             $configuration->get('auth') ?: [],
-            null,
+            $this->loop,
             $this->dispatcher
         );
     }

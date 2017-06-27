@@ -5,93 +5,95 @@
 [![Latest Stable Version](https://img.shields.io/packagist/v/slince/spike.svg?style=flat-square&label=stable)](https://packagist.org/packages/slince/spike)
 [![Scrutinizer](https://img.shields.io/scrutinizer/g/slince/spike.svg?style=flat-square)](https://scrutinizer-ci.com/g/slince/spike/?branch=master)
 
-Spike是一个可以用来将你的内网服务暴露在公网的快速的反向代理，基于[ReactPHP](https://github.com/reactphp)，采用IO多路复用模型。
+Spike is a fast reverse proxy built on top of [ReactPHP](https://github.com/reactphp) that help to expose your local services to the internet.
 
-## 安装
+[简体中文](./README-zh_CN.md)
 
-通过composer安装
+## Installation
+
+Use the following command to install
+
 
 ```bash
 composer global require slince/spike *@beta
 ```
 
-> 服务器与本地都需要执行此命令安装
+> Both the server and local machine need to install this.
 
 
-## 配置服务端
+## Configure the server
 
-使用Spike的前提是你需要有一台公网可访问的机器，这里假设你已经有一台机器.
+A public machine that can be accessed on the internet is needed. Assuming already. There are two ways to start the server
+ 
+### Based on defaults
 
-### 使用默认参数
-
-执行下面命令以开启服务
-
-```bash
-spiked --address=127.0.0.1:8088
-```
-上述命令可以创建一个基本服务，如果你需要定制更多信息可以基于配置文件服务
-
-
-### 基于配置文件
-
-- 初始化一个配置文件 
-
-执行下面命令创建文件
+Use the following command to tart the server
 
 ```bash
-spiked init --dir=/home/conf --format=json
+$ spiked --address=127.0.0.1:8088
 ```
 
-使用下面命令查看帮助
+The above command can create a basic service. If you want to customize more information, you should start the server based on
+the configuration file.
+
+### Based on the configuration file.
+
+- Creates a configuration file
+
+Execute the following command to create it.
 
 ```bash
-spiked init -h
+$ spiked init --dir=/home/conf --format=json
 ```
 
-- 打开配置文件，修改相关参数
+Yaml,Xml,Ini and Json(default) files are supported. Use the following command for help.
 
-- 基于配置文件开启服务
+
+```bash
+$ spiked init -h
+```
+
+- Open the configuration file and modify the parameters.
+
+- Executes the following command to start the service.
  
 ```bash
- spiked --config=/home/conf/spiked.json
+ $ spiked --config=/home/conf/spiked.json
 ```
 
-## 配置本地客户端
+## Configure the client.
 
-开启客户端需要先创建配置文件
+You should first create a configuration file for the client.
 
-- 初始化一个配置文件 
-
-执行下面命令创建文件
+- Execute the following command to create it
 
 ```bash
-spike init --dir=/home/conf --format=json
+$ spike init --dir=/home/conf --format=json
 ```
-
-使用下面命令查看帮助
+Use the following command for help about this command
 
 ```bash
-spike init -h
+$spike init -h
 ```
 
-- 打开配置文件，修改相关参数
+- Open the configuration file and modify the parameters.
 
-- 基于配置文件开启服务
+- Start the client service.
  
 ```bash
- spike --config=/home/conf/spike.json
+ $ spike --config=/home/conf/spike.json
 ```
 
 
-## 定义隧道
+## Tunnel
 
-隧道的定义权利完全在客户端，服务端不需要做任何配置。从而达到最简化配置。
+The definition of the tunnel only in the client, the server does not need to do any configuration, so as to achieve the most simplified configuration.
 
-> 目前支持http与tcp两种隧道
+> Now supports both http and tcp tunnels
 
-打开本地配置文件"spike.json", 修改tunnel一项;
-
-- 添加http隧道
+Open the configuration file for the client and modify the parameters for "tunnel".
+ 
+- Add an HTTP tunnel
 
 ```json
 {
@@ -103,11 +105,12 @@ spike init -h
     }
 }
 ```
-启动客户端访问 "http://www.foo.com:8086" , 服务将会被代理到本地"127.0.0.1:80"; 注意此处需要把 "www.foo.com" 解析到服务端所在机器上
+Restarts the client service. Visit "http://www.foo.com:8086", the service will be forwarded to the local "127.0.0.1:80"; 
+Note that resolve "www.foo.com" to the server IP.
 
-- 添加tcp隧道
+- Add a TCP tunnel
 
-基于tcp协议的应用层协议都可使用本隧道代理，如：mysql,redis,ssh...等；下面是代理mysql服务的例子
+The services based on the tcp can use the tunnel, such as: mysql, redis, ssh and so on; The following is an example of proxy mysql service
 
 ```json
 {
@@ -116,31 +119,35 @@ spike init -h
     "host": "127.0.0.1:3306"
 }
 ```
-执行下面命令访问本地mysql服务：
+
+Execute the following command to visit the local mysql service.
 
 ```bash
-mysql -h 服务器地址 -P 8087
+$ mysql -h SERVER IP -P 8087
 ```
 
-## 客户端身份认证
+## Client authentication
 
-使用默认参数开启的服务端没有开启客户端身份认证服务，如果需要开启该服务则只能基于配置文件去启动服务端. 
+The authentication is not enabled on the server based on defaults.You should start the server based on configuration file,
+if you want to enable this.
 
-- 服务端启用认证服务
+- Enable authentication
 
-打开"spiked.json"文件，修改auth一项信息，然后重启服务
+Open the configuration file for the server and modify parameters for "auth" and restart the service.
 
-> 目前只支持简单的用户名密码认证方式，更多的认证方式后面会陆续加入.
+> Currently only supports a simple user name password authentication, more authentication methods will be added later.
 
-- 修改客户端身份信息
+- Modify the client identity information
 
-打开本地"spike.json"文件，修改auth一栏信息，与服务端配置保持一致即可
+Open the configuration file for the client and modify parameters for "auth". Keep the same parameters as the server.
 
 
-## 日志配置
+## Configure log
 
-默认开启屏幕输出与文件两种形式的日志；前者会打印到控制台；后者会写入到指定文件；默认日志等级是"info"，此项信息可以通过
-修改配置文件"log"一项调整
+The default to open the console and file two forms of the log; the first will print the logs to the console; the second 
+will write all the logs to the specified file;  Default log level is "info"; You can adjust this in the configuration file.
+
+> Because the log reads and writes are synchronized, increasing the log level to reduce IO can help improve service performance
 
 ## License
  

@@ -6,7 +6,6 @@
 namespace Spike\Server;
 
 use Spike\Application as BaseApplication;
-use GuzzleHttp\Psr7\Response;
 use Slince\Event\SubscriberInterface;
 use Spike\Server\Command\InitCommand;
 use Spike\Server\Command\SpikeCommand;
@@ -39,7 +38,7 @@ class Application extends BaseApplication implements SubscriberInterface
         $this->server = new Server(
             $configuration->getAddress(),
             $configuration->getAuthentication(),
-            null,
+            $this->loop,
             $this->dispatcher
         );
     }

@@ -32,12 +32,17 @@ class LoggerSubscriber extends Subscriber
     {
         return [
             EventStore::CLIENT_RUN => 'onClientRun',
+            EventStore::RECEIVE_MESSAGE => 'onReceiveMessage',
             EventStore::SOCKET_ERROR => 'onSocketError',
             EventStore::CONNECTION_ERROR => 'onConnectionError',
             EventStore::CONNECT_TO_SERVER => 'onConnectToServer',
         ];
     }
 
+    public function onReceiveMessage(Event $event)
+    {
+        $this->logger->info("Received a message:\r\n" . $event->getArgument('message'));
+    }
 
     public function onClientRun(Event $event)
     {

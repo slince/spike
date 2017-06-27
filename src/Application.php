@@ -5,6 +5,8 @@
  */
 namespace Spike;
 
+use React\EventLoop\Factory;
+use React\EventLoop\LoopInterface;
 use Slince\Di\Container;
 use Slince\Event\Dispatcher;
 use Spike\Logger\Logger;
@@ -44,11 +46,18 @@ class Application extends BaseApplication
      */
     protected $logger;
 
+    /**
+     * @var LoopInterface
+     */
+    protected $loop;
+
+
     public function __construct(Configuration $configuration, $name = null, $version = null)
     {
         $this->configuration = $configuration;
         $this->container = new Container();
         $this->dispatcher =  new Dispatcher();
+        $this->loop = Factory::create();
         parent::__construct($name, $version);
     }
 
@@ -70,6 +79,16 @@ class Application extends BaseApplication
     }
 
     /**
+     * Gets the loop instance
+     * @return LoopInterface
+     */
+    public function getLoop()
+    {
+        return $this->loop;
+    }
+
+    /**
+     * Gets the logger instance
      * @return Logger
      */
     public function getLogger()
