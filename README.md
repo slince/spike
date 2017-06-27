@@ -73,7 +73,7 @@ $ spike init --dir=/home/conf --format=json
 Use the following command for help about this command
 
 ```bash
-$spike init -h
+$ spike init -h
 ```
 
 - Open the configuration file and modify the parameters.
@@ -81,7 +81,7 @@ $spike init -h
 - Start the client service.
  
 ```bash
- $ spike --config=/home/conf/spike.json
+$ spike --config=/home/conf/spike.json
 ```
 
 

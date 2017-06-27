@@ -71,7 +71,7 @@ $ spike init --dir=/home/conf --format=json
 使用下面命令查看帮助
 
 ```bash
-$spike init -h
+$ spike init -h
 ```
 
 - 打开配置文件，修改相关参数
@@ -79,7 +79,7 @@ $spike init -h
 - 基于配置文件开启服务
  
 ```bash
- $ spike --config=/home/conf/spike.json
+$ spike --config=/home/conf/spike.json
 ```
 
 
