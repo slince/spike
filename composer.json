@@ -13,8 +13,7 @@
     "require": {
         "php": ">=5.6.0",
         "react/socket": "^0.8",
-        "guzzlehttp/guzzle": "^6.0",
-        "guzzlehttp/psr7": "^1.4",
+        "guzzlehttp/psr7": "^1.0",
         "doctrine/collections": "^1.0",
         "slince/event": "^1.0",
         "slince/di": "^2.0",
