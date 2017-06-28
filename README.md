@@ -5,7 +5,7 @@
 [![Latest Stable Version](https://img.shields.io/packagist/v/slince/spike.svg?style=flat-square&label=stable)](https://packagist.org/packages/slince/spike)
 [![Scrutinizer](https://img.shields.io/scrutinizer/g/slince/spike.svg?style=flat-square)](https://scrutinizer-ci.com/g/slince/spike/?branch=master)
 
-Spike is a fast reverse proxy built on top of [ReactPHP](https://github.com/reactphp) that help to expose your local services to the internet.
+Spike is a fast reverse proxy built on top of [ReactPHP](https://github.com/reactphp) that helps to expose your local services to the internet.
 
 [简体中文](./README-zh_CN.md)
 
