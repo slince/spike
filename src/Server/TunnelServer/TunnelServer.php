@@ -157,7 +157,8 @@ abstract class TunnelServer implements TunnelServerInterface
             $proxyConnection->removeListener('close', $handleProxyConnectionClose);
             $proxyConnection->removeListener('error', $handleProxyConnectionClose);
             $proxyConnection->end();
-            $this->publicConnections->removeElement($publicConnection);
+            //There will be a bug if the tunnel server is closed before public connection
+            $this->publicConnections && $this->publicConnections->removeElement($publicConnection);
         };
         $publicConnection->on('close', $handlePublicConnectionClose);
         $publicConnection->on('error', $handlePublicConnectionClose);

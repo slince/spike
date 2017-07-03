@@ -1,11 +1,8 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: taosikai
- * Date: 2017/6/21
- * Time: 16:04
+ * Spike library
+ * @author Tao <taosikai@yeah.net>
  */
-
 namespace Spike\Timer;
 
 use React\EventLoop\LoopInterface;
