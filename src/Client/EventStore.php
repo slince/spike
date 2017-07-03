@@ -14,16 +14,16 @@ final class EventStore
     const CLIENT_RUN = 'client_run';
 
     /**
-     * Fires when the client connect to a server
+     * Fires when the client connect to the server
      * @var string
      */
     const CONNECT_TO_SERVER =  'connect_to_server';
 
     /**
-     * Fires when server socket has error
+     * Fires if the client cannot connect to the server
      * @var string
      */
-    const SOCKET_ERROR = 'socket_error';
+    const CANNOT_CONNECT_TO_SERVER = 'cannot_connect_to_server';
 
     /**
      * Fires when client registers array of tunnels to the server
@@ -42,6 +42,12 @@ final class EventStore
      * @var string
      */
     const CONNECTION_ERROR = 'connection_error';
+
+    /**
+     * Fires when the client disconnect form the server
+     * @var string
+     */
+    const DISCONNECT_SERVER = 'disconnect_server';
 
     /**
      * Fires when client receive message

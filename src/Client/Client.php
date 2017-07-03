@@ -127,6 +127,8 @@ class Client
             $this->controlConnection = $connection;
             $this->requestAuth($connection);
             $this->handleControlConnection($connection);
+        }, function(){
+            $this->dispatcher->dispatch(new Event(EventStore::CANNOT_CONNECT_TO_SERVER, $this));
         });
         $this->dispatcher->dispatch(EventStore::CLIENT_RUN);
         foreach ($this->getDefaultTimers() as $timer) {
@@ -147,7 +149,10 @@ class Client
         foreach ($this->tunnelClients as $tunnelClient) {
             $tunnelClient->close();
         }
-        $this->controlConnection && $this->controlConnection->end();
+        if ($this->controlConnection) {
+            $this->controlConnection->removeListener('close', [$this, 'handleDisconnectServer']);
+            $this->controlConnection->end();
+        }
     }
 
     /**
@@ -160,19 +165,34 @@ class Client
         $parser = new SpikeParser();
         $connection->on('data', function($data) use($parser, $connection){
             $parser->pushIncoming($data);
-            $messages = $parser->parse();
-            foreach ($messages as $message) {
-                $message = Spike::fromString($message);
-                $this->dispatcher->dispatch(new Event(EventStore::RECEIVE_MESSAGE, $this, [
-                    'message' => $message,
-                    'connection' => $connection
+            try {
+                $messages = $parser->parse();
+                foreach ($messages as $message) {
+                    $message = Spike::fromString($message);
+                    $this->dispatcher->dispatch(new Event(EventStore::RECEIVE_MESSAGE, $this, [
+                        'message' => $message,
+                        'connection' => $connection
+                    ]));
+                    $this->createMessageHandler($message, $connection)->handle($message);
+                }
+            } catch (RuntimeException $exception) {
+                $this->dispatcher->dispatch(new Event(EventStore::CONNECTION_ERROR, $this, [
+                    'connection' => $connection,
+                    'exception' => $exception
                 ]));
-                $this->createMessageHandler($message, $connection)->handle($message);
             }
         });
-        $connection->on('close', function(){
-            $this->close();
-        });
+        $connection->on('close', [$this, 'handleDisconnectServer']);
+    }
+
+    /**
+     * If the client disconnect from the server
+     * @codeCoverageIgnore
+     */
+    public function handleDisconnectServer()
+    {
+        $this->dispatcher->dispatch(new Event(EventStore::DISCONNECT_SERVER, $this));
+        $this->close();
     }
 
     /**

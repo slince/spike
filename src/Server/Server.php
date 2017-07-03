@@ -153,7 +153,7 @@ class Server
         //When client be closed
         $connection->on('end', function() use ($connection){
             $client = $this->clients->findByConnection($connection);
-            $this->closeClient($client);
+            $client && $this->closeClient($client);
         });
     }
 

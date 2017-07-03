@@ -129,8 +129,10 @@ class Application extends BaseApplication implements SubscriberInterface
     public function getEvents()
     {
         return [
+            EventStore::CANNOT_CONNECT_TO_SERVER => 'onCannotConnectToServer',
             EventStore::AUTH_ERROR => 'onAuthError',
             EventStore::REGISTER_TUNNEL_ERROR => 'onRegisterTunnelError',
+            EventStore::DISCONNECT_SERVER => 'onDisconnectFromServer'
         ];
     }
 
@@ -139,7 +141,7 @@ class Application extends BaseApplication implements SubscriberInterface
      */
     public function onAuthError(Event $event)
     {
-        $this->output->writeln('Auth error, please checks your config file');
+        $this->output->writeln('Auth error, please checks your configuration file');
         $this->client->close();
     }
 
@@ -152,6 +154,23 @@ class Application extends BaseApplication implements SubscriberInterface
             $event->getArgument('tunnel'),
             $event->getArgument('errorMessage')
         ));
+        $this->client->close();
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    public function onCannotConnectToServer(Event $event)
+    {
+        $this->client->close();
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    public function onDisconnectFromServer(Event $event)
+    {
+        $this->output->writeln('Disconnect from the server');
         $this->client->close();
     }
 

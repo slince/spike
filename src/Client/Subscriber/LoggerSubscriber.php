@@ -32,10 +32,10 @@ class LoggerSubscriber extends Subscriber
     {
         return [
             EventStore::CLIENT_RUN => 'onClientRun',
-            EventStore::RECEIVE_MESSAGE => 'onReceiveMessage',
-            EventStore::SOCKET_ERROR => 'onSocketError',
-            EventStore::CONNECTION_ERROR => 'onConnectionError',
             EventStore::CONNECT_TO_SERVER => 'onConnectToServer',
+            EventStore::CANNOT_CONNECT_TO_SERVER => 'onCannotConnectToServer',
+            EventStore::RECEIVE_MESSAGE => 'onReceiveMessage',
+            EventStore::CONNECTION_ERROR => 'onConnectionError',
         ];
     }
 
@@ -49,18 +49,21 @@ class LoggerSubscriber extends Subscriber
         $this->logger->info("The client is running ...");
     }
 
-    public function onSocketError(Event $event)
-    {
-        $this->logger->error("Client error.");
-    }
-
     public function onConnectionError(Event $event)
     {
-        $this->logger->warning($event->getArgument('exception')->getMessage());
+        $this->logger->warning(sprintf('Got a bad protocol message: "%s" from "%s"',
+            $event->getArgument('exception')->getMessage(),
+            $event->getArgument('connection')->getRemoteAddress()
+        ));
     }
 
     public function onConnectToServer(Event $event)
     {
         $this->logger->info("The client has connected to the server.");
+    }
+
+    public function onCannotConnectToServer(Event $event)
+    {
+        $this->logger->info("Cannot connect to the server. the server may not be available");
     }
 }
