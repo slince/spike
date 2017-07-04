@@ -109,8 +109,8 @@ class Application extends BaseApplication implements SubscriberInterface
     public function getSubscribers()
     {
         return [
-            $this,
-            new LoggerSubscriber($this)
+            new LoggerSubscriber($this),
+            $this
         ];
     }
 

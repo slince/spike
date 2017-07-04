@@ -47,7 +47,7 @@ final class EventStore
      * Fires when the client disconnect form the server
      * @var string
      */
-    const DISCONNECT_SERVER = 'disconnect_server';
+    const DISCONNECT_FROM_SERVER = 'disconnect_from_server';
 
     /**
      * Fires when client receive message

@@ -93,7 +93,9 @@ class Client
         $this->auth = $auth;
         $this->dispatcher = $dispatcher ?: new Dispatcher();
         $this->loop = $loop ?: LoopFactory::create();
-        $this->connector = new Connector($this->loop);
+        $this->connector = new Connector($this->loop, [
+            'timeout' => 30
+        ]);
         $this->tunnels = $this->createTunnels($tunnels);
         $this->tunnelClients = new TunnelClientCollection();
     }
@@ -125,15 +127,15 @@ class Client
                 'connection' => $connection
             ]));
             $this->controlConnection = $connection;
+            foreach ($this->getDefaultTimers() as $timer) {
+                $this->addTimer($timer);
+            }
             $this->requestAuth($connection);
             $this->handleControlConnection($connection);
         }, function(){
             $this->dispatcher->dispatch(new Event(EventStore::CANNOT_CONNECT_TO_SERVER, $this));
         });
         $this->dispatcher->dispatch(EventStore::CLIENT_RUN);
-        foreach ($this->getDefaultTimers() as $timer) {
-            $this->addTimer($timer);
-        }
         $this->loop->run();
     }
 
@@ -153,6 +155,7 @@ class Client
             $this->controlConnection->removeListener('close', [$this, 'handleDisconnectServer']);
             $this->controlConnection->end();
         }
+        $this->loop->stop();
     }
 
     /**
@@ -191,7 +194,7 @@ class Client
      */
     public function handleDisconnectServer()
     {
-        $this->dispatcher->dispatch(new Event(EventStore::DISCONNECT_SERVER, $this));
+        $this->dispatcher->dispatch(new Event(EventStore::DISCONNECT_FROM_SERVER, $this));
         $this->close();
     }
 

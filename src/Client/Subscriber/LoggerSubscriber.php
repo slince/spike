@@ -9,7 +9,6 @@ use Slince\Event\Event;
 use Spike\Client\Application;
 use Spike\Client\EventStore;
 use Spike\Logger\Logger;
-use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * @codeCoverageIgnore
@@ -27,7 +26,9 @@ class LoggerSubscriber extends Subscriber
         $this->logger =  $client->getLogger();
     }
 
-
+    /**
+     * {@inheritdoc}
+     */
     public function getEvents()
     {
         return [
@@ -36,7 +37,28 @@ class LoggerSubscriber extends Subscriber
             EventStore::CANNOT_CONNECT_TO_SERVER => 'onCannotConnectToServer',
             EventStore::RECEIVE_MESSAGE => 'onReceiveMessage',
             EventStore::CONNECTION_ERROR => 'onConnectionError',
+            EventStore::AUTH_ERROR => 'onAuthError',
+            EventStore::REGISTER_TUNNEL_ERROR => 'onRegisterTunnelError',
+            EventStore::DISCONNECT_FROM_SERVER => 'onDisconnectFromServer'
         ];
+    }
+
+    public function onAuthError(Event $event)
+    {
+        $this->logger->error('Auth error, please checks your configuration file');
+    }
+
+    public function onRegisterTunnelError(Event $event)
+    {
+        $this->logger->error(sprintf('Registers the tunnel "%s" error, message: %s',
+            $event->getArgument('tunnel'),
+            $event->getArgument('errorMessage')
+        ));
+    }
+
+    public function onDisconnectFromServer(Event $event)
+    {
+        $this->logger->error('Disconnect from the server');
     }
 
     public function onReceiveMessage(Event $event)
@@ -64,6 +86,6 @@ class LoggerSubscriber extends Subscriber
 
     public function onCannotConnectToServer(Event $event)
     {
-        $this->logger->info("Cannot connect to the server. the server may not be available");
+        $this->logger->error("Cannot connect to the server. the server may not be available");
     }
 }
