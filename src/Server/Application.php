@@ -131,10 +131,6 @@ class Application extends BaseApplication implements SubscriberInterface
     protected function getDefaultInputDefinition()
     {
         $definition = parent::getDefaultInputDefinition();
-        $definition->addOption(new InputOption('config', null, InputOption::VALUE_REQUIRED,
-            'The configuration file, support json,ini,xml and yaml format'));
-        $definition->addOption(new InputOption('address', null, InputOption::VALUE_REQUIRED,
-            'The ip address that bind to'));
         return $definition;
     }
 }

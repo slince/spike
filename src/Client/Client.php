@@ -94,7 +94,7 @@ class Client
         $this->dispatcher = $dispatcher ?: new Dispatcher();
         $this->loop = $loop ?: LoopFactory::create();
         $this->connector = new Connector($this->loop, [
-            'timeout' => 30
+            'timeout' => 5
         ]);
         $this->tunnels = $this->createTunnels($tunnels);
         $this->tunnelClients = new TunnelClientCollection();

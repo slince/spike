@@ -173,7 +173,11 @@ class Application extends BaseApplication implements SubscriberInterface
      */
     public function onDisconnectFromServer(Event $event)
     {
-        $this->client->run();
+        $index = 0;
+        while (true) {
+            $this->logger->info(sprintf('Reconnection Times: %d' . PHP_EOL, ++ $index));
+            $this->client->run();
+        }
     }
 
     /**
@@ -205,13 +209,7 @@ class Application extends BaseApplication implements SubscriberInterface
      */
     protected function getDefaultInputDefinition()
     {
-        $definition = new InputDefinition([
-            new InputOption('config', null, InputOption::VALUE_OPTIONAL,
-                'The configuration file, support json,ini,xml and yaml format')
-        ]);
-        $defaultDefinition = parent::getDefaultInputDefinition();
-        $definition->addArguments($defaultDefinition->getArguments());
-        $definition->addOptions($defaultDefinition->getOptions());
+        $definition = parent::getDefaultInputDefinition();
         return $definition;
     }
 }
