@@ -23,6 +23,7 @@ use Slince\Event\DispatcherInterface;
 use Slince\Event\Event;
 use Spike\Client\ClientInterface;
 use Spike\Common\Protocol\Spike;
+use Spike\Server\ChunkServer\ChunkServerCollection;
 use Spike\Server\Event\Events;
 use Spike\Server\Event\FilterActionHandlerEvent;
 use Spike\Server\Listener\ServerListener;
@@ -61,7 +62,7 @@ class Server extends Application implements ServerInterface
      */
     protected $eventDispatcher;
 
-    public function __construct(Configuration $configuration, LoopInterface $eventLoop)
+    public function __construct(Configuration $configuration, LoopInterface $eventLoop = null)
     {
         $this->configuration = $configuration;
         $this->eventLoop = $eventLoop ?: Factory::create();
@@ -86,9 +87,19 @@ class Server extends Application implements ServerInterface
      */
     public function run(InputInterface $input = null, OutputInterface $output = null)
     {
+        $this->start();
+    }
+
+    /**
+     * {@inheritdoc}
+     * @codeCoverageIgnore
+     */
+    public function start()
+    {
         $server = new Socket($this->configuration->getAddress(), $this->eventLoop);
         $this->eventDispatcher->dispatch(Events::SERVER_RUN);
         $server->on('connection', [$this, 'handleControlConnection']);
+        $this->eventLoop->run();
     }
 
     /**

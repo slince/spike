@@ -25,21 +25,12 @@ interface ServerInterface
     public function handleControlConnection(ConnectionInterface $connection);
 
     /**
-     * Creates chunk server
-     * @var string $address
-     * @return mixed
-     */
-    public function createChunkServer($address);
-
-    /**
      * @return Collection
      */
     public function getChunkServers();
 
     /**
-     * Gets event dispatcher
-     *
-     * @return Dispatcher
+     * Starts the server
      */
-    public function getEventDispatcher();
+    public function start();
 }
