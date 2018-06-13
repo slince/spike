@@ -10,18 +10,34 @@
  */
 namespace Spike\Client;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Slince\Config\Config;
+use Spike\Common\Tunnel\TunnelFactory;
 use Spike\Common\Tunnel\TunnelInterface;
 
 class Configuration extends Config
 {
     /**
+     * @var TunnelInterface[]|Collection
+     */
+    protected $tunnels;
+
+    /**
      * @return TunnelInterface[]|Collection
      */
     public function getTunnels()
     {
-        return $this->get('tunnels', []);
+        if ($this->tunnels) {
+            return $this->tunnels;
+        }
+        $data = $this->get('tunnels', []);
+        $tunnels = [];
+        foreach ($data as $info) {
+            $tunnel = TunnelFactory::fromArray($info);
+            $tunnels[] = $tunnel;
+        }
+        return $this->tunnels = new ArrayCollection($tunnels);
     }
 
     /**

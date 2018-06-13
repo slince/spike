@@ -11,13 +11,15 @@
 
 namespace Spike\Common\Protocol;
 
+use Spike\Version;
+
 interface SpikeInterface
 {
     /**
      * The version of protocol
      * @var string
      */
-    const VERSION = 1.0;
+    const VERSION = Version::VERSION;
 
     /**
      * Creates a protocol from a string

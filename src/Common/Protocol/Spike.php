@@ -11,7 +11,7 @@
 
 namespace Spike\Common\Protocol;
 
-use Spike\Exception\BadRequestException;
+use Spike\Common\Exception\BadRequestException;
 
 class Spike implements SpikeInterface
 {

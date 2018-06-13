@@ -21,7 +21,7 @@ use Spike\Server\Event\FilterActionHandlerEvent;
 use Spike\Server\Handler;
 use Spike\Server\ServerInterface;
 
-class KernelListener implements SubscriberInterface
+class ServerListener implements SubscriberInterface
 {
     /**
      * {@inheritdoc}
@@ -29,7 +29,7 @@ class KernelListener implements SubscriberInterface
     public function getEvents()
     {
         return [
-            Events::KERNEL_ACTION => 'onKernelAction',
+            Events::SERVER_ACTION => 'onServerAction',
             Events::CONNECTION_ERROR => 'onConnectionError'
         ];
     }
@@ -45,7 +45,7 @@ class KernelListener implements SubscriberInterface
     /**
      * @param FilterActionHandlerEvent $event
      */
-    public function onKernelAction(FilterActionHandlerEvent $event)
+    public function onServerAction(FilterActionHandlerEvent $event)
     {
         $actionHandler = $this->createMessageHandler(
             $event->getSubject(),

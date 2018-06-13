@@ -38,7 +38,7 @@ class FilterActionHandlerEvent extends Event
     {
         $this->message = $message;
         $this->connection = $connection;
-        parent::__construct(Events::KERNEL_CONNECT, $subject);
+        parent::__construct(Events::CLIENT_ACTION, $subject);
     }
 
     /**

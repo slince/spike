@@ -10,6 +10,8 @@
  */
 namespace Spike\Client;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use React\EventLoop\Factory;
 use React\EventLoop\LoopInterface;
 use React\Socket\ConnectionInterface;
@@ -19,6 +21,8 @@ use Slince\Event\Dispatcher;
 use Slince\Event\DispatcherInterface;
 use Spike\Client\Event\Events;
 use Spike\Client\Event\FilterActionHandlerEvent;
+use Spike\Client\Listener\ClientListener;
+use Spike\Client\Worker\WorkerInterface;
 use Spike\Common\Protocol\Spike;
 use Spike\Version;
 use Slince\Event\Event;
@@ -63,11 +67,18 @@ class Client extends Application implements ClientInterface
      */
     protected $activeAt;
 
+    /**
+     * @var WorkerInterface[]|Collection
+     */
+    protected $workers;
+
     public function __construct(Configuration $configuration, LoopInterface $eventLoop)
     {
         $this->configuration = $configuration;
         $this->eventLoop = $eventLoop ?: Factory::create();
         $this->eventDispatcher = new Dispatcher();
+        $this->workers = new ArrayCollection();
+        $this->initializeEvents();
         parent::__construct(static::NAME, Version::VERSION);
     }
 
@@ -190,5 +201,26 @@ class Client extends Application implements ClientInterface
     public function setActiveAt($activeAt)
     {
         $this->activeAt = $activeAt;
+    }
+
+    /**
+     * @return LoopInterface
+     */
+    public function getEventLoop()
+    {
+        return $this->eventLoop;
+    }
+
+    /**
+     * @return Collection|WorkerInterface[]
+     */
+    public function getWorkers()
+    {
+        return $this->workers;
+    }
+
+    protected function initializeEvents()
+    {
+        $this->eventDispatcher->addSubscriber(new ClientListener());
     }
 }

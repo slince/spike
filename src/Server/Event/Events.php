@@ -40,7 +40,7 @@ final class Events
      * Fires when the server receives message
      * @var string
      */
-    const KERNEL_ACTION = 'kernel.action';
+    const SERVER_ACTION = 'server.action';
 
     /**
      * Fires when the server receives message

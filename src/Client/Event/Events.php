@@ -25,6 +25,11 @@ final class Events
     const CLIENT_CONNECT =  'client.connect';
 
     /**
+     * @var string
+     */
+    const CLIENT_ACTION = 'client.action';
+
+    /**
      * Fires if the client cannot connect to the server
      * @var string
      */
