@@ -18,6 +18,7 @@ use React\EventLoop\LoopInterface;
 use React\Socket\ConnectionInterface;
 use React\Socket\Server as Socket;
 use function Slince\Common\jsonBuffer;
+use Slince\Event\Dispatcher;
 use Slince\Event\DispatcherInterface;
 use Slince\Event\Event;
 use Spike\Common\Protocol\Spike;
@@ -55,11 +56,6 @@ class Server extends Application implements ServerInterface
     protected $clients;
 
     /**
-     * @var Server
-     */
-    protected $server;
-
-    /**
      * @var DispatcherInterface
      */
     protected $eventDispatcher;
@@ -68,6 +64,7 @@ class Server extends Application implements ServerInterface
     {
         $this->configuration = $configuration;
         $this->eventLoop = $eventLoop ?: Factory::create();
+        $this->eventDispatcher = new Dispatcher();
         $this->chunkServers = new ArrayCollection();
         $this->clients = new ArrayCollection();
         $this->initializeEvents();
@@ -90,11 +87,15 @@ class Server extends Application implements ServerInterface
 
     }
 
+    /**
+     * {@inheritdoc}
+     * @codeCoverageIgnore
+     */
     public function run(InputInterface $input = null, OutputInterface $output = null)
     {
-        $this->server = new Socket($this->configuration->getAddress(), $this->eventLoop);
+        $server = new Socket($this->configuration->getAddress(), $this->eventLoop);
         $this->eventDispatcher->dispatch(Events::SERVER_RUN);
-        $this->server->on('connection', [$this, 'handleControlConnection']);
+        $server->on('connection', [$this, 'handleControlConnection']);
     }
 
     /**

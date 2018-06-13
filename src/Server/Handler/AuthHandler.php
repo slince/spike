@@ -32,12 +32,12 @@ class AuthHandler extends MessageActionHandler
                 $response = new Spike('auth_response', $client->toArray());
             } else {
                 $response = new Spike('auth_response', $auth, [
-                    'Code' =>  200
+                    'code' =>  200
                 ]);
             }
         } catch (InvalidArgumentException $exception) {
             $response = new Spike('auth_response', $auth, [
-                'Code' =>  200,
+                'code' =>  200,
                 'message' => $exception->getMessage()
             ]);
         }
