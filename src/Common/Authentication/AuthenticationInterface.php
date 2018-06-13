@@ -1,0 +1,21 @@
+<?php
+
+/*
+ * This file is part of the slince/spike package.
+ *
+ * (c) Slince <taosikai@yeah.net>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+namespace Spike\Common\Authentication;
+
+interface AuthenticationInterface
+{
+    /**
+     * Verify the auth information
+     * @param mixed $auth
+     * @return boolean
+     */
+    public function verify($auth);
+}

@@ -1,0 +1,55 @@
+filter:
+    excluded_paths:
+        - "tests/*"
+        - "vendor/*"
+
+tools:
+    external_code_coverage:
+        timeout: 600
+
+    php_sim: true
+
+    php_changetracking: true
+
+    php_cs_fixer:
+        enabled: true
+        config:
+            level: all
+        filter:
+            excluded_paths:
+                - "tests/*"
+                - "vendor/*"
+
+    php_mess_detector:
+        enabled: true
+        filter:
+            excluded_paths:
+                - "tests/*"
+                - "vendor/*"
+
+    php_pdepend:
+        enabled: true
+        filter:
+            excluded_paths:
+                - "tests/*"
+                - "vendor/*"
+
+    php_analyzer:
+        enabled: true
+        filter:
+            excluded_paths:
+                - "tests/*"
+                - "vendor/*"
+
+
+    php_cpd:
+        enabled: true
+        excluded_dirs:
+            - "tests/*"
+            - "vendor/*"
+
+    php_loc:
+        enabled: true
+        excluded_dirs:
+            - "tests/*"
+            - "vendor/*"

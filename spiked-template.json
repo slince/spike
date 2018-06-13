@@ -1,0 +1,12 @@
+{
+    "address": "127.0.0.1:8088",
+    "log": {
+        "file": "./server.log",
+        "level": "info"
+    },
+    "auth": {
+        "type": "simple_password",
+        "username": "spike",
+        "password": "spike"
+    }
+}

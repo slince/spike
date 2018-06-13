@@ -1,0 +1,10 @@
+vendor/
+.settings/
+.project
+.buildpath
+composer.lock
+.idea
+tmp/
+*.log
+spike.json
+spiked.json
