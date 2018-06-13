@@ -1,26 +1,37 @@
 <?php
-/**
- * Spike library
- * @author Tao <taosikai@yeah.net>
+
+/*
+ * This file is part of the slince/spike package.
+ *
+ * (c) Slince <taosikai@yeah.net>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 namespace Spike\Client\Command;
 
-use Spike\Tunnel\HttpTunnel;
+use Spike\Common\Tunnel\HttpTunnel;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class ShowProxyHostsCommand extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function configure()
     {
         $this->setName('list-proxy')
             ->setDescription('Lists all supported proxy hosts by the client');
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $tunnels = $this->getClient()->getKernel()->getTunnels();
+        $tunnels = $this->getClient()->getConfiguration()->getTunnels();
         if ($tunnels) {
             $table = new Table($output);
             $table->setHeaders(['Protocol', 'Server Port', 'Local Host', 'Proxy Host']);

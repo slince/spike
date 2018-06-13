@@ -177,4 +177,15 @@ class Server extends Application implements ServerInterface
     {
         $this->eventDispatcher->addSubscriber(new ServerListener());
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getDefaultCommands()
+    {
+        return array_merge(parent::getDefaultCommands(), [
+            new Command\InitCommand($this),
+            new Command\HelpCommand($this),
+        ]);
+    }
 }

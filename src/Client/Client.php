@@ -219,6 +219,18 @@ class Client extends Application implements ClientInterface
         return $this->workers;
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    protected function getDefaultCommands()
+    {
+        return array_merge(parent::getDefaultCommands(), [
+            new Command\SpikeCommand($this),
+            new Command\ShowProxyHostsCommand($this),
+            new Command\InitCommand($this),
+        ]);
+    }
+
     protected function initializeEvents()
     {
         $this->eventDispatcher->addSubscriber(new ClientListener());
