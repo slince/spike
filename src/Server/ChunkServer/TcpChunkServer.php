@@ -11,22 +11,24 @@
 
 namespace Spike\Server\ChunkServer;
 
-use React\EventLoop\LoopInterface;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use React\Socket\ConnectionInterface;
 use React\Socket\Server as Socket;
 use Slince\Event\Event;
+use Spike\Common\Exception\InvalidArgumentException;
+use Spike\Common\Protocol\Spike;
+use Spike\Common\Tunnel\TcpTunnel;
 use Spike\Common\Tunnel\TunnelInterface;
+use Spike\Server\Client;
+use Spike\Server\Event\Events;
+use Spike\Server\Server;
 use Spike\Server\ServerInterface;
 
-class TcpTunnelServer implements ChunkServerInterface
+class TcpChunkServer implements ChunkServerInterface
 {
     /**
-     * @var ConnectionInterface
-     */
-    protected $controlConnection;
-
-    /**
-     * @var PublicConnectionCollection
+     * @var Collection|PublicConnection[]
      */
     protected $publicConnections;
 
@@ -36,7 +38,7 @@ class TcpTunnelServer implements ChunkServerInterface
     protected $socket;
 
     /**
-     * @var TunnelInterface
+     * @var TcpTunnel
      */
     protected $tunnel;
 
@@ -46,44 +48,38 @@ class TcpTunnelServer implements ChunkServerInterface
     protected $server;
 
     /**
-     * @var LoopInterface
+     * @var Client
      */
-    protected $loop;
+    protected $client;
 
-    public function __construct(Server $server, ConnectionInterface $controlConnection, TunnelInterface $tunnel, LoopInterface $loop)
+    public function __construct(Server $server, Client $client, TunnelInterface $tunnel)
     {
         $this->server = $server;
-        $this->controlConnection = $controlConnection;
+        $this->client = $client;
         $this->tunnel = $tunnel;
-        $this->loop = $loop;
-        $this->publicConnections = new PublicConnectionCollection();
+        $this->publicConnections = new ArrayCollection();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getTunnel()
+    {
+        return $this->tunnel;
     }
 
     /**
      * {@inheritdoc}
      * @codeCoverageIgnore
      */
-    public function run()
+    public function start()
     {
-        $this->socket = new Socket($this->getListenAddress(), $this->loop);
+        $this->socket = new Socket($this->resolveListenAddress(), $this->server->getEventLoop());
         $this->socket->on('connection', function($connection){
             $publicConnection = new PublicConnection($connection);
             $this->publicConnections->add($publicConnection);
             $this->handlePublicConnection($publicConnection);
         });
-        //Creates defaults timers
-        foreach ($this->getDefaultTimers() as $timer) {
-            $this->addTimer($timer);
-        }
-    }
-
-    /**
-     * Gets the event dispatcher
-     * @return Dispatcher
-     */
-    public function getDispatcher()
-    {
-        return $this->server->getDispatcher();
     }
 
     /**
@@ -93,14 +89,8 @@ class TcpTunnelServer implements ChunkServerInterface
     {
         //Close all public connection
         foreach ($this->publicConnections as $publicConnection) {
-            $this->closePublicConnection($publicConnection, 'The tunnel server has been closed');
+            $this->closePublicConnection($publicConnection);
         }
-        //Cancel all timers
-        foreach ($this->timers as $timer) {
-            $timer->cancel();
-        }
-        $this->publicConnections = null;
-        $this->timers = null;
         $this->socket && $this->socket->close();
     }
 
@@ -112,11 +102,11 @@ class TcpTunnelServer implements ChunkServerInterface
     public function handlePublicConnection(PublicConnection $publicConnection)
     {
         $requestProxyMessage = new Spike('request_proxy', $this->tunnel->toArray(), [
-            'Proxy-Connection-ID' => $publicConnection->getId()
+            'public-connection-id' => $publicConnection->getId()
         ]);
-        $this->controlConnection->write($requestProxyMessage);
+        $this->sendToClient($requestProxyMessage);
         //Fires 'request_proxy' event
-        $this->getDispatcher()->dispatch(new Event(EventStore::REQUEST_PROXY, $this, [
+        $this->server->getEventDispatcher()->dispatch(new Event(Events::REQUEST_PROXY, $this, [
             'message' => $requestProxyMessage
         ]));
         $publicConnection->removeAllListeners();
@@ -124,22 +114,19 @@ class TcpTunnelServer implements ChunkServerInterface
     }
 
     /**
-     * Registers proxy connection
-     * @param ConnectionInterface $proxyConnection
-     * @param SpikeInterface $message
+     * {@inheritdoc}
      * @codeCoverageIgnore
      */
-    public function registerProxyConnection(ConnectionInterface $proxyConnection, SpikeInterface $message)
+    public function setProxyConnection($publicConnectionId, ConnectionInterface $proxyConnection)
     {
-        $connectionId = $message->getHeader('Proxy-Connection-ID');
-        $publicConnection = $this->publicConnections->findById($connectionId);
+        $publicConnection = $this->findPublicConnectionById($publicConnectionId);
         if (is_null($publicConnection)) {
             throw new InvalidArgumentException(sprintf('Cannot find the public connection "%s"', $connectionId));
         }
         $startProxyMessage = new Spike('start_proxy');
         $proxyConnection->write($startProxyMessage);
         //Fires 'start_proxy' event
-        $this->getDispatcher()->dispatch(new Event(EventStore::REQUEST_PROXY, $this, [
+        $this->server->getEventDispatcher()->dispatch(new Event(Events::START_PROXY, $this, [
             'message' => $startProxyMessage
         ]));
         //Resumes the public connection
@@ -169,81 +156,42 @@ class TcpTunnelServer implements ChunkServerInterface
         $proxyConnection->on('error', $handleProxyConnectionClose);
     }
 
-    /**
-     * Gets the server
-     * @return Server
-     */
-    public function getServer()
+    protected function sendToClient($data)
     {
-        return $this->server;
+        $this->client->getControlConnection()->write($data);
+        $this->client->setActiveAt(new \DateTime());
+    }
+
+    /**
+     * @param string $id
+     * @return null|PublicConnection
+     */
+    protected function findPublicConnectionById($id)
+    {
+        foreach ($this->publicConnections as $publicConnection) {
+            if ($publicConnection->getId() === $id) {
+                return $publicConnection;
+            }
+        }
+        return null;
     }
 
     /**
      * Gets the server address to bind
      * @return string
      */
-    protected function getListenAddress()
+    protected function resolveListenAddress()
     {
-        return "{$this->server->getHost()}:{$this->tunnel->getServerPort()}";
+        return "0.0.0.0:{$this->tunnel->getServerPort()}";
     }
 
     /**
-     * Creates default timers
-     * @return TimerInterface[]
+     * Close public connection
+     * @param PublicConnection $publicConnection
+     * @param string|null $message
      */
-    protected function getDefaultTimers()
+    protected function closePublicConnection(PublicConnection $publicConnection, $message = null)
     {
-        return [
-            new ReviewPublicConnection($this)
-        ];
-    }
-
-    /**
-     * Gets the socket of the tunnel server
-     * @return Socket
-     */
-    public function getSocket()
-    {
-        return $this->socket;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getControlConnection()
-    {
-        return $this->controlConnection;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getLoop()
-    {
-        return $this->loop;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getPublicConnections()
-    {
-        return $this->publicConnections;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getTunnel()
-    {
-        return $this->tunnel;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function closePublicConnection(PublicConnection $publicConnection, $message = null)
-    {
-        $publicConnection->getConnection()->end($message ?: "Timeout");
+        $publicConnection->write($message ?: 'The chunk server is closed');
     }
 }

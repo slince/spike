@@ -11,8 +11,8 @@
 
 namespace Spike\Server\ChunkServer;
 
+use React\Socket\ConnectionInterface;
 use Spike\Common\Tunnel\TunnelInterface;
-use Spike\Server\Client;
 
 interface ChunkServerInterface
 {
@@ -24,17 +24,19 @@ interface ChunkServerInterface
     public function getTunnel();
 
     /**
-     * @return Client
-     */
-    public function getClient();
-
-    /**
      * Run the server
      */
-    public function run();
+    public function start();
 
     /**
      * Close the server
      */
-    public function close();
+    public function stop();
+
+    /**
+     * Pipe Proxy Connection to the chunk server
+     * @param int $publicConnectionId
+     * @param ConnectionInterface $proxyConnection
+     */
+    public function setProxyConnection($publicConnectionId, ConnectionInterface $proxyConnection);
 }

@@ -42,11 +42,13 @@ class RequireAuthHandler extends MessageActionHandler
     }
 
     /**
-     * Gets the authorized client
-     * @return Client
+     * Sends data to client
+     *
+     * @param string $buffer
      */
-    public function getClient()
+    protected function sendToClient($buffer)
     {
-        return $this->client;
+        $this->connection->write($buffer);
+        $this->client->setActiveAt(new \DateTime());
     }
 }

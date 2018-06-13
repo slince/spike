@@ -47,7 +47,7 @@ class Server extends Application implements ServerInterface
     protected $eventLoop;
 
     /**
-     * @var Collection
+     * @var ChunkServerCollection
      */
     protected $chunkServers;
 
@@ -66,7 +66,7 @@ class Server extends Application implements ServerInterface
         $this->configuration = $configuration;
         $this->eventLoop = $eventLoop ?: Factory::create();
         $this->eventDispatcher = new Dispatcher();
-        $this->chunkServers = new ArrayCollection();
+        $this->chunkServers = new ChunkServerCollection();
         $this->clients = new ArrayCollection();
         $this->initializeEvents();
         parent::__construct(static::NAME, static::VERSION);
@@ -78,14 +78,6 @@ class Server extends Application implements ServerInterface
     public function getChunkServers()
     {
         return $this->chunkServers;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function createChunkServer($address)
-    {
-
     }
 
     /**
@@ -124,6 +116,14 @@ class Server extends Application implements ServerInterface
                 'exception' => $exception
             ]));
         });
+    }
+
+    /**
+     * @return LoopInterface
+     */
+    public function getEventLoop()
+    {
+        return $this->eventLoop;
     }
 
     /**

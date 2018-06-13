@@ -10,7 +10,6 @@
  */
 namespace Spike\Server\Handler;
 
-
 use Slince\Event\Event;
 use Spike\Common\Exception\BadRequestException;
 use Spike\Common\Protocol\SpikeInterface;
@@ -33,6 +32,6 @@ class RegisterProxyHandler extends RequireAuthHandler
             throw new BadRequestException("Can not find the chunk server");
         }
         $this->connection->removeAllListeners();
-        $tunnelServer->registerProxyConnection($this->connection, $message);
+        $tunnelServer->setProxyConnection($message->getHeader('public-connection-id'), $this->connection);
     }
 }
