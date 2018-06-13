@@ -43,11 +43,4 @@ interface ClientInterface
      * @return ConnectionInterface
      */
     public function getControlConnection();
-
-    /**
-     * Gets the event dispatcher
-     *
-     * @return DispatcherInterface
-     */
-    public function getEventDispatcher();
 }

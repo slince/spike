@@ -1,13 +1,18 @@
 <?php
-/**
- * Spike library
- * @author Tao <taosikai@yeah.net>
+
+/*
+ * This file is part of the slince/spike package.
+ *
+ * (c) Slince <taosikai@yeah.net>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 namespace Spike\Server\Handler;
 
 use React\Socket\ConnectionInterface;
 use Slince\Event\Dispatcher;
-use Spike\Server\ServerInterface;
+use Spike\Server\Server;
 
 abstract class MessageActionHandler implements ActionHandlerInterface
 {
@@ -21,7 +26,7 @@ abstract class MessageActionHandler implements ActionHandlerInterface
      */
     protected $connection;
 
-    public function __construct(ServerInterface $server, ConnectionInterface $connection)
+    public function __construct(Server $server, ConnectionInterface $connection)
     {
         $this->server = $server;
         $this->connection = $connection;
@@ -31,17 +36,8 @@ abstract class MessageActionHandler implements ActionHandlerInterface
      * Gets the event dispatcher
      * @return Dispatcher
      */
-    public function getDispatcher()
+    public function getEventDispatcher()
     {
-        return $this->server->getDispatcher();
-    }
-
-    /**
-     * Gets the server instance
-     * @return Server
-     */
-    public function getServer()
-    {
-        return $this->server;
+        return $this->server->getEventDispatcher();
     }
 }

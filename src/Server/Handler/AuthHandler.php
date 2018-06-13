@@ -24,8 +24,9 @@ class AuthHandler extends MessageActionHandler
     {
         $auth = $message->getBody();
         try{
-            if (!$this->server->getAuthentication()
-                || $this->server->getAuthentication()->verify($auth)
+            $authentication = $this->server->getConfiguration()->getAuthentication();
+            if (!$authentication
+                || $authentication->verify($auth)
             ) {
                 $client = new Client($message->getBody(), $this->connection);
                 $this->server->getClients()->add($client);

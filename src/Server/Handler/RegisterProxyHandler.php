@@ -1,14 +1,20 @@
 <?php
-/**
- * Spike library
- * @author Tao <taosikai@yeah.net>
+
+/*
+ * This file is part of the slince/spike package.
+ *
+ * (c) Slince <taosikai@yeah.net>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 namespace Spike\Server\Handler;
 
-use Spike\Exception\BadRequestException;
-use Spike\Protocol\SpikeInterface;
+
 use Slince\Event\Event;
-use Spike\Server\EventStore;
+use Spike\Common\Exception\BadRequestException;
+use Spike\Common\Protocol\SpikeInterface;
+use Spike\Server\Event\Events;
 
 class RegisterProxyHandler extends RequireAuthHandler
 {
@@ -19,12 +25,12 @@ class RegisterProxyHandler extends RequireAuthHandler
     {
         parent::handle($message);
         //Fires 'register_proxy' event
-        $this->getDispatcher()->dispatch(new Event(EventStore::REGISTER_PROXY, $this, [
+        $this->getEventDispatcher()->dispatch(new Event(Events::REGISTER_PROXY, $this, [
             'message' => $message
         ]));
-        $tunnelServer = $this->server->getTunnelServers()->findByTunnelInfo($message->getBody());
+        $tunnelServer = $this->server->getChunkServers()->findByTunnelInfo($message->getBody());
         if (!$tunnelServer) {
-            throw new BadRequestException("Can not find the tunnel server");
+            throw new BadRequestException("Can not find the chunk server");
         }
         $this->connection->removeAllListeners();
         $tunnelServer->registerProxyConnection($this->connection, $message);

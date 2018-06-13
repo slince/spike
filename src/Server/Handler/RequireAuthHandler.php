@@ -1,15 +1,19 @@
 <?php
-/**
- * Spike library
- * @author Tao <taosikai@yeah.net>
+
+/*
+ * This file is part of the slince/spike package.
+ *
+ * (c) Slince <taosikai@yeah.net>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 namespace Spike\Server\Handler;
 
 use Slince\Event\Event;
-use Spike\Exception\ForbiddenException;
+use Spike\Common\Protocol\SpikeInterface;
 use Spike\Server\Client;
-use Spike\Protocol\SpikeInterface;
-use Spike\Server\EventStore;
+use Spike\Server\Event\Events;
 
 class RequireAuthHandler extends MessageActionHandler
 {
@@ -23,16 +27,18 @@ class RequireAuthHandler extends MessageActionHandler
      */
     public function handle(SpikeInterface $message)
     {
-        $clientId = $message->getHeader('Client-ID');
-        if (!$clientId || !($client = $this->server->getClients()->findById($clientId))) {
-            $this->getDispatcher()->dispatch(new Event(EventStore::UNAUTHORIZED_CLIENT, $this, [
+        $clientId = $message->getHeader('client-id');
+        $client = $this->server->getClientById($clientId);
+        if (!$client){
+            $event = new Event(Events::UNAUTHORIZED_CLIENT, $this, [
                 'clientId' => $clientId,
                 'connection' => $this->connection
-            ]));
+            ]);
+            $this->getEventDispatcher()->dispatch($event);
             $this->connection->close();
-            throw new ForbiddenException();
+        } else {
+            $this->client = $client;
         }
-        $this->client = $client;
     }
 
     /**

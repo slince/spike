@@ -21,10 +21,11 @@ use function Slince\Common\jsonBuffer;
 use Slince\Event\Dispatcher;
 use Slince\Event\DispatcherInterface;
 use Slince\Event\Event;
+use Spike\Client\ClientInterface;
 use Spike\Common\Protocol\Spike;
 use Spike\Server\Event\Events;
 use Spike\Server\Event\FilterActionHandlerEvent;
-use Spike\Server\Listener\KernelListener;
+use Spike\Server\Listener\ServerListener;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -133,8 +134,36 @@ class Server extends Application implements ServerInterface
         return $this->eventDispatcher;
     }
 
+    /**
+     * @return Configuration
+     */
+    public function getConfiguration()
+    {
+        return $this->configuration;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getClients()
+    {
+        return $this->clients;
+    }
+
+    /**
+     * Gets the client by ID
+     * @param string $id
+     * @return null|ClientInterface
+     */
+    public function getClientById($id)
+    {
+        return $this->clients->filter(function(Client $client) use ($id){
+            return $client->getId() === $id;
+        })->first();
+    }
+
     protected function initializeEvents()
     {
-        $this->eventDispatcher->addSubscriber(new KernelListener());
+        $this->eventDispatcher->addSubscriber(new ServerListener());
     }
 }

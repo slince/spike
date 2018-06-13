@@ -1,13 +1,17 @@
 <?php
-/**
- * Spike library
- * @author Tao <taosikai@yeah.net>
+
+/*
+ * This file is part of the slince/spike package.
+ *
+ * (c) Slince <taosikai@yeah.net>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 namespace Spike\Server\Handler;
 
-use Spike\Protocol\SpikeInterface;
-use Spike\Protocol\Spike;
-use Spike\Tunnel\TunnelFactory;
+
+use Spike\Common\Protocol\SpikeInterface;
 
 class RegisterTunnelHandler extends RequireAuthHandler
 {
@@ -18,7 +22,7 @@ class RegisterTunnelHandler extends RequireAuthHandler
     {
         parent::handle($message);
         $tunnelInfo = $message->getBody();
-        $tunnelServer = $this->server->getTunnelServers()->findByTunnelInfo($tunnelInfo);
+        $tunnelServer = $this->server->getChunkServers()->findByTunnelInfo($tunnelInfo);
         if (!$tunnelServer) {
             $tunnel = TunnelFactory::fromArray($tunnelInfo);
             try {
