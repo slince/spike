@@ -22,10 +22,12 @@ use Slince\Event\Dispatcher;
 use Slince\Event\DispatcherInterface;
 use Slince\Event\Event;
 use Spike\Client\ClientInterface;
+use Spike\Common\Logger\Logger;
 use Spike\Common\Protocol\Spike;
 use Spike\Server\ChunkServer\ChunkServerCollection;
 use Spike\Server\Event\Events;
 use Spike\Server\Event\FilterActionHandlerEvent;
+use Spike\Server\Listener\LoggerListener;
 use Spike\Server\Listener\ServerListener;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\InputInterface;
@@ -62,6 +64,11 @@ class Server extends Application implements ServerInterface
      */
     protected $eventDispatcher;
 
+    /**
+     * @var Logger
+     */
+    protected $logger;
+
     public function __construct(Configuration $configuration, LoopInterface $eventLoop = null)
     {
         $this->configuration = $configuration;
@@ -83,10 +90,15 @@ class Server extends Application implements ServerInterface
 
     /**
      * {@inheritdoc}
-     * @codeCoverageIgnore
      */
-    public function run(InputInterface $input = null, OutputInterface $output = null)
+    public function doRun(InputInterface $input, OutputInterface $output)
     {
+        $this->logger = new Logger(
+            $this->eventLoop,
+            $this->getConfiguration()->getLogLevel(),
+            $this->getConfiguration()->getLogFile(),
+            $output
+        );
         $this->start();
     }
 
@@ -173,9 +185,18 @@ class Server extends Application implements ServerInterface
         })->first();
     }
 
+    /**
+     * @return Logger
+     */
+    public function getLogger()
+    {
+        return $this->logger;
+    }
+
     protected function initializeEvents()
     {
         $this->eventDispatcher->addSubscriber(new ServerListener());
+        $this->eventDispatcher->addSubscriber(new LoggerListener($this));
     }
 
     /**
