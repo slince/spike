@@ -18,7 +18,7 @@
         "slince/event": "^1.0",
         "slince/di": "^2.0",
         "slince/config": "^1.0",
-        "symfony/console": "^3.0",
+        "symfony/console": "^2.0|^3.0|^3.0",
         "monolog/monolog": "^1.0"
     },
     "require-dev": {

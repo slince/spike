@@ -6,7 +6,7 @@
 namespace Spike\Timer;
 
 use React\EventLoop\LoopInterface;
-use React\EventLoop\Timer\TimerInterface as ReactTimer;
+use React\EventLoop\TimerInterface as ReactTimer;
 
 abstract class Timer implements TimerInterface
 {
