@@ -21,6 +21,8 @@ class PingHandler extends RequireAuthHandler
     public function handle(SpikeInterface $message)
     {
         parent::handle($message);
-        $this->client->setActiveAt(new \DateTime());
+        if ($this->client) {
+            $this->client->setActiveAt(new \DateTime());
+        }
     }
 }

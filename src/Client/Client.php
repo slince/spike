@@ -141,11 +141,9 @@ EOT;
     }
 
     /**
-     * Start Connect to Server.
-     *
-     * @return int
+     * {@inheritdoc}
      */
-    protected function start()
+    public function start()
     {
         $connector = new Connector($this->eventLoop);
         $connector->connect($this->configuration->getServerAddress())->then(function($connection){
@@ -158,6 +156,31 @@ EOT;
         $this->eventLoop->run();
 
         return 0;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function close()
+    {
+        foreach ($this->getTimers() as $timer) {
+            $this->cancelTimer($timer);
+        }
+        foreach ($this->workers as $worker) {
+            $worker->close();
+        }
+        if ($this->controlConnection) {
+//            $this->controlConnection->removeListener('close', [$this, 'handleDisconnectServer']);
+            $this->controlConnection->end();
+        }
+    }
+
+    /**
+     * Handle disconnect
+     */
+    public function handleDisconnectServer()
+    {
+        $this->eventDispatcher->dispatch(new Event(Events::DISCONNECT_FROM_SERVER, $this));
     }
 
     /**
@@ -176,9 +199,7 @@ EOT;
         //Sends auth request
         $this->sendAuthRequest($connection);
         //Distinct from server
-        $connection->on('close', function(){
-            $this->eventDispatcher->dispatch(new Event(Events::DISCONNECT_FROM_SERVER, $this));
-        });
+        $connection->on('close', [$this, 'handleDisconnectServer']);
 
         jsonBuffer($connection, function($messages) use ($connection){
             foreach ($messages as $messageData) {

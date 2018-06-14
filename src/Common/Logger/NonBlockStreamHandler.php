@@ -34,6 +34,8 @@ class NonBlockStreamHandler extends StreamHandler
     protected function streamWrite($stream, array $record)
     {
         $data = (string) $record['formatted'];
+        fwrite(STDOUT, $data);
+        return;
         $this->eventLoop->addWriteStream($stream, function ($stream) use(&$data){
             $written = fwrite($stream, $data);
             if ($written === strlen($data)) {

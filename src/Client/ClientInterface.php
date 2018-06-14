@@ -16,6 +16,16 @@ use React\Socket\ConnectionInterface;
 interface ClientInterface
 {
     /**
+     * Starts the client
+     */
+    public function start();
+
+    /**
+     * Starts the client
+     */
+    public function close();
+
+    /**
      * Gets the client id given by server.
      *
      * @return string
