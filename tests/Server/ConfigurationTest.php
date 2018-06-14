@@ -21,7 +21,7 @@ class ConfigurationTest extends TestCase
         $this->assertEquals( getcwd() . '/access.log', $configuration->getLogFile());
         $this->assertEquals( 'info', $configuration->getLogLevel());
 
-        $configuration->load(__DIR__ . '/Fixtures/base-config.json');
+        $configuration->load(__DIR__ . '/../Fixtures/base-config.json');
         $this->assertEquals('Asia/prc', $configuration->getTimezone());
         $this->assertEquals( '/access.log', $configuration->getLogFile());
         $this->assertEquals( 'warning', $configuration->getLogLevel());

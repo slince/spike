@@ -15,20 +15,9 @@ class ClientTest extends TestCase
         $this->assertInstanceOf(ConnectionInterface::class, $client->getControlConnection());
         $this->assertEquals([
             'OS' => 'win'
-        ], $client->getInfo());
+        ], $client->toArray());
         $this->assertArrayHasKey('OS', $client->toArray());
         $this->assertArrayHasKey('id', $client->toArray());
-    }
-
-    public function testSilent()
-    {
-        $client = new Client([
-            'OS' => 'win'
-        ], $this->createMock(ConnectionInterface::class));
-        $this->assertGreaterThan(0, $client->getSilentDuration());
-
-        $client->setLastActiveAt(microtime(true));
-        $this->assertLessThan(1, $client->getSilentDuration());
     }
 
     public function testControlConnection()

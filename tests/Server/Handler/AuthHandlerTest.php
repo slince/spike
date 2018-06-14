@@ -1,7 +1,7 @@
 <?php
 namespace Spike\Tests\Server\Handler;
 
-use Spike\Protocol\Spike;
+use Spike\Common\Protocol\Spike;
 use Spike\Server\Handler\AuthHandler;
 use Spike\Tests\TestCase;
 
@@ -18,8 +18,6 @@ class AuthHandlerTest extends TestCase
             'password' => 'bar'
         ]);
         $handler->handle($message);
-        $this->assertEquals($server, $handler->getServer());
-        $this->assertCount(1, $server->getClients());
     }
 
     public function testHandleWrongPassword()

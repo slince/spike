@@ -1,8 +1,7 @@
 <?php
 namespace Spike\Tests\Server\Handler;
 
-use Spike\Exception\BadRequestException;
-use Spike\Protocol\Spike;
+use Spike\Common\Protocol\Spike;
 use Spike\Server\Client;
 use Spike\Server\Handler\RegisterProxyHandler;
 use Spike\Tests\TestCase;
@@ -27,7 +26,7 @@ class RegisterProxyHandlerTest extends TestCase
         $message = new Spike('register_proxy', [
             'serverPort' => 8086
         ], [
-            'Client-ID' => $client->getId()
+            'client-id' => $client->getId()
         ]);
         $handler->handle($message);
     }
@@ -50,7 +49,7 @@ class RegisterProxyHandlerTest extends TestCase
         $message = new Spike('register_proxy', [
             'serverPort' => 9999999
         ], [
-            'Client-ID' => $client->getId()
+            'client-id' => $client->getId()
         ]);
         $this->expectException(BadRequestException::class);
         $handler->handle($message);

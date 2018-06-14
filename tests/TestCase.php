@@ -9,6 +9,7 @@ use Spike\Client\Worker\TcpWorker;
 use Spike\Common\Authentication\PasswordAuthentication;
 use Spike\Common\Tunnel\TunnelFactory;
 use Spike\Server\ChunkServer\TcpChunkServer;
+use Spike\Server\Configuration;
 use Spike\Server\Server;
 use Spike\Tests\Stub\ServerStub;
 use Spike\Tests\Stub\ClientStub;
@@ -17,7 +18,7 @@ use Spike\Tests\Stub\LoggerStub;
 class TestCase extends BaseTestCase
 {
     /**
-     * @var LoopInterfaces
+     * @var LoopInterface
      */
     protected $loop;
 
@@ -33,6 +34,10 @@ class TestCase extends BaseTestCase
         return new ServerStub($config);
     }
 
+    /**
+     * @param array $config
+     * @return \Spike\Server\Server
+     */
     public function getServerMock($config = [])
     {
         $defaults = [
@@ -41,11 +46,14 @@ class TestCase extends BaseTestCase
                 'username' => 'foo',
                 'password' => 'bar'
             ]),
-            'loop' => $this->getEventLoop()
         ];
         $config = array_merge($defaults, $config);
+
+        $configuration = new Configuration();
+        $configuration->merge($config);
+
         return $this->getMockBuilder(Server::class)
-            ->setConstructorArgs(array_values($config))
+            ->setConstructorArgs([$configuration, $this->getEventLoop()])
             ->setMethods(null)
             ->getMock();
     }

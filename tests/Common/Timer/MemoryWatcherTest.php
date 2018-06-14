@@ -21,9 +21,13 @@ class MemoryWatcherTest extends TestCase
         $timer->method('getInterval')->willReturn(0.1);
 
         $this->addTimer($timer);
-        $this->addTimer(new CallableTimer(0.2, function() use ($timer){
+        $callableTimer = new CallableTimer(0.2, function() use ($timer, &$callableTimer){
             $this->cancelTimer($timer);
-        }));
+            $this->cancelTimer($callableTimer);
+            $this->loop->stop();
+        });
+
+        $this->addTimer($callableTimer);
         $this->loop->run();
         $stream = $logger->getOutput()->getStream();
         fseek($stream, 0);

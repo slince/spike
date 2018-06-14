@@ -1,9 +1,9 @@
 <?php
 namespace Spike\Tests\Server\Handler;
 
+use Spike\Common\Protocol\Spike;
 use Spike\Server\Client;
 use Spike\Server\Handler\PingHandler;
-use Spike\Protocol\Spike;
 use Spike\Tests\TestCase;
 
 class PingHandlerTest extends TestCase
@@ -16,14 +16,14 @@ class PingHandlerTest extends TestCase
         ], $this->getConnectionMock());
         $server = $this->getServerMock();
         $server->getClients()->add($client);
-        $duration = $client->getSilentDuration();
+        $duration = time() - $client->getActiveAt()->getTimestamp();
 
         $handler = new PingHandler($server, $this->getConnectionMock());
         $message = new Spike('ping', null, [
-            'Client-ID' => $client->getId()
+            'client-id' => $client->getId()
         ]);
-        $this->assertGreaterThan($duration, $client->getSilentDuration());
+        $this->assertGreaterThan($duration, time() - $client->getActiveAt()->getTimestamp() );
         $handler->handle($message);
-        $this->assertGreaterThan($client->getSilentDuration(), $duration);
+        $this->assertGreaterThan(time() - $client->getActiveAt()->getTimestamp(), $duration);
     }
 }
