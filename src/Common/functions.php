@@ -10,26 +10,29 @@
  */
 namespace Slince\Common;
 
-use Clue\JsonStream\StreamingJsonParser;
 use React\Promise;
 use React\Stream\ReadableStreamInterface;
 use Spike\Common\Exception\RuntimeException;
 use Spike\Common\Protocol\HttpHeaderParser;
+use Spike\Common\Protocol\StreamingJsonParser;
 
 /**
  * @param ReadableStreamInterface $stream
  * @param callable $resolve
  * @param callable $reject
+ * @param StreamingJsonParser $streamParser
  * @return void
  */
-function jsonBuffer(ReadableStreamInterface $stream, callable $resolve, callable $reject = null)
+function jsonBuffer(ReadableStreamInterface $stream, callable $resolve, callable $reject = null, StreamingJsonParser $streamParser = null)
 {
     var_dump('start');
     // stream already ended => resolve with empty buffer
     if (!$stream->isReadable()) {
         return;
     }
-    $streamParser = new StreamingJsonParser();
+    if ($streamParser === null) {
+        $streamParser = new StreamingJsonParser();
+    }
     $bufferer = function ($data) use ($resolve, $streamParser) {
         var_dump('data', $data);
         $parsed = $streamParser->push($data);
@@ -51,6 +54,7 @@ function jsonBuffer(ReadableStreamInterface $stream, callable $resolve, callable
 
 /**
  * @param ReadableStreamInterface $stream
+ * @param HttpHeaderParser $parser
  * @return Promise\PromiseInterface
  */
 function httpHeaderBuffer(ReadableStreamInterface $stream, HttpHeaderParser $parser = null)

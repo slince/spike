@@ -16,6 +16,7 @@ use React\Socket\Connector;
 use function Slince\Common\jsonBuffer;
 use Spike\Client\Client;
 use Spike\Common\Protocol\Spike;
+use Spike\Common\Protocol\StreamingJsonParser;
 use Spike\Common\Tunnel\TcpTunnel;
 use Spike\Common\Tunnel\TunnelInterface;
 
@@ -45,6 +46,11 @@ class TcpWorker implements WorkerInterface
      * @var string
      */
     protected $publicConnectionId;
+
+    /**
+     * @var string
+     */
+    protected $initBuffer;
 
     public function __construct(Client $client, TunnelInterface $tunnel, $publicConnectionId)
     {
@@ -79,19 +85,24 @@ class TcpWorker implements WorkerInterface
     public function handleProxyConnection(ConnectionInterface $connection)
     {
         $this->proxyConnection = $connection;
-
-        jsonBuffer($connection, function($messages) use ($connection){
-            $message = Spike::fromArray(reset($messages));
-            if ($message && $messages->getAction() === 'start_proxy') {
-                $connection->removeAllListeners('data');
-                $localAddress = $this->resolveTargetHost();
-                $this->connectLocalHost($localAddress);
-            }
-        });
         //Register proxy connection
         $connection->write(new Spike('register_proxy', $this->tunnel->toArray(), [
             'public-connection-id' => $this->publicConnectionId
         ]));
+        $streamParser = new StreamingJsonParser();
+        jsonBuffer($connection, function($messages) use ($connection, $streamParser){
+            if (!$messages) {
+                return;
+            }
+            $message = reset($messages);
+            $message = Spike::fromArray($message);
+            if ($message->getAction() === 'start_proxy') {
+                $this->initBuffer = $streamParser->getRemainingChunk();
+                $connection->removeAllListeners('data');
+                $localAddress = $this->resolveTargetHost();
+                $this->connectLocalHost($localAddress);
+            }
+        }, null, $streamParser);
     }
 
     /**
@@ -115,7 +126,7 @@ class TcpWorker implements WorkerInterface
     {
         $localConnection->pipe($this->proxyConnection);
         $this->proxyConnection->pipe($localConnection);
-//        $localConnection->write($this->initBuffer);
+        $localConnection->write($this->initBuffer);
 
         //Handles the local connection close
         $handleLocalConnectionClose = function(){

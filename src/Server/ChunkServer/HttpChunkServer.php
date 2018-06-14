@@ -26,7 +26,12 @@ class HttpChunkServer extends TcpChunkServer
     public function handlePublicConnection(PublicConnection $publicConnection)
     {
         $parser = new HttpHeaderParser();
-        httpHeaderBuffer($publicConnection->getConnection(), $parser)->then(function($message) use ($parser, $publicConnection){
+        httpHeaderBuffer($publicConnection->getConnection(), $parser)->then(function($messages) use ($parser, $publicConnection){
+            //Ignore empty message
+            if (!$messages) {
+                return;
+            }
+            $message = reset($messages);
             $psrRequest = Psr7\parse_request($message);
             $host = $psrRequest->getUri()->getHost();
             if ($this->tunnel->supportProxyHost($host)) {

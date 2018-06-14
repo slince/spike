@@ -121,6 +121,7 @@ class TcpChunkServer implements ChunkServerInterface
      */
     public function handlePublicConnection(PublicConnection $publicConnection)
     {
+        //Request proxy to client
         $requestProxyMessage = new Spike('request_proxy', $this->tunnel->toArray(), [
             'public-connection-id' => $publicConnection->getId()
         ]);
@@ -129,6 +130,7 @@ class TcpChunkServer implements ChunkServerInterface
         $this->server->getEventDispatcher()->dispatch(new Event(Events::REQUEST_PROXY, $this, [
             'message' => $requestProxyMessage
         ]));
+        //Pause the public connection
         $publicConnection->removeAllListeners();
         $publicConnection->pause();
     }
