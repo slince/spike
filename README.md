@@ -15,7 +15,7 @@ Use the following command to install
 
 
 ```bash
-composer global require slince/spike *@beta
+composer global require slince/spike
 ```
 
 > Both the server and local machine need to install this.
