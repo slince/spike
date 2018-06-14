@@ -78,7 +78,8 @@ class TcpWorker implements WorkerInterface
     }
 
     /**
-     * Handles the proxy connection
+     * Handles the proxy connection.
+     *
      * @param ConnectionInterface $connection
      * @codeCoverageIgnore
      */
@@ -87,7 +88,7 @@ class TcpWorker implements WorkerInterface
         $this->proxyConnection = $connection;
         //Register proxy connection
         $connection->write(new Spike('register_proxy', $this->tunnel->toArray(), [
-            'public-connection-id' => $this->publicConnectionId
+            'public-connection-id' => $this->publicConnectionId,
         ]));
         $streamParser = new StreamingJsonParser();
         jsonBuffer($connection, function($messages) use ($connection, $streamParser){
@@ -96,7 +97,7 @@ class TcpWorker implements WorkerInterface
             }
             $message = reset($messages);
             $message = Spike::fromArray($message);
-            if ($message->getAction() === 'start_proxy') {
+            if ('start_proxy' === $message->getAction()) {
                 $this->initBuffer = $streamParser->getRemainingChunk();
                 $connection->removeAllListeners('data');
                 $localAddress = $this->resolveTargetHost();
@@ -106,7 +107,8 @@ class TcpWorker implements WorkerInterface
     }
 
     /**
-     * Connect the local server
+     * Connect the local server.
+     *
      * @param string $address
      * @codeCoverageIgnore
      */
@@ -120,6 +122,7 @@ class TcpWorker implements WorkerInterface
 
     /**
      * {@inheritdoc}
+     *
      * @codeCoverageIgnore
      */
     public function handleLocalConnection(ConnectionInterface $localConnection)
@@ -167,8 +170,8 @@ class TcpWorker implements WorkerInterface
     }
 
     /**
-    * {@inheritdoc}
-    */
+     * {@inheritdoc}
+     */
     public function getTunnel()
     {
         return $this->tunnel;

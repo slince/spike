@@ -44,7 +44,7 @@ class Server extends Application implements ServerInterface
     /**
      * @var string
      */
-    const LOGO  = <<<EOT
+    const LOGO = <<<EOT
  _____   _____   _   _   _    _____   _____  
 /  ___/ |  _  \ | | | | / /  | ____| |  _  \ 
 | |___  | |_| | | | | |/ /   | |__   | | | | 
@@ -100,13 +100,12 @@ EOT;
         parent::__construct(static::NAME, static::VERSION);
     }
 
-
     /**
      * {@inheritdoc}
      */
     public function getHelp()
     {
-        return static::LOGO . parent::getHelp();
+        return static::LOGO.parent::getHelp();
     }
 
     /**
@@ -128,11 +127,13 @@ EOT;
         } else {
             $exitCode = $this->start();
         }
+
         return $exitCode;
     }
 
     /**
      * {@inheritdoc}
+     *
      * @codeCoverageIgnore
      */
     public function start()
@@ -143,6 +144,7 @@ EOT;
 
         $this->initializeTimers();
         $this->eventLoop->run();
+
         return 0;
     }
 
@@ -156,7 +158,7 @@ EOT;
         });
         $this->eventDispatcher->dispatch(new Event(Events::CLIENT_CLOSE, $this, [
             'client' => $client,
-            'chunkServers' => $chunkServers
+            'chunkServers' => $chunkServers,
         ]));
         foreach ($chunkServers as $chunkServer) {
             //Close the tunnel server and removes it
@@ -168,7 +170,7 @@ EOT;
     }
 
     /**
-     * Handle control connection
+     * Handle control connection.
      *
      * @param ConnectionInterface $connection
      */
@@ -191,7 +193,7 @@ EOT;
         }, function($exception) use ($connection){
             $this->eventDispatcher->dispatch(new Event(Events::CONNECTION_ERROR, $this, [
                 'connection' => $connection,
-                'exception' => $exception
+                'exception' => $exception,
             ]));
         });
         //Distinct
@@ -244,7 +246,8 @@ EOT;
     }
 
     /**
-     * Gets all clients
+     * Gets all clients.
+     *
      * @return Collection|ClientInterface[]
      */
     public function getClients()
@@ -253,8 +256,10 @@ EOT;
     }
 
     /**
-     * Gets the client by ID
+     * Gets the client by ID.
+     *
      * @param string $id
+     *
      * @return null|ClientInterface
      */
     public function getClientById($id)
@@ -279,7 +284,8 @@ EOT;
     }
 
     /**
-     * Creates default timers
+     * Creates default timers.
+     *
      * @codeCoverageIgnore
      */
     protected function initializeTimers()

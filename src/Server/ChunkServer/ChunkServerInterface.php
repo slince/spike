@@ -19,48 +19,49 @@ use Spike\Common\Tunnel\TunnelInterface;
 interface ChunkServerInterface
 {
     /**
-     * Gets the tunnel
+     * Gets the tunnel.
      *
      * @return TunnelInterface
      */
     public function getTunnel();
 
     /**
-     * Gets client
+     * Gets client.
+     *
      * @return ClientInterface
      */
     public function getClient();
 
     /**
-     * Run the server
+     * Run the server.
      */
     public function start();
 
     /**
-     * Close the server
+     * Close the server.
      */
     public function stop();
 
     /**
-     * Pipe proxy connection to the chunk server
+     * Pipe proxy connection to the chunk server.
      *
-     * @param int $publicConnectionId
+     * @param int                 $publicConnectionId
      * @param ConnectionInterface $proxyConnection
      */
     public function setProxyConnection($publicConnectionId, ConnectionInterface $proxyConnection);
 
     /**
-     * Gets all public connections
+     * Gets all public connections.
      *
      * @return Collection|PublicConnection[]
      */
     public function getPublicConnections();
 
     /**
-     * Close public connection
+     * Close public connection.
      *
      * @param PublicConnection $publicConnection
-     * @param string|null $message
+     * @param string|null      $message
      */
     public function closePublicConnection(PublicConnection $publicConnection, $message = null);
 }

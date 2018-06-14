@@ -8,6 +8,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace Slince\Common;
 
 use React\Promise;
@@ -18,27 +19,22 @@ use Spike\Common\Protocol\StreamingJsonParser;
 
 /**
  * @param ReadableStreamInterface $stream
- * @param callable $resolve
- * @param callable $reject
- * @param StreamingJsonParser $streamParser
- * @return void
+ * @param callable                $resolve
+ * @param callable                $reject
+ * @param StreamingJsonParser     $streamParser
  */
 function jsonBuffer(ReadableStreamInterface $stream, callable $resolve, callable $reject = null, StreamingJsonParser $streamParser = null)
 {
-    var_dump('start');
     // stream already ended => resolve with empty buffer
     if (!$stream->isReadable()) {
         return;
     }
-    if ($streamParser === null) {
+    if (null === $streamParser) {
         $streamParser = new StreamingJsonParser();
     }
     $bufferer = function ($data) use ($resolve, $streamParser) {
-        var_dump('data', $data);
         $parsed = $streamParser->push($data);
-        var_dump($parsed);
         if ($parsed) {
-            var_dump('parsed');
             $resolve($parsed);
         }
     };
@@ -54,7 +50,8 @@ function jsonBuffer(ReadableStreamInterface $stream, callable $resolve, callable
 
 /**
  * @param ReadableStreamInterface $stream
- * @param HttpHeaderParser $parser
+ * @param HttpHeaderParser        $parser
+ *
  * @return Promise\PromiseInterface
  */
 function httpHeaderBuffer(ReadableStreamInterface $stream, HttpHeaderParser $parser = null)
@@ -63,7 +60,7 @@ function httpHeaderBuffer(ReadableStreamInterface $stream, HttpHeaderParser $par
     if (!$stream->isReadable()) {
         return Promise\resolve('');
     }
-    if ($parser === null) {
+    if (null === $parser) {
         $parser = new HttpHeaderParser();
     }
     $promise = new Promise\Promise(function ($resolve, $reject) use ($stream, &$bufferer, $parser) {
@@ -83,6 +80,7 @@ function httpHeaderBuffer(ReadableStreamInterface $stream, HttpHeaderParser $par
     }, function ($_, $reject) {
         $reject(new RuntimeException('Cancelled buffering'));
     });
+
     return $promise->then(null, function ($error) use (&$buffer, $bufferer, $stream) {
         // promise rejected => clear buffer and buffering
         $buffer = '';

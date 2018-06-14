@@ -8,12 +8,14 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace Spike\Common\Tunnel;
 
 abstract class Tunnel implements TunnelInterface
 {
     /**
-     * The tunnel server port
+     * The tunnel server port.
+     *
      * @var int
      */
     protected $serverPort;

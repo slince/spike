@@ -8,6 +8,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace Spike\Client;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -37,11 +38,13 @@ class Configuration extends Config
             $tunnel = TunnelFactory::fromArray($info);
             $tunnels[] = $tunnel;
         }
+
         return $this->tunnels = new ArrayCollection($tunnels);
     }
 
     /**
-     * Gets the current timezone
+     * Gets the current timezone.
+     *
      * @return string
      */
     public function getTimezone()
@@ -50,31 +53,34 @@ class Configuration extends Config
     }
 
     /**
-     * Gets the log file
+     * Gets the log file.
+     *
      * @return string
      */
     public function getLogFile()
     {
-        return isset($this['log']['file']) ? $this['log']['file']: getcwd() . '/access.log';
+        return isset($this['log']['file']) ? $this['log']['file'] : getcwd().'/access.log';
     }
 
     /**
-     * Gets the log level
+     * Gets the log level.
+     *
      * @return int
      */
     public function getLogLevel()
     {
-        return  isset($this['log']['level']) ? $this['log']['level']: 'info';
+        return  isset($this['log']['level']) ? $this['log']['level'] : 'info';
     }
 
     public function getServerAddress()
     {
         $address = $this->get('server-address', '127.0.0.1:8090');
+
         return $address;
     }
 
     public function getDefaultConfigFile()
     {
-        return getcwd() . '/' . 'spike.json';
+        return getcwd().'/'.'spike.json';
     }
 }

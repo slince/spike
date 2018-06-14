@@ -8,3 +8,4 @@ tmp/
 *.log
 spike.json
 spiked.json
+.php_cs.cache

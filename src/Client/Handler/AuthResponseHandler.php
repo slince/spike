@@ -8,6 +8,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace Spike\Client\Handler;
 
 use Spike\Client\Event\Events;
@@ -22,13 +23,13 @@ class AuthResponseHandler extends MessageActionHandler
      */
     public function handle(SpikeInterface $message)
     {
-        if ($message->getHeader('code') !== 200) {
+        if (200 !== $message->getHeader('code')) {
             $this->getEventDispatcher()->dispatch(new Event(Events::AUTH_ERROR, $this->client, [
-                'message' => $message
+                'message' => $message,
             ]));
         } else {
             $this->getEventDispatcher()->dispatch(new Event(Events::AUTH_SUCCESS, $this->client, [
-                'message' => $message
+                'message' => $message,
             ]));
             $clientInfo = $message->getBody();
             $this->client->setId($clientInfo['id']);
@@ -38,13 +39,13 @@ class AuthResponseHandler extends MessageActionHandler
     }
 
     /**
-     * Reports the proxy hosts to the server
+     * Reports the proxy hosts to the server.
      */
     protected function registerTunnels()
     {
         $tunnels = $this->client->getConfiguration()->getTunnels();
         $this->getEventDispatcher()->dispatch(new Event(Events::REGISTER_TUNNELS, $this, [
-            'tunnels' => $tunnels
+            'tunnels' => $tunnels,
         ]));
         foreach ($tunnels as $tunnel) {
             $this->connection->write(new Spike('register_tunnel', $tunnel));

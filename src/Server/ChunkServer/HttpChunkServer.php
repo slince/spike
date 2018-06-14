@@ -8,6 +8,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace Spike\Server\ChunkServer;
 
 use GuzzleHttp\Psr7\Response;
@@ -36,7 +37,7 @@ class HttpChunkServer extends TcpChunkServer
             $host = $psrRequest->getUri()->getHost();
             if ($this->tunnel->supportProxyHost($host)) {
                 $this->tunnel->setProxyHost($host);
-                $httpMessage = $message . $parser->getRemainingChunk();
+                $httpMessage = $message.$parser->getRemainingChunk();
                 $publicConnection->setInitBuffer($httpMessage);
                 parent::handlePublicConnection($publicConnection);
             } else {
@@ -48,16 +49,19 @@ class HttpChunkServer extends TcpChunkServer
     }
 
     /**
-     * Make an error psr7 response
-     * @param int $code
+     * Make an error psr7 response.
+     *
+     * @param int    $code
      * @param string $message
+     *
      * @return Response
      */
     protected function makeErrorResponse($code, $message)
     {
         $message = $message ?: 'Proxy error';
+
         return new Response($code, [
-            'Content-Length' => strlen($message)
+            'Content-Length' => strlen($message),
         ], $message);
     }
 

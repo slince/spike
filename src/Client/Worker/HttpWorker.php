@@ -36,16 +36,19 @@ class HttpWorker extends TcpWorker
     }
 
     /**
-     * Make an error psr7 response
-     * @param int $code
+     * Make an error psr7 response.
+     *
+     * @param int    $code
      * @param string $message
+     *
      * @return Psr7\Response
      */
     protected function makeErrorResponse($code, $message)
     {
         $message = $message ?: sprintf('Cannot connect to "%s"', $this->resolveTargetHost());
+
         return new Psr7\Response($code, [
-            'Content-Length' => strlen($message)
+            'Content-Length' => strlen($message),
         ], $message);
     }
 

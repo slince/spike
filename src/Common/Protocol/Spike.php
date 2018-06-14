@@ -16,13 +16,15 @@ use Spike\Common\Exception\BadRequestException;
 class Spike implements SpikeInterface
 {
     /**
-     * The action
+     * The action.
+     *
      * @var string
      */
     protected $action;
 
     /**
-     * Array of custom headers
+     * Array of custom headers.
+     *
      * @var array
      */
     protected $headers = [];
@@ -33,16 +35,18 @@ class Spike implements SpikeInterface
     protected $body;
 
     /**
-     * The global headers
+     * The global headers.
+     *
      * @var array
      */
     protected static $globalHeaders = [];
 
     /**
      * Spike constructor.
+     *
      * @param string $action
-     * @param mixed $body
-     * @param array $headers
+     * @param mixed  $body
+     * @param array  $headers
      */
     public function __construct($action, $body = null, $headers = [])
     {
@@ -112,8 +116,9 @@ class Spike implements SpikeInterface
         $data = [
             'action' => $this->action,
             'headers' => array_merge($this->headers, static::$globalHeaders),
-            'body' => $this->body
+            'body' => $this->body,
         ];
+
         return json_encode($data);
     }
 
@@ -142,6 +147,7 @@ class Spike implements SpikeInterface
         if (json_last_error() || !isset($headers['action'])) {
             throw new BadRequestException('Bad spike protocol message"');
         }
+
         return new static($parsed['action'], $parsed['body'], $parsed['headers']);
     }
 
@@ -153,11 +159,13 @@ class Spike implements SpikeInterface
         if (!isset($array['action'])) {
             throw new BadRequestException('Bad spike protocol message"');
         }
+
         return new static($array['action'], $array['body'], $array['headers']);
     }
 
     /**
-     * Sets a global header
+     * Sets a global header.
+     *
      * @param string $name
      * @param string $value
      */

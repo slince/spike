@@ -8,6 +8,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace Spike\Client\Command;
 
 use Spike\Common\Tunnel\HttpTunnel;
@@ -46,7 +47,7 @@ class ShowProxyHostsCommand extends Command
             }
             $table->render();
         } else {
-            $output->writeln("<comment>Hi, there is no proxy host, you should create a configuration file first</comment>");
+            $output->writeln('<comment>Hi, there is no proxy host, you should create a configuration file first</comment>');
         }
     }
 }

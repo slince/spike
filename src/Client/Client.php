@@ -8,6 +8,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace Spike\Client;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -111,11 +112,12 @@ EOT;
      */
     public function getHelp()
     {
-        return static::LOGO . parent::getHelp();
+        return static::LOGO.parent::getHelp();
     }
 
     /**
      * {@inheritdoc}
+     *
      * @codeCoverageIgnore
      */
     public function doRun(InputInterface $input, OutputInterface $output)
@@ -134,11 +136,13 @@ EOT;
         } else {
             $exitCode = $this->start();
         }
+
         return $exitCode;
     }
 
     /**
-     * Start Connect to Server
+     * Start Connect to Server.
+     *
      * @return int
      */
     protected function start()
@@ -152,11 +156,13 @@ EOT;
         });
         $this->eventDispatcher->dispatch(Events::CLIENT_RUN);
         $this->eventLoop->run();
+
         return 0;
     }
 
     /**
-     * Handles the control connection
+     * Handles the control connection.
+     *
      * @param ConnectionInterface $connection
      * @codeCoverageIgnore
      */
@@ -165,7 +171,7 @@ EOT;
         $this->controlConnection = $connection;
         //Emit the event
         $this->eventDispatcher->dispatch(new Event(Events::CLIENT_CONNECT, $this, [
-            'connection' => $connection
+            'connection' => $connection,
         ]));
         //Sends auth request
         $this->sendAuthRequest($connection);
@@ -192,13 +198,14 @@ EOT;
         }, function($exception) use ($connection){
             $this->eventDispatcher->dispatch(new Event(Events::CONNECTION_ERROR, $this, [
                 'connection' => $connection,
-                'exception' => $exception
+                'exception' => $exception,
             ]));
         });
     }
 
     /**
-     * Request for auth
+     * Request for auth.
+     *
      * @param ConnectionInterface $connection
      * @codeCoverageIgnore
      */
@@ -310,7 +317,8 @@ EOT;
     }
 
     /**
-     * Creates default timers
+     * Creates default timers.
+     *
      * @codeCoverageIgnore
      */
     protected function initializeTimers()

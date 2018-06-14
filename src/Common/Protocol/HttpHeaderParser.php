@@ -14,24 +14,29 @@ namespace Spike\Common\Protocol;
 class HttpHeaderParser
 {
     /**
-     * The incoming buffer
+     * The incoming buffer.
+     *
      * @var string
      */
     protected $buffer;
 
     /**
-     * Push incoming data to the parser
+     * Push incoming data to the parser.
+     *
      * @param string $data
+     *
      * @return array
      */
     public function push($data)
     {
         $this->buffer .= $data;
+
         return $this->parse();
     }
 
     /**
-     * Parse the incoming buffer
+     * Parse the incoming buffer.
+     *
      * @return array
      */
     public function parse()
@@ -44,26 +49,30 @@ class HttpHeaderParser
             }
             $messages[] = $message;
         }
+
         return $messages;
     }
 
     /**
-     * Parse one message from the data
+     * Parse one message from the data.
+     *
      * @return string
      */
     public function parseFirst()
     {
         $pos = strpos($this->buffer, "\r\n\r\n");
-        if ($pos === false) {
+        if (false === $pos) {
             return null;
         }
         $message = substr($this->buffer, 0, $pos + 4);
         $this->buffer = substr($this->buffer, strlen($message));
+
         return $message;
     }
 
     /**
-     * Get the reset of data
+     * Get the reset of data.
+     *
      * @return string
      */
     public function getRemainingChunk()

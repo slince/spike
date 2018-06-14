@@ -8,6 +8,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace Spike\Common\Tunnel;
 
 class TcpTunnel extends Tunnel
@@ -24,7 +25,8 @@ class TcpTunnel extends Tunnel
     }
 
     /**
-     * Gets the local host
+     * Gets the local host.
+     *
      * @return string
      */
     public function getHost()
@@ -40,7 +42,7 @@ class TcpTunnel extends Tunnel
         return [
             'protocol' => $this->getProtocol(),
             'host' => $this->host,
-            'serverPort' => $this->serverPort
+            'serverPort' => $this->serverPort,
         ];
     }
 
@@ -51,5 +53,4 @@ class TcpTunnel extends Tunnel
     {
         return 'tcp';
     }
-
 }

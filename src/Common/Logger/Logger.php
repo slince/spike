@@ -8,6 +8,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace Spike\Common\Logger;
 
 use Monolog\Logger as Monologer;
@@ -22,13 +23,15 @@ class Logger extends Monologer
     protected $eventLoop;
 
     /**
-     * The log file
+     * The log file.
+     *
      * @var string
      */
     protected $file;
 
     /**
-     * The log level
+     * The log level.
+     *
      * @var int|string
      */
     protected $level;
@@ -42,7 +45,7 @@ class Logger extends Monologer
     {
         $this->eventLoop = $loop;
         $this->level = $level;
-        $this->file = $file;;
+        $this->file = $file;
         $this->output = $output;
         parent::__construct('', $this->createHandlers());
     }

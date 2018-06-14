@@ -8,17 +8,18 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace Spike\Server\ChunkServer;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use React\Socket\ConnectionInterface;
-use Spike\Server\ChunkServer\ChunkServerInterface;
 
 class ChunkServerCollection extends ArrayCollection
 {
     /**
-     * Finds the tunnel server by the tunnel information
+     * Finds the tunnel server by the tunnel information.
+     *
      * @param array $tunnelInfo
+     *
      * @return ChunkServerInterface
      */
     public function findByTunnelInfo($tunnelInfo)

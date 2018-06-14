@@ -18,7 +18,7 @@ use Spike\Client\ClientInterface;
 interface ServerInterface
 {
     /**
-     * Handle control connection
+     * Handle control connection.
      *
      * @param ConnectionInterface $connection
      */
@@ -30,13 +30,14 @@ interface ServerInterface
     public function getChunkServers();
 
     /**
-     * Stop client
+     * Stop client.
+     *
      * @param ClientInterface $client
      */
     public function stopClient(ClientInterface $client);
 
     /**
-     * Starts the server
+     * Starts the server.
      */
     public function start();
 }

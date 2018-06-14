@@ -55,7 +55,7 @@ class LoggerListener implements SubscriberInterface
             Events::AUTH_ERROR => 'onAuthError',
             Events::AUTH_SUCCESS => 'onAuthSuccess',
             Events::REGISTER_TUNNEL_ERROR => 'onRegisterTunnelError',
-            Events::DISCONNECT_FROM_SERVER => 'onDisconnectFromServer'
+            Events::DISCONNECT_FROM_SERVER => 'onDisconnectFromServer',
         ];
     }
 
@@ -84,12 +84,12 @@ class LoggerListener implements SubscriberInterface
 
     public function onReceiveMessage(FilterActionHandlerEvent $event)
     {
-        $this->getLogger()->info("Received a message:\r\n" . $event->getMessage());
+        $this->getLogger()->info("Received a message:\r\n".$event->getMessage());
     }
 
     public function onClientRun(Event $event)
     {
-        $this->getLogger()->info("The client is running ...");
+        $this->getLogger()->info('The client is running ...');
     }
 
     public function onConnectionError(Event $event)
@@ -102,11 +102,11 @@ class LoggerListener implements SubscriberInterface
 
     public function onConnectToServer(Event $event)
     {
-        $this->getLogger()->info("The client has connected to the server.");
+        $this->getLogger()->info('The client has connected to the server.');
     }
 
     public function onCannotConnectToServer(Event $event)
     {
-        $this->getLogger()->error("Cannot connect to the server. the server may not be available");
+        $this->getLogger()->error('Cannot connect to the server. the server may not be available');
     }
 }

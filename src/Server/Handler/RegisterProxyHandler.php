@@ -8,6 +8,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace Spike\Server\Handler;
 
 use Slince\Event\Event;
@@ -25,11 +26,11 @@ class RegisterProxyHandler extends RequireAuthHandler
         parent::handle($message);
         //Fires 'register_proxy' event
         $this->getEventDispatcher()->dispatch(new Event(Events::REGISTER_PROXY, $this, [
-            'message' => $message
+            'message' => $message,
         ]));
         $chunkServer = $this->server->getChunkServers()->findByTunnelInfo($message->getBody());
         if (!$chunkServer) {
-            throw new BadRequestException("Can not find the chunk server");
+            throw new BadRequestException('Can not find the chunk server');
         }
         $this->connection->removeAllListeners();
         $chunkServer->setProxyConnection($message->getHeader('public-connection-id'), $this->connection);

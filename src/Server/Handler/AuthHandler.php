@@ -8,6 +8,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace Spike\Server\Handler;
 
 use Spike\Common\Exception\InvalidArgumentException;
@@ -31,17 +32,17 @@ class AuthHandler extends MessageActionHandler
                 $client = new Client($message->getBody(), $this->connection);
                 $this->server->getClients()->add($client);
                 $response = new Spike('auth_response', $client->toArray(), [
-                    'code' => 200
+                    'code' => 200,
                 ]);
             } else {
                 $response = new Spike('auth_response', $auth, [
-                    'code' =>  403
+                    'code' => 403,
                 ]);
             }
         } catch (InvalidArgumentException $exception) {
             $response = new Spike('auth_response', $auth, [
-                'code' =>  403,
-                'message' => $exception->getMessage()
+                'code' => 403,
+                'message' => $exception->getMessage(),
             ]);
         }
         $this->connection->write($response);

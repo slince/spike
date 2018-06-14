@@ -8,6 +8,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace Spike\Client\Handler;
 
 use Slince\Event\Event;
@@ -38,14 +39,16 @@ class RequestProxyHandler extends MessageActionHandler
         $client = $this->createWorker($tunnel, $message->getHeader('public-connection-id'));
         $this->getEventDispatcher()->dispatch(new Event(Events::REQUEST_PROXY, $this, [
             'tunnel' => $tunnel,
-            'client' => $client
+            'client' => $client,
         ]));
     }
 
     /**
-     * Creates worker
+     * Creates worker.
+     *
      * @param TunnelInterface $tunnel
      * @param $publicConnectionId
+     *
      * @return Worker\WorkerInterface
      */
     protected function createWorker(TunnelInterface $tunnel, $publicConnectionId)
@@ -57,6 +60,7 @@ class RequestProxyHandler extends MessageActionHandler
         }
         $worker->start();
         $this->client->getWorkers()->add($worker);
+
         return $worker;
     }
 }

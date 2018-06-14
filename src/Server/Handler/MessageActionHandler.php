@@ -8,6 +8,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace Spike\Server\Handler;
 
 use React\Socket\ConnectionInterface;
@@ -33,7 +34,8 @@ abstract class MessageActionHandler implements ActionHandlerInterface
     }
 
     /**
-     * Gets the event dispatcher
+     * Gets the event dispatcher.
+     *
      * @return Dispatcher
      */
     public function getEventDispatcher()

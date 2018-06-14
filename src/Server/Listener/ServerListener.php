@@ -20,7 +20,6 @@ use Spike\Server\Event\Events;
 use Spike\Server\Event\FilterActionHandlerEvent;
 use Spike\Server\Handler;
 use Spike\Server\Server;
-use Spike\Server\ServerInterface;
 
 class ServerListener implements SubscriberInterface
 {
@@ -31,7 +30,7 @@ class ServerListener implements SubscriberInterface
     {
         return [
             Events::SERVER_ACTION => 'onServerAction',
-            Events::CONNECTION_ERROR => 'onConnectionError'
+            Events::CONNECTION_ERROR => 'onConnectionError',
         ];
     }
 
@@ -57,11 +56,12 @@ class ServerListener implements SubscriberInterface
     }
 
     /**
-     * Creates the handler for the received message
+     * Creates the handler for the received message.
      *
-     * @param Server $server
-     * @param SpikeInterface $message
+     * @param Server              $server
+     * @param SpikeInterface      $message
      * @param ConnectionInterface $connection
+     *
      * @return Handler\ActionHandlerInterface
      * @codeCoverageIgnore
      */
@@ -85,6 +85,7 @@ class ServerListener implements SubscriberInterface
                     get_class($message)
                 ));
         }
+
         return $handler;
     }
 }

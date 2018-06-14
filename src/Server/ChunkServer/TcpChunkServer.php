@@ -73,6 +73,7 @@ class TcpChunkServer implements ChunkServerInterface
 
     /**
      * {@inheritdoc}
+     *
      * @codeCoverageIgnore
      */
     public function start()
@@ -115,7 +116,8 @@ class TcpChunkServer implements ChunkServerInterface
     }
 
     /**
-     * Handles the public connection
+     * Handles the public connection.
+     *
      * @param PublicConnection $publicConnection
      * @codeCoverageIgnore
      */
@@ -123,12 +125,12 @@ class TcpChunkServer implements ChunkServerInterface
     {
         //Request proxy to client
         $requestProxyMessage = new Spike('request_proxy', $this->tunnel->toArray(), [
-            'public-connection-id' => $publicConnection->getId()
+            'public-connection-id' => $publicConnection->getId(),
         ]);
         $this->sendToClient($requestProxyMessage);
         //Fires 'request_proxy' event
         $this->server->getEventDispatcher()->dispatch(new Event(Events::REQUEST_PROXY, $this, [
-            'message' => $requestProxyMessage
+            'message' => $requestProxyMessage,
         ]));
         //Pause the public connection
         $publicConnection->removeAllListeners();
@@ -137,6 +139,7 @@ class TcpChunkServer implements ChunkServerInterface
 
     /**
      * {@inheritdoc}
+     *
      * @codeCoverageIgnore
      */
     public function setProxyConnection($publicConnectionId, ConnectionInterface $proxyConnection)
@@ -149,7 +152,7 @@ class TcpChunkServer implements ChunkServerInterface
         $proxyConnection->write($startProxyMessage);
         //Fires 'start_proxy' event
         $this->server->getEventDispatcher()->dispatch(new Event(Events::START_PROXY, $this, [
-            'message' => $startProxyMessage
+            'message' => $startProxyMessage,
         ]));
         //Resumes the public connection
         $publicConnection->resume();
@@ -203,6 +206,7 @@ class TcpChunkServer implements ChunkServerInterface
 
     /**
      * @param string $id
+     *
      * @return null|PublicConnection
      */
     protected function findPublicConnectionById($id)
@@ -212,11 +216,13 @@ class TcpChunkServer implements ChunkServerInterface
                 return $publicConnection;
             }
         }
+
         return null;
     }
 
     /**
-     * Gets the server address to bind
+     * Gets the server address to bind.
+     *
      * @return string
      */
     protected function resolveListenAddress()

@@ -8,6 +8,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace Spike\Server\Handler;
 
 use Slince\Event\Event;
@@ -32,7 +33,7 @@ class RequireAuthHandler extends MessageActionHandler
         if (!$client){
             $event = new Event(Events::UNAUTHORIZED_CLIENT, $this, [
                 'clientId' => $clientId,
-                'connection' => $this->connection
+                'connection' => $this->connection,
             ]);
             $this->getEventDispatcher()->dispatch($event);
             $this->connection->close();
@@ -42,7 +43,7 @@ class RequireAuthHandler extends MessageActionHandler
     }
 
     /**
-     * Sends data to client
+     * Sends data to client.
      *
      * @param string $buffer
      */

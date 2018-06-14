@@ -8,6 +8,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace Spike\Server\Command;
 
 use Slince\Config\Config;
@@ -34,21 +35,23 @@ class InitCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $templateConfigFile = __DIR__ . '/../../../spiked-template.json';
+        $templateConfigFile = __DIR__.'/../../../spiked-template.json';
         $config = new Config($templateConfigFile);
         $dstPath = $input->getOption('dir');
         $extension = $input->getOption('format');
         if (!in_array($extension, $this->getSupportedFormats())) {
             $output->writeln(sprintf('<error>The format "%s" is not supported</error>', $extension));
+
             return false;
         }
         if (!$config->dump("{$dstPath}/spiked.{$extension}")) {
-            $output->writeln("Can not create the configuration file");
+            $output->writeln('Can not create the configuration file');
         }
     }
 
     /**
      * {@inheritdoc}
+     *
      * @codeCoverageIgnore
      */
     public function getNativeDefinition()
@@ -57,13 +60,14 @@ class InitCommand extends Command
     }
 
     /**
-     * Gets all supported formats
+     * Gets all supported formats.
+     *
      * @return array
      */
     protected function getSupportedFormats()
     {
         return [
-            'json', 'yaml', 'xml'
+            'json', 'yaml', 'xml',
         ];
     }
 

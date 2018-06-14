@@ -16,17 +16,17 @@ use Spike\Common\Tunnel\TunnelInterface;
 interface WorkerInterface
 {
     /**
-     * Starts work
+     * Starts work.
      */
     public function start();
 
     /**
-     * Stop work
+     * Stop work.
      */
     public function stop();
 
     /**
-     * gets tunnel which the worker for
+     * gets tunnel which the worker for.
      *
      * @return TunnelInterface
      */
@@ -34,14 +34,15 @@ interface WorkerInterface
 
     /**
      * Get target host
-     * return string
+     * return string.
      */
     public function resolveTargetHost();
 
     /**
-     * Checks whether the worker support the tunnel
+     * Checks whether the worker support the tunnel.
      *
      * @param TunnelInterface $tunnel
+     *
      * @return boolean
      */
     public static function support(TunnelInterface $tunnel);

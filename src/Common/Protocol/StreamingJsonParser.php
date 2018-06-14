@@ -11,10 +11,8 @@
 
 namespace Spike\Common\Protocol;
 
-use UnexpectedValueException;
-
 /**
- * {@link https://github.com/clue/php-json-stream/blob/master/src/StreamingJsonParser.php}
+ * {@link https://github.com/clue/php-json-stream/blob/master/src/StreamingJsonParser.php}.
  */
 class StreamingJsonParser
 {
@@ -27,18 +25,18 @@ class StreamingJsonParser
     {
         $objects = array();
 
-        while ($chunk !== '') {
-            if ($this->endCharacter === null) {
+        while ('' !== $chunk) {
+            if (null === $this->endCharacter) {
                 // trim leading whitespace
                 $chunk = ltrim($chunk);
 
-                if ($chunk === '') {
+                if ('' === $chunk) {
                     // only whitespace => skip chunk
                     break;
-                } elseif ($chunk[0] === '[') {
+                } elseif ('[' === $chunk[0]) {
                     // array/list delimiter
                     $this->endCharacter = ']';
-                } elseif ($chunk[0] === '{') {
+                } elseif ('{' === $chunk[0]) {
                     // object/hash delimiter
                     $this->endCharacter = '}';
                 }
@@ -47,7 +45,7 @@ class StreamingJsonParser
             $pos = strpos($chunk, $this->endCharacter);
 
             // no end found in chunk => must be part of segment, wait for next chunk
-            if ($pos === false) {
+            if (false === $pos) {
                 $this->buffer .= $chunk;
                 break;
             }
@@ -60,8 +58,8 @@ class StreamingJsonParser
             $json = json_decode($this->buffer, $this->assoc);
 
             // successfully parsed
-            if ($json !== null) {
-                $objects [] = $json;
+            if (null !== $json) {
+                $objects[] = $json;
 
                 // clear parsed buffer and continue checking remaining chunk
                 $this->buffer = '';
@@ -74,11 +72,12 @@ class StreamingJsonParser
 
     public function isEmpty()
     {
-        return ($this->buffer === '');
+        return '' === $this->buffer;
     }
 
     /**
-     * Get the reset of data
+     * Get the reset of data.
+     *
      * @return string
      */
     public function getRemainingChunk()

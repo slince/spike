@@ -8,6 +8,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace Spike\Client\Handler;
 
 use Slince\Event\Event;
@@ -31,22 +32,24 @@ class RegisterTunnelResponseHandler extends MessageActionHandler
         if (!$tunnel) {
             throw new InvalidArgumentException('Can not find the matching tunnel');
         }
-        if ($message->getHeader('code') === 200) {
+        if (200 === $message->getHeader('code')) {
             $event = new Event(Events::REGISTER_TUNNEL_SUCCESS, $this->client, [
-                'tunnel' => $tunnel
+                'tunnel' => $tunnel,
             ]);
         } else {
             $event = new Event(Events::REGISTER_TUNNEL_ERROR, $this->client, [
                 'tunnel' => $tunnel,
-                'errorMessage' => $tunnelInfo['error']
+                'errorMessage' => $tunnelInfo['error'],
             ]);
         }
         $this->getEventDispatcher()->dispatch($event);
     }
 
     /**
-     * Finds the matching tunnel
+     * Finds the matching tunnel.
+     *
      * @param array $tunnelInfo
+     *
      * @return false|TunnelInterface
      */
     protected function findByInfo($tunnelInfo)

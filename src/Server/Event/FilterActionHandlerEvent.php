@@ -16,7 +16,6 @@ use Slince\Event\Event;
 use Spike\Common\Protocol\SpikeInterface;
 use Spike\Server\Handler\ActionHandlerInterface;
 
-
 class FilterActionHandlerEvent extends Event
 {
     /**

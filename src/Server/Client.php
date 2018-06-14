@@ -8,6 +8,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace Spike\Server;
 
 use React\Socket\ConnectionInterface;
@@ -16,13 +17,15 @@ use Spike\Client\ClientInterface;
 class Client implements ClientInterface
 {
     /**
-     * id
+     * id.
+     *
      * @var string
      */
     protected $id;
 
     /**
-     * Client information
+     * Client information.
+     *
      * @var array
      */
     protected $info;
@@ -45,7 +48,8 @@ class Client implements ClientInterface
     }
 
     /**
-     * Sets the control connection for the client
+     * Sets the control connection for the client.
+     *
      * @param ConnectionInterface $controlConnection
      */
     public function setControlConnection($controlConnection)
@@ -54,8 +58,8 @@ class Client implements ClientInterface
     }
 
     /**
+     * Gets the control connection of the client.
      *
-     * Gets the control connection of the client
      * @return ConnectionInterface
      */
     public function getControlConnection()
@@ -80,7 +84,7 @@ class Client implements ClientInterface
     }
 
     /**
-     * Close the client
+     * Close the client.
      */
     public function close()
     {
@@ -104,13 +108,14 @@ class Client implements ClientInterface
     }
 
     /**
-     * Gets the client information
+     * Gets the client information.
+     *
      * @return array
      */
     public function toArray()
     {
         return array_replace($this->info, [
-            'id' => $this->getId()
+            'id' => $this->getId(),
         ]);
     }
 }

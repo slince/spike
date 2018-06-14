@@ -8,6 +8,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace Spike\Common\Authentication;
 
 use Spike\Common\Exception\InvalidArgumentException;
@@ -24,9 +25,10 @@ class PasswordAuthentication implements AuthenticationInterface
     public function verify($auth)
     {
         if (!isset($auth['username'])) {
-            throw new InvalidArgumentException("Invalid arguments");
+            throw new InvalidArgumentException('Invalid arguments');
         }
-        return ($this->auth['username']  == $auth['username'])
+
+        return ($this->auth['username'] == $auth['username'])
             && (!isset($this->auth['password']) || $this->auth['password'] == $auth['password']);
     }
 }

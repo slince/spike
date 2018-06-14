@@ -8,6 +8,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace Spike\Server\ChunkServer;
 
 use React\Socket\ConnectionInterface;
@@ -40,14 +41,15 @@ class PublicConnection
     protected $id;
 
     /**
-     * The create time
+     * The create time.
+     *
      * @var int
      */
     protected $createAt;
 
     public function __construct(ConnectionInterface $connection, $initBuffer = '')
     {
-        $this->connection =  $connection;
+        $this->connection = $connection;
         $this->initBuffer = $initBuffer;
         $this->id = spl_object_hash($connection);
         $this->createAt = microtime(true);
@@ -94,7 +96,8 @@ class PublicConnection
     }
 
     /**
-     * Gets the waiting duration of the connection
+     * Gets the waiting duration of the connection.
+     *
      * @return float
      */
     public function getWaitingDuration()

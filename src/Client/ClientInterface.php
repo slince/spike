@@ -23,14 +23,14 @@ interface ClientInterface
     public function getId();
 
     /**
-     * Sets client ID
+     * Sets client ID.
      *
-     * @param  string $id
+     * @param string $id
      */
     public function setId($id);
 
     /**
-     * Gets the last active time
+     * Gets the last active time.
      *
      * @return \DateTimeInterface
      */

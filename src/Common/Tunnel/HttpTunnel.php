@@ -8,6 +8,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace Spike\Common\Tunnel;
 
 class HttpTunnel extends Tunnel
@@ -26,7 +27,8 @@ class HttpTunnel extends Tunnel
     }
 
     /**
-     * Gets all proxy hosts
+     * Gets all proxy hosts.
+     *
      * @return array
      */
     public function getProxyHosts()
@@ -51,8 +53,10 @@ class HttpTunnel extends Tunnel
     }
 
     /**
-     * Checks whether the tunnel supports the host
+     * Checks whether the tunnel supports the host.
+     *
      * @param string $proxyHost
+     *
      * @return bool
      */
     public function supportProxyHost($proxyHost)
@@ -61,8 +65,10 @@ class HttpTunnel extends Tunnel
     }
 
     /**
-     * Gets the forward host of the proxy host
+     * Gets the forward host of the proxy host.
+     *
      * @param string $proxyHost
+     *
      * @return string|null
      */
     public function getForwardHost($proxyHost)
@@ -77,7 +83,7 @@ class HttpTunnel extends Tunnel
     public function match($info)
     {
         return parent::match($info)
-            &&  (!isset($info['proxyHost'])
+            && (!isset($info['proxyHost'])
                 || $this->supportProxyHost($info['proxyHost']));
     }
 

@@ -8,8 +8,8 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace Spike\Server\Handler;
 
+namespace Spike\Server\Handler;
 
 use Spike\Common\Protocol\Spike;
 use Spike\Common\Protocol\SpikeInterface;
@@ -25,7 +25,6 @@ class RegisterTunnelHandler extends RequireAuthHandler
      */
     public function handle(SpikeInterface $message)
     {
-        var_dump('register tunnel');
         parent::handle($message);
         $tunnelInfo = $message->getBody();
         $chunkServer = $this->server->getChunkServers()->findByTunnelInfo($tunnelInfo);
@@ -34,31 +33,31 @@ class RegisterTunnelHandler extends RequireAuthHandler
             try {
                 $chunkServer = $this->createChunkServer($tunnel);
                 $response = new Spike('register_tunnel_response', $tunnel->toArray(), [
-                    'code' => 200
+                    'code' => 200,
                 ]);
                 $chunkServer->start();
             } catch (\Exception $exception) {
                 $response = new Spike('register_tunnel_response', array_merge($tunnel->toArray(), [
-                    'error' => $exception->getMessage()
+                    'error' => $exception->getMessage(),
                 ]), [
-                    'code' => $exception->getCode() ?: 1
+                    'code' => $exception->getCode() ?: 1,
                 ]);
             }
         } else {
             $response = new Spike('register_tunnel_response', array_merge($tunnelInfo, [
-                'error' => 'The tunnel has been registered'
+                'error' => 'The tunnel has been registered',
             ]), [
-                'code' => 1
+                'code' => 1,
             ]);
         }
-        var_dump($response);
         $this->sendToClient($response);
     }
 
     /**
-     * Creates a tunnel server for the tunnel
+     * Creates a tunnel server for the tunnel.
      *
      * @param TunnelInterface $tunnel
+     *
      * @return ChunkServer\ChunkServerInterface
      */
     protected function createChunkServer(TunnelInterface $tunnel)
@@ -69,6 +68,7 @@ class RegisterTunnelHandler extends RequireAuthHandler
             $chunkServer = new ChunkServer\TcpChunkServer($this->server, $this->client, $tunnel);
         }
         $this->server->getChunkServers()->add($chunkServer);
+
         return $chunkServer;
     }
 }

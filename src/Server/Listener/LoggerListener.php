@@ -61,13 +61,13 @@ class LoggerListener implements SubscriberInterface
 
     public function onReceiveMessage(FilterActionHandlerEvent $event)
     {
-        $this->getLogger()->info("Received a message:\r\n" . $event->getMessage());
+        $this->getLogger()->info("Received a message:\r\n".$event->getMessage());
     }
 
     public function onSocketError(Event $event)
     {
         $this->getLogger()->warning('Received a error: '
-            . $event->getArgument('exception')->getMessage());
+            .$event->getArgument('exception')->getMessage());
     }
 
     public function onConnectionError(Event $event)

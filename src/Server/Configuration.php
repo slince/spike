@@ -18,7 +18,8 @@ use Spike\Common\Authentication;
 class Configuration  extends Config
 {
     /**
-     * Gets the current timezone
+     * Gets the current timezone.
+     *
      * @return string
      */
     public function getTimezone()
@@ -27,44 +28,50 @@ class Configuration  extends Config
     }
 
     /**
-     * Gets the log file
+     * Gets the log file.
+     *
      * @return string
      */
     public function getLogFile()
     {
-        return isset($this['log']['file']) ? $this['log']['file']: getcwd() . '/access.log';
+        return isset($this['log']['file']) ? $this['log']['file'] : getcwd().'/access.log';
     }
 
     /**
-     * Gets the log level
+     * Gets the log level.
+     *
      * @return int
      */
     public function getLogLevel()
     {
-        return  isset($this['log']['level']) ? $this['log']['level']: 'info';
+        return  isset($this['log']['level']) ? $this['log']['level'] : 'info';
     }
 
     /**
-     * Gets the server address to bind
+     * Gets the server address to bind.
+     *
      * @return string
      */
     public function getAddress()
     {
         $address = $this->get('address', '0.0.0.0:8090');
+
         return $address;
     }
 
     /**
-     * Gets the config file
+     * Gets the config file.
+     *
      * @return string
      */
     public function getDefaultConfigFile()
     {
-        return getcwd() . '/' . 'spiked.json';
+        return getcwd().'/'.'spiked.json';
     }
 
     /**
-     * Gets the authentication
+     * Gets the authentication.
+     *
      * @return AuthenticationInterface|null
      */
     public function getAuthentication()
@@ -81,6 +88,7 @@ class Configuration  extends Config
         } else {
             $authentication = null;
         }
+
         return $authentication;
     }
 }

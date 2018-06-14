@@ -8,6 +8,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace Spike\Client\Handler;
 
 use Spike\Common\Protocol\SpikeInterface;
@@ -15,7 +16,8 @@ use Spike\Common\Protocol\SpikeInterface;
 interface ActionHandlerInterface
 {
     /**
-     * Handling the message
+     * Handling the message.
+     *
      * @param SpikeInterface $message
      */
     public function handle(SpikeInterface $message);

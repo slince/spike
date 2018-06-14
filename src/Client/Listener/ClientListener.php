@@ -47,10 +47,12 @@ class ClientListener implements SubscriberInterface
     }
 
     /**
-     * Creates the handler for the received message
-     * @param Client $client
-     * @param SpikeInterface $message
+     * Creates the handler for the received message.
+     *
+     * @param Client              $client
+     * @param SpikeInterface      $message
      * @param ConnectionInterface $connection
+     *
      * @return Handler\ActionHandlerInterface
      * @codeCoverageIgnore
      */
@@ -71,6 +73,7 @@ class ClientListener implements SubscriberInterface
                     $message->getAction()
                 ));
         }
+
         return $handler;
     }
 }

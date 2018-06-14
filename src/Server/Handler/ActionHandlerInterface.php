@@ -16,7 +16,8 @@ use Spike\Common\Protocol\SpikeInterface;
 interface ActionHandlerInterface
 {
     /**
-     * Handling the message
+     * Handling the message.
+     *
      * @param SpikeInterface $message
      */
     public function handle(SpikeInterface $message);

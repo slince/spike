@@ -8,6 +8,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace Spike\Common\Timer;
 
 use React\EventLoop\LoopInterface;
@@ -15,11 +16,11 @@ use React\EventLoop\LoopInterface;
 trait TimersAware
 {
     /**
-     * Array of timers
+     * Array of timers.
      *
      * @var TimerInterface[]
      */
-    private $timers =  [];
+    private $timers = [];
 
     /**
      * @var array
@@ -27,7 +28,8 @@ trait TimersAware
     private $reactTimers = [];
 
     /**
-     * Add one timer
+     * Add one timer.
+     *
      * @param TimerInterface $timer
      */
     public function addTimer(TimerInterface $timer)
@@ -38,12 +40,13 @@ trait TimersAware
         } else {
             $reactTimer = $eventLoop->addTimer($timer->getInterval(), $timer);
         }
-        $this->timers[] =  $timer;
+        $this->timers[] = $timer;
         $this->reactTimers[spl_object_hash($timer)] = $reactTimer;
     }
 
     /**
-     * Cancel Timer
+     * Cancel Timer.
+     *
      * @param TimerInterface $timer
      */
     public function cancelTimer(TimerInterface $timer)
@@ -63,7 +66,7 @@ trait TimersAware
     }
 
     /**
-     * Gets the loop instance
+     * Gets the loop instance.
      *
      * @return LoopInterface
      */
