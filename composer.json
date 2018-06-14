@@ -14,13 +14,12 @@
         "php": ">=5.6.0",
         "react/socket": "^0.8",
         "react/promise": "^2.6",
-        "react/stream": "^0.7.7",
-        "clue/json-stream": "^0.1.0",
+        "react/stream": "^0.7.0",
         "guzzlehttp/psr7": "^1.0",
         "doctrine/collections": "^1.0",
         "slince/event": "^1.0",
         "slince/config": "^1.0",
-        "symfony/console": "^2.0|^3.0|^3.0",
+        "symfony/console": "^2.0|^3.0|^4.0",
         "monolog/monolog": "^1.0"
     },
     "require-dev": {
@@ -28,13 +27,13 @@
     },
     "autoload": {
         "psr-4": {
-          "Spike\\": "./src"
+            "Spike\\": "./src"
         },
         "files": ["./src/Common/functions.php"]
     },
     "autoload-dev": {
         "psr-4": {
-          "Spike\\Tests\\": "./tests"
+            "Spike\\Tests\\": "./tests"
         }
     },
     "bin": ["bin/spike", "bin/spiked"],
