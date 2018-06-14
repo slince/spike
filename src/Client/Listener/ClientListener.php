@@ -30,16 +30,7 @@ class ClientListener implements SubscriberInterface
     {
         return [
             Events::CLIENT_ACTION => 'onClientAction',
-            Events::CONNECTION_ERROR => 'onConnectionError'
         ];
-    }
-
-    /**
-     * @param Event $event
-     */
-    public function onConnectionError(Event $event)
-    {
-        $event->getArgument('connection')->end('bad message');
     }
 
     /**

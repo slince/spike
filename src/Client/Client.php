@@ -37,7 +37,21 @@ class Client extends Application implements ClientInterface
     /**
      * @var string
      */
-    const NAME = 'spike-client';
+    const LOGO = <<<EOT
+ _____   _____   _   _   _    _____  
+/  ___/ |  _  \ | | | | / /  | ____| 
+| |___  | |_| | | | | |/ /   | |__   
+\___  \ |  ___/ | | | |\ \   |  __|  
+ ___| | | |     | | | | \ \  | |___  
+/_____/ |_|     |_| |_|  \_\ |_____| 
+
+
+EOT;
+
+    /**
+     * @var string
+     */
+    const NAME = 'Spike Client';
 
     /**
      * @var string
@@ -91,6 +105,14 @@ class Client extends Application implements ClientInterface
 
     /**
      * {@inheritdoc}
+     */
+    public function getHelp()
+    {
+        return static::LOGO . parent::getHelp();
+    }
+
+    /**
+     * {@inheritdoc}
      * @codeCoverageIgnore
      */
     public function doRun(InputInterface $input, OutputInterface $output)
@@ -101,6 +123,23 @@ class Client extends Application implements ClientInterface
             $this->getConfiguration()->getLogFile(),
             $output
         );
+        // Execute command if the command name is exists
+        if ($this->getCommandName($input) ||
+            true === $input->hasParameterOption(array('--help', '-h'), true)
+        ) {
+            $exitCode = parent::doRun($input, $output);
+        } else {
+            $exitCode = $this->start();
+        }
+        return $exitCode;
+    }
+
+    /**
+     * Start Connect to Server
+     * @return int
+     */
+    protected function start()
+    {
         $connector = new Connector($this->eventLoop);
         $connector->connect($this->configuration->getServerAddress())->then(function($connection){
             $this->handleControlConnection($connection);
@@ -109,6 +148,7 @@ class Client extends Application implements ClientInterface
         });
         $this->eventDispatcher->dispatch(Events::CLIENT_RUN);
         $this->eventLoop->run();
+        return 0;
     }
 
     /**
@@ -125,13 +165,15 @@ class Client extends Application implements ClientInterface
         ]));
         //Sends auth request
         $this->sendAuthRequest($connection);
-        $connection->on('close', [$this, 'handleDisconnectServer']);
-        jsonBuffer($connection)->then(function($messages, $connection){
+        //Distinct from server
+        $connection->on('close', function(){
+            $this->eventDispatcher->dispatch(new Event(Events::DISCONNECT_FROM_SERVER, $this));
+        });
+        jsonBuffer($connection)->then(function($messages) use ($connection){
             foreach ($messages as $messageData) {
                 if (!$messageData) {
                     continue;
                 }
-
                 $message = Spike::fromArray($messageData);
 
                 //Fires filter action handler event
@@ -251,7 +293,6 @@ class Client extends Application implements ClientInterface
     protected function getDefaultCommands()
     {
         return array_merge(parent::getDefaultCommands(), [
-            new Command\SpikeCommand($this),
             new Command\ShowProxyHostsCommand($this),
             new Command\InitCommand($this),
         ]);

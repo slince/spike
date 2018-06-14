@@ -13,6 +13,7 @@ use Spike\Common\Protocol\HttpHeaderParser;
  */
 function jsonBuffer(ReadableStreamInterface $stream)
 {
+    var_dump('start');
     // stream already ended => resolve with empty buffer
     if (!$stream->isReadable()) {
         return Promise\resolve('');
@@ -20,8 +21,9 @@ function jsonBuffer(ReadableStreamInterface $stream)
     $promise = new Promise\Promise(function ($resolve, $reject) use ($stream, &$bufferer) {
         $streamParser = new StreamingJsonParser();
         $bufferer = function ($data) use ($resolve, $streamParser) {
+            var_dump('data', $data);
+
             $parsed = $streamParser->push($data);
-            var_dump('data');
             if ($parsed) {
                 $resolve($parsed);
             }

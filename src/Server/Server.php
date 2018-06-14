@@ -35,6 +35,20 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class Server extends Application implements ServerInterface
 {
+    /**
+     * @var string
+     */
+    const LOGO  = <<<EOT
+ _____   _____   _   _   _    _____   _____  
+/  ___/ |  _  \ | | | | / /  | ____| |  _  \ 
+| |___  | |_| | | | | |/ /   | |__   | | | | 
+\___  \ |  ___/ | | | |\ \   |  __|  | | | | 
+ ___| | | |     | | | | \ \  | |___  | |_| | 
+/_____/ |_|     |_| |_|  \_\ |_____| |_____/ 
+
+
+EOT;
+
     const NAME = 'Spike Server';
 
     const VERSION = '0.0.1';
@@ -83,6 +97,14 @@ class Server extends Application implements ServerInterface
     /**
      * {@inheritdoc}
      */
+    public function getHelp()
+    {
+        return static::LOGO . parent::getHelp();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getChunkServers()
     {
         return $this->chunkServers;
@@ -99,7 +121,15 @@ class Server extends Application implements ServerInterface
             $this->getConfiguration()->getLogFile(),
             $output
         );
-        $this->start();
+        // Execute command if the command name is exists
+        if ($this->getCommandName($input) ||
+            true === $input->hasParameterOption(array('--help', '-h'), true)
+        ) {
+            $exitCode = parent::doRun($input, $output);
+        } else {
+            $exitCode = $this->start();
+        }
+        return $exitCode;
     }
 
     /**
@@ -208,7 +238,6 @@ class Server extends Application implements ServerInterface
     {
         return array_merge(parent::getDefaultCommands(), [
             new Command\InitCommand($this),
-            new Command\HelpCommand($this),
         ]);
     }
 }

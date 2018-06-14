@@ -19,6 +19,7 @@ use Spike\Common\Protocol\SpikeInterface;
 use Spike\Server\Event\Events;
 use Spike\Server\Event\FilterActionHandlerEvent;
 use Spike\Server\Handler;
+use Spike\Server\Server;
 use Spike\Server\ServerInterface;
 
 class ServerListener implements SubscriberInterface
@@ -57,13 +58,14 @@ class ServerListener implements SubscriberInterface
 
     /**
      * Creates the handler for the received message
-     * @param ServerInterface $server
+     *
+     * @param Server $server
      * @param SpikeInterface $message
      * @param ConnectionInterface $connection
      * @return Handler\ActionHandlerInterface
      * @codeCoverageIgnore
      */
-    protected function createMessageHandler(ServerInterface $server, SpikeInterface $message, ConnectionInterface $connection)
+    protected function createMessageHandler(Server $server, SpikeInterface $message, ConnectionInterface $connection)
     {
         switch ($message->getAction()) {
             case 'auth':

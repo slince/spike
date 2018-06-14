@@ -28,7 +28,6 @@ class AuthHandler extends MessageActionHandler
             if (!$authentication
                 || $authentication->verify($auth)
             ) {
-                var_dump(1233);
                 $client = new Client($message->getBody(), $this->connection);
                 $this->server->getClients()->add($client);
                 $response = new Spike('auth_response', $client->toArray());
@@ -43,6 +42,7 @@ class AuthHandler extends MessageActionHandler
                 'message' => $exception->getMessage()
             ]);
         }
+        echo $response;
         $this->connection->write($response);
     }
 }

@@ -12,7 +12,6 @@
 namespace Spike\Client;
 
 use React\Socket\ConnectionInterface;
-use Slince\Event\DispatcherInterface;
 
 interface ClientInterface
 {
