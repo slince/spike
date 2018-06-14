@@ -16,7 +16,12 @@ class ConsoleHandlerTest extends TestCase
         $handler->handle($this->getRecord(200, 'foo'));
         $handler->handle($this->getRecord(200, 'bar'));
         $handler->handle($this->getRecord(200, 'baz'));
-        fseek($stream, 0);
-        $this->assertEquals('foobarbaz', stream_get_contents($stream));
+
+        $this->getEventLoop()->addWriteStream($stream, function($stream){
+            fseek($stream, 0);
+            $this->assertEquals('foobarbaz', stream_get_contents($stream));
+            $this->getEventLoop()->removeWriteStream($stream);
+        });
+        $this->assertEquals('', stream_get_contents($stream));
     }
 }

@@ -28,10 +28,15 @@ class MemoryWatcherTest extends TestCase
         });
 
         $this->addTimer($callableTimer);
-        $this->loop->run();
         $stream = $logger->getOutput()->getStream();
-        fseek($stream, 0);
-        $this->assertContains('Memory usage', stream_get_contents($stream));
-        $this->assertContains('Memory usage', file_get_contents($logger->getFile()));
+
+        $this->getEventLoop()->addWriteStream($stream, function($stream) use ($logger){
+            fseek($stream, 0);
+            $this->assertContains('Memory usage', stream_get_contents($stream));
+            $this->assertContains('Memory usage', file_get_contents($logger->getFile()));
+            $this->getEventLoop()->removeWriteStream($stream);
+        });
+
+        $this->loop->run();
     }
 }

@@ -3,9 +3,10 @@ namespace Spike\Tests\Stub;
 
 use React\EventLoop\Factory;
 use Slince\Event\Dispatcher;
-use Spike\Server\EventStore;
+use Spike\Common\Authentication\PasswordAuthentication;
+use Spike\Common\Logger\Logger;
+use Spike\Server\Configuration;
 use Spike\Server\Server;
-use Spike\Authentication\PasswordAuthentication;
 
 class ServerStub extends Server
 {
@@ -21,16 +22,13 @@ class ServerStub extends Server
             'dispatcher' => new Dispatcher()
         ];
         $config = array_merge($defaults, $config);
-        parent::__construct($config['address'], $defaults['authentication']
-            , $config['loop'], $config['dispatcher']);
+        $configuration = new Configuration();
+        $configuration->merge($config);
+        parent::__construct($configuration);
     }
 
-    public function run()
+    public function setLogger(Logger $logger)
     {
-        $this->dispatcher->dispatch(EventStore::SERVER_RUN);
-        foreach ($this->getDefaultTimers() as $timer) {
-            $this->addTimer($timer);
-        }
-        $this->loop->run();
+        $this->logger = $logger;
     }
 }

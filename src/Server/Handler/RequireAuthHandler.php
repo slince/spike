@@ -43,6 +43,14 @@ class RequireAuthHandler extends MessageActionHandler
     }
 
     /**
+     * @return Client
+     */
+    public function getClient()
+    {
+        return $this->client;
+    }
+
+    /**
      * Sends data to client.
      *
      * @param string $buffer

@@ -18,6 +18,7 @@ class AuthHandlerTest extends TestCase
             'password' => 'bar'
         ]);
         $handler->handle($message);
+        $this->assertCount(1, $server->getClients());
     }
 
     public function testHandleWrongPassword()

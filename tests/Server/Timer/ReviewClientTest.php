@@ -30,10 +30,11 @@ class ReviewClientTest extends TestCase
         $client = new Client([], $this->getConnectionMock());
         $server->getClients()->add($client);
         $this->assertGreaterThan(0, count($server->getClients()));
-        $client->setLastActiveAt(strtotime('-5 hours'));
+        $client->setActiveAt(new \DateTime('-5 hours'));
         $this->addTimer($timer);
+
         $this->addTimer(new CallableTimer(0.2, function() use ($timer){
-            $timer->cancel();
+            $this->cancelTimer($timer);
         }));
         $this->getEventLoop()->run();
         $this->assertCount(0, $server->getClients());

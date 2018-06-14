@@ -73,6 +73,14 @@ class TcpChunkServer implements ChunkServerInterface
 
     /**
      * {@inheritdoc}
+     */
+    public function getServer()
+    {
+        return $this->server;
+    }
+
+    /**
+     * {@inheritdoc}
      *
      * @codeCoverageIgnore
      */

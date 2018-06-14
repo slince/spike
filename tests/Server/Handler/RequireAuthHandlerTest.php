@@ -1,10 +1,10 @@
 <?php
 namespace Spike\Tests\Server\Handler;
 
-use Spike\Exception\ForbiddenException;
+use Spike\Common\Exception\ForbiddenException;
+use Spike\Common\Protocol\Spike;
 use Spike\Server\Client;
 use Spike\Server\Handler\RequireAuthHandler;
-use Spike\Protocol\Spike;
 use Spike\Tests\TestCase;
 
 class RequireAuthHandlerTest extends TestCase
@@ -19,7 +19,7 @@ class RequireAuthHandlerTest extends TestCase
         $server->getClients()->add($client);
         $handler = new RequireAuthHandler($server, $this->getConnectionMock());
         $message = new Spike('ping', null, [
-            'Client-ID' => $client->getId()
+            'client-id' => $client->getId()
         ]);
         $this->assertNull($handler->getClient());
         $handler->handle($message);
@@ -30,23 +30,10 @@ class RequireAuthHandlerTest extends TestCase
     {
         $server = $this->getServerMock();
         $message = new Spike('ping', null, [
-            'Client-ID' => 'foo'
+            'client-id' => 'foo'
         ]);
         $handler = new RequireAuthHandler($server, $this->getConnectionMock());
-        try {
-            $handler->handle($message);
-            $this->fail();
-        } catch (\Exception $exception) {
-            $this->assertInstanceOf(ForbiddenException::class, $exception);
-        }
-
-        $message = new Spike('ping', null);
-        $handler = new RequireAuthHandler($server, $this->getConnectionMock());
-        try {
-            $handler->handle($message);
-            $this->fail();
-        } catch (\Exception $exception) {
-            $this->assertInstanceOf(ForbiddenException::class, $exception);
-        }
+        $handler->handle($message);
+        $this->assertNull($handler->getClient());
     }
 }

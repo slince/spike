@@ -9,6 +9,7 @@ use Spike\Client\Worker\TcpWorker;
 use Spike\Common\Authentication\PasswordAuthentication;
 use Spike\Common\Tunnel\TunnelFactory;
 use Spike\Server\ChunkServer\TcpChunkServer;
+use Spike\Server\Client;
 use Spike\Server\Configuration;
 use Spike\Server\Server;
 use Spike\Tests\Stub\ServerStub;
@@ -42,10 +43,11 @@ class TestCase extends BaseTestCase
     {
         $defaults = [
             'address' => '127.0.0.1:8088',
-            'authentication' => new PasswordAuthentication([
+            'auth' =>[
+                'type' => 'simple_password',
                 'username' => 'foo',
                 'password' => 'bar'
-            ]),
+            ],
         ];
         $config = array_merge($defaults, $config);
 
@@ -101,10 +103,11 @@ class TestCase extends BaseTestCase
 
     public function getChunkServerMock()
     {
+        $connection = $this->getConnectionMock();
         return $this->getMockBuilder(TcpChunkServer::class)
             ->setConstructorArgs([
                 $this->getServerStub(),
-                $this->getConnectionMock(),
+                new Client([], $connection),
                 TunnelFactory::fromArray([
                     'protocol' => 'tcp',
                     'serverPort' => 8086,

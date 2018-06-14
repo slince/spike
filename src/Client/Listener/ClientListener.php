@@ -12,7 +12,6 @@
 namespace Spike\Client\Listener;
 
 use React\Socket\ConnectionInterface;
-use Slince\Event\Event;
 use Slince\Event\SubscriberInterface;
 use Spike\Client\Client;
 use Spike\Common\Exception\InvalidArgumentException;

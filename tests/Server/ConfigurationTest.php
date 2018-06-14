@@ -9,7 +9,7 @@ class ConfigurationTest extends TestCase
     public function testConstruct()
     {
         $configuration = new Configuration();
-        $this->assertEquals('127.0.0.1:8088', $configuration->getAddress());
+        $this->assertEquals('0.0.0.0:8090', $configuration->getAddress());
         $this->assertContains('spiked.json', $configuration->getDefaultConfigFile());
         $this->assertNull($configuration->getAuthentication());
     }

@@ -1,7 +1,6 @@
 <?php
 namespace Spike\Tests\Server\ChunkServer;
 
-use React\Socket\ConnectionInterface;
 use Spike\Common\Tunnel\TcpTunnel;
 use Spike\Server\ChunkServer\TcpChunkServer;
 use Spike\Server\Client;

@@ -15,9 +15,17 @@ use Doctrine\Common\Collections\Collection;
 use React\Socket\ConnectionInterface;
 use Spike\Client\ClientInterface;
 use Spike\Common\Tunnel\TunnelInterface;
+use Spike\Server\ServerInterface;
 
 interface ChunkServerInterface
 {
+    /**
+     * Gets server.
+     *
+     * @return ServerInterface
+     */
+    public function getServer();
+
     /**
      * Gets the tunnel.
      *

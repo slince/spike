@@ -1,8 +1,8 @@
 <?php
 namespace Spike\Tests\Server\Handler;
 
+use Spike\Common\Protocol\Spike;
 use Spike\Server\Client;
-use Spike\Protocol\Spike;
 use Spike\Server\Handler\RegisterTunnelHandler;
 use Spike\Tests\TestCase;
 
@@ -25,7 +25,7 @@ class RegisterTunnelHandlerTest extends TestCase
             'host' => '127.0.0.1',
             'serverPort' => 8086
         ], [
-            'Client-ID' => $client->getId()
+            'client-id' => $client->getId()
         ]);
         $handler->handle($message);
         $this->assertCount(1, $server->getChunkServers());
@@ -34,19 +34,12 @@ class RegisterTunnelHandlerTest extends TestCase
             'host' => '127.0.0.1',
             'serverPort' => 8087
         ], [
-            'Client-ID' => $client->getId()
+            'client-id' => $client->getId()
         ]);
         $handler->handle($message2);
         $this->assertCount(2, $server->getChunkServers());
         $handler->handle($message2);
         $this->assertCount(2, $server->getChunkServers());
         $this->server = $server;
-    }
-
-    public function tearDown()
-    {
-        foreach ($this->server->getClients() as $client) {
-            $this->server->closeClient($client);
-        }
     }
 }

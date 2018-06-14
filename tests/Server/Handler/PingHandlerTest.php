@@ -16,14 +16,15 @@ class PingHandlerTest extends TestCase
         ], $this->getConnectionMock());
         $server = $this->getServerMock();
         $server->getClients()->add($client);
-        $duration = time() - $client->getActiveAt()->getTimestamp();
+        $activeAt = $client->getActiveAt();
 
         $handler = new PingHandler($server, $this->getConnectionMock());
         $message = new Spike('ping', null, [
             'client-id' => $client->getId()
         ]);
-        $this->assertGreaterThan($duration, time() - $client->getActiveAt()->getTimestamp() );
+        sleep(1);
+        $this->assertEquals($activeAt, $client->getActiveAt());
         $handler->handle($message);
-        $this->assertGreaterThan(time() - $client->getActiveAt()->getTimestamp(), $duration);
+        $this->assertGreaterThan($activeAt, $client->getActiveAt());
     }
 }

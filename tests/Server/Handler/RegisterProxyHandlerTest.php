@@ -1,7 +1,9 @@
 <?php
 namespace Spike\Tests\Server\Handler;
 
+use Spike\Common\Exception\BadRequestException;
 use Spike\Common\Protocol\Spike;
+use Spike\Server\ChunkServer\PublicConnection;
 use Spike\Server\Client;
 use Spike\Server\Handler\RegisterProxyHandler;
 use Spike\Tests\TestCase;
@@ -10,46 +12,33 @@ class RegisterProxyHandlerTest extends TestCase
 {
     public function testExecute()
     {
-        $ChunkServer = $this->getChunkServerMock();
+        $chunkServer = $this->getChunkServerMock();
 
-        $client = new Client([
-            'os' => PHP_OS,
-            'version' => '',
-        ], $ChunkServer->getControlConnection());
+        $client = $chunkServer->getClient();
+        $server = $chunkServer->getServer();
 
-        $server = $ChunkServer->getServer();
         $server->getClients()->add($client);
+        $server->getChunkServers()->add($chunkServer);
+        //fake public connection
+        $publicConnection = new PublicConnection($this->getConnectionMock());
+        $chunkServer->getPublicConnections()->add($publicConnection);
 
-        $server->getChunkServers()->add($ChunkServer);
+        $handler = new RegisterProxyHandler($server, $client->getControlConnection());
 
-        $handler = new RegisterProxyHandler($server, $ChunkServer->getControlConnection());
+
         $message = new Spike('register_proxy', [
             'serverPort' => 8086
         ], [
-            'client-id' => $client->getId()
+            'client-id' => $client->getId(),
+            'public-connection-id' => $publicConnection->getId()
         ]);
         $handler->handle($message);
-    }
 
-    public function testWrongTunnelInfo()
-    {
-        $ChunkServer = $this->getChunkServerMock();
-
-        $client = new Client([
-            'os' => PHP_OS,
-            'version' => '',
-        ], $ChunkServer->getControlConnection());
-
-        $server = $ChunkServer->getServer();
-        $server->getClients()->add($client);
-
-        $server->getChunkServers()->add($ChunkServer);
-
-        $handler = new RegisterProxyHandler($server, $ChunkServer->getControlConnection());
         $message = new Spike('register_proxy', [
             'serverPort' => 9999999
         ], [
-            'client-id' => $client->getId()
+            'client-id' => $client->getId(),
+            'public-connection-id' => $publicConnection->getId()
         ]);
         $this->expectException(BadRequestException::class);
         $handler->handle($message);

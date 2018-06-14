@@ -13,9 +13,6 @@ class ClientTest extends TestCase
             'OS' => 'win'
         ], $this->createMock(ConnectionInterface::class));
         $this->assertInstanceOf(ConnectionInterface::class, $client->getControlConnection());
-        $this->assertEquals([
-            'OS' => 'win'
-        ], $client->toArray());
         $this->assertArrayHasKey('OS', $client->toArray());
         $this->assertArrayHasKey('id', $client->toArray());
     }

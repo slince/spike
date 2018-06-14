@@ -21,8 +21,7 @@ GET http://www.foo.com/ HTTP/1.1\r\nHost: www.foo.com\r\n\r\n
 EOT;
 
         $parser = new HttpHeaderParser();
-        $parser->push($message);
-        $this->assertEquals($message, $parser->parseFirst());
+        $this->assertEquals($message, $parser->push($message)[0]);
     }
 
     public function testParseWithRest()
@@ -35,8 +34,7 @@ EOT;
 GET http://www.foo.com/ HTTP/1.1\r\nHost: www.foo.com\r\n\r\n
 EOT;
         $parser = new HttpHeaderParser();
-        $parser->push($message);
-        $this->assertEquals($expected, $parser->parseFirst());
+        $this->assertEquals($expected, $parser->push($message)[0]);
         $this->assertEquals('hello world', $parser->getRemainingChunk());
     }
 
@@ -50,31 +48,13 @@ EOT;
 Host: www.foo.com\r\n\r\nGET http://www.foo.com/ HTTP/1.1\r\nHost: www.foo.com\r\n\r\n
 EOT;
         $parser = new HttpHeaderParser();
-        $parser->push($message1);
-        $this->assertEquals(null, $parser->parseFirst());
+        $this->assertEquals([], $parser->push($message1));
         $this->assertEquals($message1, $parser->getRemainingChunk());
-        $parser->push($message2);
 
         $expected = <<<EOT
 GET http://www.foo.com/ HTTP/1.1\r\nHost: www.foo.com\r\n\r\n
 EOT;
-        $this->assertEquals($expected, $parser->parseFirst());
-        $this->assertEquals($expected, $parser->getRemainingChunk());
-    }
-
-    public function testParseMany()
-    {
-        $message1 = <<<EOT
-GET http://www.foo.com/ HTTP/1.1\r\nHost: www.foo.com\r\n\r\n
-EOT;
-        $parser = new HttpHeaderParser();
-        $parser->push($message1);
-        $parser->push($message1);
-        $parser->push('Spike');
-        $messages = $parser->parse();
-        $this->assertCount(2, $messages);
-        $this->assertEquals($message1, $messages[0]);
-        $this->assertEquals($message1, $messages[1]);
-        $this->assertEquals('Spike', $parser->getRemainingChunk());
+        $this->assertEquals($expected,  $parser->push($message2)[0]);
+        $this->assertEquals('', $parser->getRemainingChunk());
     }
 }

@@ -2,7 +2,6 @@
 namespace Spike\Tests\Common\Logger;
 
 use Spike\Common\Logger\FileHandler;
-use Symfony\Component\Console\Output\StreamOutput;
 use Monolog\Formatter\LineFormatter;
 
 class FileHandlerTest extends TestCase
@@ -15,7 +14,12 @@ class FileHandlerTest extends TestCase
         $handler->handle($this->getRecord(200, 'foo'));
         $handler->handle($this->getRecord(200, 'bar'));
         $handler->handle($this->getRecord(200, 'baz'));
-        $this->assertEquals('foobarbaz', file_get_contents($file));
+
+        $this->getEventLoop()->addWriteStream($handler->getStream(), function($stream){
+            fseek($stream, 0);
+            $this->assertEquals('foobarbaz', stream_get_contents($stream));
+            $this->getEventLoop()->removeWriteStream($stream);
+        });
         @unlink($file);
     }
 }
