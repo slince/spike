@@ -4,6 +4,8 @@ namespace Spike\Tests\Stub;
 use React\EventLoop\Factory;
 use Slince\Event\Dispatcher;
 use Spike\Client\Client;
+use Spike\Client\Configuration;
+use Spike\Common\Logger\Logger;
 
 class ClientStub extends Client
 {
@@ -34,11 +36,21 @@ class ClientStub extends Client
             'dispatcher' => new Dispatcher()
         ];
         $config = array_merge($defaults, $config);
-        parent::__construct($config['serverAddress'], $config['tunnels'], $config['auth'], $config['loop'], $config['dispatcher']);
+        $configuration = new Configuration();
+        $configuration->merge($config);
+        parent::__construct($configuration);
     }
 
     public function setClientId($id)
     {
         $this->id = $id;
+    }
+
+    /**
+     * @param Logger $logger
+     */
+    public function setLogger($logger)
+    {
+        $this->logger = $logger;
     }
 }

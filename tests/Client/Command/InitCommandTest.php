@@ -1,9 +1,9 @@
 <?php
 namespace Spike\Tests\Client\Command;
 
-use PHPUnit\Framework\TestCase;
+use Spike\Tests\TestCase;
 use Spike\Client\Command\InitCommand;
-use Spike\Client\Application;
+use Spike\Client\Client;
 use Symfony\Component\Console\Tester\CommandTester;
 
 class InitCommandTest extends TestCase
@@ -11,7 +11,7 @@ class InitCommandTest extends TestCase
 
     protected function getApplicationMock()
     {
-        return $this->getMockBuilder(Application::class)
+        return $this->getMockBuilder(Client::class)
             ->setMethods(null)
             ->disableOriginalConstructor()
             ->getMock();
@@ -19,13 +19,13 @@ class InitCommandTest extends TestCase
 
     public function testClient()
     {
-        $command = new InitCommand($this->getApplicationMock());
-        $this->assertInstanceOf(Application::class, $command->getClient());
+        $command = new InitCommand($this->getClientStub());
+        $this->assertInstanceOf(Client::class, $command->getClient());
     }
 
     public function testExecute()
     {
-        $command = new InitCommand($this->getApplicationMock());
+        $command = new InitCommand($this->getClientStub());
         $commandTester = new CommandTester($command);
         $dir = sys_get_temp_dir();
         $commandTester->execute([
@@ -36,7 +36,7 @@ class InitCommandTest extends TestCase
 
     public function testExecuteUnsupportedFormat()
     {
-        $command = new InitCommand($this->getApplicationMock());
+        $command = new InitCommand($this->getClientStub());
         $commandTester = new CommandTester($command);
         $dir = sys_get_temp_dir();
         $commandTester->execute([
@@ -48,7 +48,7 @@ class InitCommandTest extends TestCase
 
     public function testExecuteDumpError()
     {
-        $command = new InitCommand($this->getApplicationMock());
+        $command = new InitCommand($this->getClientStub());
         $commandTester = new CommandTester($command);
         $commandTester->execute([
             '--dir' => preg_match('/win/i', PHP_OS) ? 'foo://a/' :  '/dev/null'
@@ -58,7 +58,7 @@ class InitCommandTest extends TestCase
 
     public function testFormatYaml()
     {
-        $command = new InitCommand($this->getApplicationMock());
+        $command = new InitCommand($this->getClientStub());
         $commandTester = new CommandTester($command);
         $dir = sys_get_temp_dir();
 
@@ -74,7 +74,7 @@ class InitCommandTest extends TestCase
 
     public function testFormatXml()
     {
-        $command = new InitCommand($this->getApplicationMock());
+        $command = new InitCommand($this->getClientStub());
         $commandTester = new CommandTester($command);
         $dir = sys_get_temp_dir();
 

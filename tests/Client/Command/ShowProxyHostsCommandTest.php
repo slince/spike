@@ -1,7 +1,7 @@
 <?php
 namespace Spike\Tests\Client\Command;
 
-use Spike\Client\Application;
+use Spike\Client\Client;
 use Spike\Client\Command\ShowProxyHostsCommand;
 use Symfony\Component\Console\Tester\CommandTester;
 use Spike\Tests\TestCase;
@@ -10,7 +10,7 @@ class ShowProxyHostsCommandTest extends TestCase
 {
     protected function getApplicationMock()
     {
-        return $this->getMockBuilder(Application::class)
+        return $this->getMockBuilder(Client::class)
             ->setMethods(null)
             ->disableOriginalConstructor()
             ->getMock();
@@ -18,9 +18,7 @@ class ShowProxyHostsCommandTest extends TestCase
 
     public function testExecute()
     {
-        $application = $this->getApplicationMock();
-        $application->setKernel($this->getClientStub());
-        $command = new ShowProxyHostsCommand($application);
+        $command = new ShowProxyHostsCommand($this->getClientStub());
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
         $this->assertContains('Proxy Host', $commandTester->getDisplay());

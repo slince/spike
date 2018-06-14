@@ -1,8 +1,8 @@
 <?php
-namespace Spike\Tests\Server\TunnelServer;
+namespace Spike\Tests\Server\ChunkServer;
 
 use React\Socket\ConnectionInterface;
-use Spike\Server\TunnelServer\PublicConnection;
+use Spike\Server\ChunkServer\PublicConnection;
 use Spike\Tests\TestCase;
 
 class PublicConnectionTest extends TestCase

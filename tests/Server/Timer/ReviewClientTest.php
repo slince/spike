@@ -3,8 +3,8 @@ namespace Spike\Tests\Server\Timer;
 
 use Spike\Server\Client;
 use Spike\Server\Timer\ReviewClient;
-use Spike\Tests\Timer\TestCase;
-use Spike\Timer\CallableTimer;
+use Spike\Tests\Common\Timer\TestCase;
+use Spike\Tests\Common\Timer\CallableTimer;
 
 class ReviewClientTest extends TestCase
 {
@@ -35,7 +35,7 @@ class ReviewClientTest extends TestCase
         $this->addTimer(new CallableTimer(0.2, function() use ($timer){
             $timer->cancel();
         }));
-        $this->getLoop()->run();
+        $this->getEventLoop()->run();
         $this->assertCount(0, $server->getClients());
     }
 }

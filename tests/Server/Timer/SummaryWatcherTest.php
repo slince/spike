@@ -1,9 +1,8 @@
 <?php
 namespace Spike\Tests\Server\Timer;
 
-use Spike\Server\Timer\SummaryWatcher;
-use Spike\Tests\Timer\TestCase;
-use Spike\Timer\CallableTimer;
+use Spike\Tests\Common\Timer\TestCase;
+use Spike\Tests\Common\Timer\CallableTimer;
 
 class SummaryWatcherTest extends TestCase
 {
@@ -32,7 +31,7 @@ class SummaryWatcherTest extends TestCase
         $this->addTimer(new CallableTimer(0.2, function() use ($timer){
             $timer->cancel();
         }));
-        $this->getLoop()->run();
+        $this->getEventLoop()->run();
         $this->assertContains('Client Total: 0', file_get_contents($logger->getFile()));
     }
 }

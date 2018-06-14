@@ -28,7 +28,7 @@ class RegisterTunnelHandlerTest extends TestCase
             'Client-ID' => $client->getId()
         ]);
         $handler->handle($message);
-        $this->assertCount(1, $server->getTunnelServers());
+        $this->assertCount(1, $server->getChunkServers());
         $message2 = new Spike('register_tunnel', [
             'protocol' => 'tcp',
             'host' => '127.0.0.1',
@@ -37,9 +37,9 @@ class RegisterTunnelHandlerTest extends TestCase
             'Client-ID' => $client->getId()
         ]);
         $handler->handle($message2);
-        $this->assertCount(2, $server->getTunnelServers());
+        $this->assertCount(2, $server->getChunkServers());
         $handler->handle($message2);
-        $this->assertCount(2, $server->getTunnelServers());
+        $this->assertCount(2, $server->getChunkServers());
         $this->server = $server;
     }
 

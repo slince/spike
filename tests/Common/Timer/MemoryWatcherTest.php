@@ -1,10 +1,7 @@
 <?php
-namespace Spike\Tests\Timer;
+namespace Spike\Tests\Common\Timer;
 
-use Spike\Logger\Logger;
-use Spike\Timer\CallableTimer;
-use Spike\Timer\MemoryWatcher;
-use Symfony\Component\Console\Output\StreamOutput;
+use Spike\Common\Timer\MemoryWatcher;
 
 class MemoryWatcherTest extends TestCase
 {
@@ -25,7 +22,7 @@ class MemoryWatcherTest extends TestCase
 
         $this->addTimer($timer);
         $this->addTimer(new CallableTimer(0.2, function() use ($timer){
-            $timer->cancel();
+            $this->cancelTimer($timer);
         }));
         $this->loop->run();
         $stream = $logger->getOutput()->getStream();

@@ -11,19 +11,19 @@ class RegisterProxyHandlerTest extends TestCase
 {
     public function testExecute()
     {
-        $tunnelServer = $this->getTunnelServerMock();
+        $ChunkServer = $this->getChunkServerMock();
 
         $client = new Client([
             'os' => PHP_OS,
             'version' => '',
-        ], $tunnelServer->getControlConnection());
+        ], $ChunkServer->getControlConnection());
 
-        $server = $tunnelServer->getServer();
+        $server = $ChunkServer->getServer();
         $server->getClients()->add($client);
 
-        $server->getTunnelServers()->add($tunnelServer);
+        $server->getChunkServers()->add($ChunkServer);
 
-        $handler = new RegisterProxyHandler($server, $tunnelServer->getControlConnection());
+        $handler = new RegisterProxyHandler($server, $ChunkServer->getControlConnection());
         $message = new Spike('register_proxy', [
             'serverPort' => 8086
         ], [
@@ -34,19 +34,19 @@ class RegisterProxyHandlerTest extends TestCase
 
     public function testWrongTunnelInfo()
     {
-        $tunnelServer = $this->getTunnelServerMock();
+        $ChunkServer = $this->getChunkServerMock();
 
         $client = new Client([
             'os' => PHP_OS,
             'version' => '',
-        ], $tunnelServer->getControlConnection());
+        ], $ChunkServer->getControlConnection());
 
-        $server = $tunnelServer->getServer();
+        $server = $ChunkServer->getServer();
         $server->getClients()->add($client);
 
-        $server->getTunnelServers()->add($tunnelServer);
+        $server->getChunkServers()->add($ChunkServer);
 
-        $handler = new RegisterProxyHandler($server, $tunnelServer->getControlConnection());
+        $handler = new RegisterProxyHandler($server, $ChunkServer->getControlConnection());
         $message = new Spike('register_proxy', [
             'serverPort' => 9999999
         ], [

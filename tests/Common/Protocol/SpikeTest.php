@@ -1,10 +1,10 @@
 <?php
-namespace Spike\Tests\Protocol;
+namespace Spike\Tests\Common\Protocol;
 
 use PHPUnit\Framework\TestCase;
-use Spike\Exception\BadRequestException;
-use Spike\Protocol\Spike;
-use Spike\Protocol\SpikeInterface;
+use Spike\Common\Exception\BadRequestException;
+use Spike\Common\Protocol\Spike;
+use Spike\Common\Protocol\SpikeInterface;
 
 class SpikeTest extends TestCase
 {
@@ -52,60 +52,6 @@ class SpikeTest extends TestCase
         $this->assertEquals([
             'bar' => 'baz'
         ], $message->getHeaders());
-    }
-
-    public function testToString()
-    {
-        $message = new Spike('foo', 'body', [
-            'foo' => 'bar',
-            'bar' => 'baz'
-        ]);
-        $version = SpikeInterface::VERSION;
-        $expected = <<<EOT
-Spike-Action: foo\r\nSpike-Version: {$version}\r\nContent-Length: 6\r\nfoo: bar\r\nbar: baz\r\n\r\n"body"
-EOT;
-        $this->assertEquals($expected, $message->toString());
-        $this->assertEquals($expected, (string)$message);
-    }
-
-    public function testFromString()
-    {
-        $version = SpikeInterface::VERSION;
-        $string = <<<EOT
-Spike-Action: foo\r\nSpike-Version: {$version}\r\nContent-Length: 6\r\nfoo: bar\r\nbar: baz\r\n\r\n"body"
-EOT;
-        $message = Spike::fromString($string);
-        $this->assertEquals('foo', $message->getAction());
-        $this->assertEquals('body', $message->getBody());
-        $this->assertEquals([
-            'Spike-Action' => 'foo',
-            'Spike-Version' => '1',
-            'Content-Length' => '6',
-            'foo' => 'bar',
-            'bar' => 'baz'
-        ], $message->getHeaders());
-        $this->assertEquals('bar', $message->getHeader('foo'));
-        $this->assertNull($message->getHeader('unknow-header'));
-    }
-
-    public function testBody()
-    {
-        $message = new Spike('foo', 'body', [
-            'foo' => 'bar',
-            'bar' => 'baz'
-        ]);
-        $message->setBody('body2');
-        $this->assertEquals('body2', $message->getBody());
-    }
-
-    public function testBadMessage()
-    {
-        $version = SpikeInterface::VERSION;
-        $string = <<<EOT
-Spike-Action2: foo\r\nSpike-Version: {$version}\r\nContent-Length: 6\r\nfoo: bar\r\nbar: baz\r\n\r\n"body"
-EOT;
-        $this->expectException(BadRequestException::class);
-        Spike::fromString($string);
     }
 
     public function testGlobalHeader()

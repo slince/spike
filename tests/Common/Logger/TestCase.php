@@ -1,5 +1,5 @@
 <?php
-namespace Spike\Tests\Logger;
+namespace Spike\Tests\Common\Logger;
 
 use Spike\Tests\TestCase as BaseTestCase;
 use Monolog\Logger;

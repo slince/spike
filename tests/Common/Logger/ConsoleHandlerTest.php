@@ -1,7 +1,7 @@
 <?php
-namespace Spike\Tests\Logger;
+namespace Spike\Tests\Common\Logger;
 
-use Spike\Logger\ConsoleHandler;
+use Spike\Common\Logger\ConsoleHandler;
 use Symfony\Component\Console\Output\StreamOutput;
 use Monolog\Formatter\LineFormatter;
 
@@ -11,7 +11,7 @@ class ConsoleHandlerTest extends TestCase
     {
         $stream = fopen('php://memory', 'a+');
         $output = new StreamOutput($stream);
-        $handler = new ConsoleHandler($output, 'info');
+        $handler = new ConsoleHandler($this->getEventLoop(), $output, 'info');
         $handler->setFormatter(new LineFormatter("%message%"));
         $handler->handle($this->getRecord(200, 'foo'));
         $handler->handle($this->getRecord(200, 'bar'));

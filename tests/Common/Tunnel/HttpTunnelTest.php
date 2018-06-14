@@ -1,8 +1,8 @@
 <?php
-namespace Spike\Tests\Tunnel;
+namespace Spike\Tests\Common\Tunnel;
 
 use PHPUnit\Framework\TestCase;
-use Spike\Tunnel\HttpTunnel;
+use Spike\Common\Tunnel\HttpTunnel;
 
 class HttpTunnelTest extends TestCase
 {

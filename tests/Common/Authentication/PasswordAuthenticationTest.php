@@ -1,9 +1,9 @@
 <?php
-namespace Spike\Tests;
+namespace Spike\Tests\Common;
 
 use PHPUnit\Framework\TestCase;
-use Spike\Authentication\PasswordAuthentication;
-use Spike\Exception\InvalidArgumentException;
+use Spike\Common\Exception\InvalidArgumentException;
+use Spike\Common\Authentication\PasswordAuthentication;
 
 class PasswordAuthenticationTest extends TestCase
 {

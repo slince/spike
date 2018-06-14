@@ -3,18 +3,22 @@ namespace Spike\Tests;
 
 use PHPUnit\Framework\TestCase as BaseTestCase;
 use React\EventLoop\Factory;
+use React\EventLoop\LoopInterface;
 use React\Socket\ConnectionInterface;
-use Spike\Authentication\PasswordAuthentication;
-use Spike\Client\TunnelClient\TcpTunnelClient;
+use Spike\Client\Worker\TcpWorker;
+use Spike\Common\Authentication\PasswordAuthentication;
+use Spike\Common\Tunnel\TunnelFactory;
+use Spike\Server\ChunkServer\TcpChunkServer;
 use Spike\Server\Server;
-use Spike\Server\TunnelServer\TcpTunnelServer;
 use Spike\Tests\Stub\ServerStub;
 use Spike\Tests\Stub\ClientStub;
 use Spike\Tests\Stub\LoggerStub;
-use Spike\Tunnel\TunnelFactory;
 
 class TestCase extends BaseTestCase
 {
+    /**
+     * @var LoopInterfaces
+     */
     protected $loop;
 
     public function setUp()
@@ -25,7 +29,7 @@ class TestCase extends BaseTestCase
 
     public function getServerStub($config = [])
     {
-        $config['loop'] = $this->getLoop();
+        $config['loop'] = $this->getEventLoop();
         return new ServerStub($config);
     }
 
@@ -37,7 +41,7 @@ class TestCase extends BaseTestCase
                 'username' => 'foo',
                 'password' => 'bar'
             ]),
-            'loop' => $this->getLoop()
+            'loop' => $this->getEventLoop()
         ];
         $config = array_merge($defaults, $config);
         return $this->getMockBuilder(Server::class)
@@ -48,7 +52,7 @@ class TestCase extends BaseTestCase
 
     public function getClientStub()
     {
-        $config['loop'] = $this->getLoop();
+        $config['loop'] = $this->getEventLoop();
         return new ClientStub($config);
     }
 
@@ -61,17 +65,17 @@ class TestCase extends BaseTestCase
 
     public function getLoggerStub($level = 200)
     {
-        return new LoggerStub($level);
+        return new LoggerStub($this->getEventLoop(), $level);
     }
 
-    public function getLoop()
+    public function getEventLoop()
     {
         return $this->loop ?: ($this->loop = Factory::create());
     }
 
-    public function getTunnelClientMock()
+    public function getWorkerMock()
     {
-        return $this->getMockBuilder(TcpTunnelClient::class)
+        return $this->getMockBuilder(TcpWorker::class)
             ->setConstructorArgs([
                 $this->getClientStub(),
                 TunnelFactory::fromArray([
@@ -81,15 +85,15 @@ class TestCase extends BaseTestCase
                 ]),
                 'foo-connection-id',
                 '127.0.0.1:8088',
-                $this->getLoop()
+                $this->getEventLoop()
             ])
             ->setMethods(['run', 'registerProxyConnection'])
             ->getMock();
     }
 
-    public function getTunnelServerMock()
+    public function getChunkServerMock()
     {
-        return $this->getMockBuilder(TcpTunnelServer::class)
+        return $this->getMockBuilder(TcpChunkServer::class)
             ->setConstructorArgs([
                 $this->getServerStub(),
                 $this->getConnectionMock(),
@@ -98,7 +102,7 @@ class TestCase extends BaseTestCase
                     'serverPort' => 8086,
                     'host' => '127.0.0.1:3306'
                 ]),
-                $this->getLoop()
+                $this->getEventLoop()
             ])
             ->setMethods(['run', 'registerProxyConnection'])
             ->getMock();
