@@ -15,12 +15,13 @@ use Slince\Event\Event;
 use Slince\Event\SubscriberInterface;
 use Spike\Common\Logger\Logger;
 use Spike\Server\Event\Events;
+use Spike\Server\Event\FilterActionHandlerEvent;
 use Spike\Server\Server;
 
 class LoggerListener implements SubscriberInterface
 {
     /**
-     * @var Logger
+     * @var Server
      */
     protected $server;
 
@@ -58,9 +59,9 @@ class LoggerListener implements SubscriberInterface
         $this->getLogger()->info('Accepted a connection.');
     }
 
-    public function onReceiveMessage(Event $event)
+    public function onReceiveMessage(FilterActionHandlerEvent $event)
     {
-        $this->getLogger()->info("Received a message:\r\n" . $event->getArgument('message'));
+        $this->getLogger()->info("Received a message:\r\n" . $event->getMessage());
     }
 
     public function onSocketError(Event $event)

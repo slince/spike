@@ -15,7 +15,6 @@ use React\Socket\ConnectionInterface;
 use Slince\Event\Event;
 use Slince\Event\SubscriberInterface;
 use Spike\Client\Client;
-use Spike\Client\ClientInterface;
 use Spike\Common\Exception\InvalidArgumentException;
 use Spike\Common\Protocol\SpikeInterface;
 use Spike\Client\Event\Events;

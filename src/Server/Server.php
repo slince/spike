@@ -121,14 +121,16 @@ class Server extends Application implements ServerInterface
      */
     public function handleControlConnection(ConnectionInterface $connection)
     {
-        jsonBuffer($connection)->then(function($messages, $connection){
+        jsonBuffer($connection)->then(function($messages) use ($connection){
             foreach ($messages as $messageData) {
+                if (!$messageData) {
+                    continue;
+                }
                 $message = Spike::fromArray($messageData);
 
                 //Fires filter action handler event
                 $event = new FilterActionHandlerEvent($this, $message, $connection);
                 $this->eventDispatcher->dispatch($event);
-
                 if ($actionHandler = $event->getActionHandler()) {
                     $actionHandler->handle($message);
                 }

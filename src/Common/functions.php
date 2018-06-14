@@ -21,6 +21,7 @@ function jsonBuffer(ReadableStreamInterface $stream)
         $streamParser = new StreamingJsonParser();
         $bufferer = function ($data) use ($resolve, $streamParser) {
             $parsed = $streamParser->push($data);
+            var_dump('data');
             if ($parsed) {
                 $resolve($parsed);
             }

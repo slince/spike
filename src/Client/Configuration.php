@@ -69,7 +69,7 @@ class Configuration extends Config
 
     public function getServerAddress()
     {
-        $address = $this->get('server-address', '127.0.0.1:8088');
+        $address = $this->get('server-address', '127.0.0.1:8090');
         return $address;
     }
 

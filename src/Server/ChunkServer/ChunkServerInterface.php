@@ -34,7 +34,8 @@ interface ChunkServerInterface
     public function stop();
 
     /**
-     * Pipe Proxy Connection to the chunk server
+     * Pipe proxy connection to the chunk server
+     *
      * @param int $publicConnectionId
      * @param ConnectionInterface $proxyConnection
      */

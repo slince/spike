@@ -42,6 +42,12 @@ interface SpikeInterface
     public function toString();
 
     /**
+     * Convert the protocol to string
+     * @return string
+     */
+    public function __toString();
+
+    /**
      * Sets the action of the protocol
      * @param string $action
      */

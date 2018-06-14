@@ -22,7 +22,9 @@ use Slince\Event\DispatcherInterface;
 use Spike\Client\Event\Events;
 use Spike\Client\Event\FilterActionHandlerEvent;
 use Spike\Client\Listener\ClientListener;
+use Spike\Client\Listener\LoggerListener;
 use Spike\Client\Worker\WorkerInterface;
+use Spike\Common\Logger\Logger;
 use Spike\Common\Protocol\Spike;
 use Spike\Version;
 use Slince\Event\Event;
@@ -72,7 +74,12 @@ class Client extends Application implements ClientInterface
      */
     protected $workers;
 
-    public function __construct(Configuration $configuration, LoopInterface $eventLoop)
+    /**
+     * @var Logger
+     */
+    protected $logger;
+
+    public function __construct(Configuration $configuration, LoopInterface $eventLoop = null)
     {
         $this->configuration = $configuration;
         $this->eventLoop = $eventLoop ?: Factory::create();
@@ -86,10 +93,18 @@ class Client extends Application implements ClientInterface
      * {@inheritdoc}
      * @codeCoverageIgnore
      */
-    public function run(InputInterface $input = null, OutputInterface $output = null)
+    public function doRun(InputInterface $input, OutputInterface $output)
     {
+        $this->logger = new Logger(
+            $this->eventLoop,
+            $this->getConfiguration()->getLogLevel(),
+            $this->getConfiguration()->getLogFile(),
+            $output
+        );
         $connector = new Connector($this->eventLoop);
-        $connector->connect($this->configuration->getServerAddress())->then([$this, 'handleControlConnection'], function(){
+        $connector->connect($this->configuration->getServerAddress())->then(function($connection){
+            $this->handleControlConnection($connection);
+        }, function(){
             $this->eventDispatcher->dispatch(new Event(Events::CANNOT_CONNECT_SERVER, $this));
         });
         $this->eventDispatcher->dispatch(Events::CLIENT_RUN);
@@ -108,8 +123,15 @@ class Client extends Application implements ClientInterface
         $this->eventDispatcher->dispatch(new Event(Events::CLIENT_CONNECT, $this, [
             'connection' => $connection
         ]));
+        //Sends auth request
+        $this->sendAuthRequest($connection);
+        $connection->on('close', [$this, 'handleDisconnectServer']);
         jsonBuffer($connection)->then(function($messages, $connection){
             foreach ($messages as $messageData) {
+                if (!$messageData) {
+                    continue;
+                }
+
                 $message = Spike::fromArray($messageData);
 
                 //Fires filter action handler event
@@ -126,11 +148,6 @@ class Client extends Application implements ClientInterface
                 'exception' => $exception
             ]));
         });
-
-        $connection->on('close', [$this, 'handleDisconnectServer']);
-
-        //Sends auth request
-        $this->sendAuthRequest($connection);
     }
 
     /**
@@ -144,6 +161,7 @@ class Client extends Application implements ClientInterface
             'os' => PHP_OS,
             'version' => Version::VERSION,
         ], $this->configuration->get('auth', []));
+
         $connection->write(new Spike('auth', $authInfo));
     }
 
@@ -220,6 +238,14 @@ class Client extends Application implements ClientInterface
     }
 
     /**
+     * @return Logger
+     */
+    public function getLogger()
+    {
+        return $this->logger;
+    }
+
+    /**
      * {@inheritdoc}
      */
     protected function getDefaultCommands()
@@ -234,5 +260,6 @@ class Client extends Application implements ClientInterface
     protected function initializeEvents()
     {
         $this->eventDispatcher->addSubscriber(new ClientListener());
+        $this->eventDispatcher->addSubscriber(new LoggerListener($this));
     }
 }

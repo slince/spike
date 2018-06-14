@@ -150,7 +150,7 @@ class Spike implements SpikeInterface
      */
     public static function fromArray($array)
     {
-        if (!isset($headers['action'])) {
+        if (!isset($array['action'])) {
             throw new BadRequestException('Bad spike protocol message"');
         }
         return new static($array['action'], $array['body'], $array['headers']);
