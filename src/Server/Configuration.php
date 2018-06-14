@@ -18,14 +18,6 @@ use Spike\Common\Authentication;
 class Configuration  extends Config
 {
     /**
-     * @return array
-     */
-    public function getTunnels()
-    {
-        return $this->get('tunnels', []);
-    }
-
-    /**
      * Gets the current timezone
      * @return string
      */
@@ -58,7 +50,7 @@ class Configuration  extends Config
      */
     public function getAddress()
     {
-        $address = $this->get('address', '127.0.0.1:8090');
+        $address = $this->get('address', '0.0.0.0:8090');
         return $address;
     }
 

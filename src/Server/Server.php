@@ -24,17 +24,23 @@ use Slince\Event\Event;
 use Spike\Client\ClientInterface;
 use Spike\Common\Logger\Logger;
 use Spike\Common\Protocol\Spike;
+use Spike\Common\Timer\MemoryWatcher;
+use Spike\Common\Timer\TimersAware;
 use Spike\Server\ChunkServer\ChunkServerCollection;
+use Spike\Server\ChunkServer\ChunkServerInterface;
 use Spike\Server\Event\Events;
 use Spike\Server\Event\FilterActionHandlerEvent;
 use Spike\Server\Listener\LoggerListener;
 use Spike\Server\Listener\ServerListener;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class Server extends Application implements ServerInterface
 {
+    use TimersAware;
+
     /**
      * @var string
      */
@@ -64,12 +70,12 @@ EOT;
     protected $eventLoop;
 
     /**
-     * @var ChunkServerCollection
+     * @var ChunkServerInterface[]|ChunkServerCollection
      */
     protected $chunkServers;
 
     /**
-     * @var Collection
+     * @var ClientInterface[]|Collection
      */
     protected $clients;
 
@@ -94,20 +100,13 @@ EOT;
         parent::__construct(static::NAME, static::VERSION);
     }
 
+
     /**
      * {@inheritdoc}
      */
     public function getHelp()
     {
         return static::LOGO . parent::getHelp();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getChunkServers()
-    {
-        return $this->chunkServers;
     }
 
     /**
@@ -141,7 +140,30 @@ EOT;
         $server = new Socket($this->configuration->getAddress(), $this->eventLoop);
         $this->eventDispatcher->dispatch(Events::SERVER_RUN);
         $server->on('connection', [$this, 'handleControlConnection']);
+
+        $this->initializeTimers();
         $this->eventLoop->run();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function stopClient(ClientInterface $client)
+    {
+        $chunkServers = $this->chunkServers->filter(function(ChunkServerInterface $chunkServer) use ($client){
+            return $client === $chunkServer->getClient();
+        });
+        $this->eventDispatcher->dispatch(new Event(Events::CLIENT_CLOSE, $this, [
+            'client' => $client,
+            'chunkServers' => $chunkServers
+        ]));
+        foreach ($chunkServers as $chunkServer) {
+            //Close the tunnel server and removes it
+            $chunkServer->stop();
+            $this->chunkServers->removeElement($chunkServer);
+        }
+        $client->getControlConnection()->end(); //Distinct
+        $this->clients->removeElement($client); //Removes the client
     }
 
     /**
@@ -174,6 +196,14 @@ EOT;
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function getChunkServers()
+    {
+        return $this->chunkServers;
+    }
+
+    /**
      * @return LoopInterface
      */
     public function getEventLoop()
@@ -198,7 +228,8 @@ EOT;
     }
 
     /**
-     * @return Collection
+     * Gets all clients
+     * @return Collection|ClientInterface[]
      */
     public function getClients()
     {
@@ -232,6 +263,17 @@ EOT;
     }
 
     /**
+     * Creates default timers
+     * @codeCoverageIgnore
+     */
+    protected function initializeTimers()
+    {
+        $this->addTimer(new Timer\ReviewClient($this));
+        $this->addTimer(new Timer\SummaryWatcher($this));
+        $this->addTimer(new MemoryWatcher($this->getLogger()));
+    }
+
+    /**
      * {@inheritdoc}
      */
     protected function getDefaultCommands()
@@ -239,5 +281,19 @@ EOT;
         return array_merge(parent::getDefaultCommands(), [
             new Command\InitCommand($this),
         ]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getDefaultInputDefinition()
+    {
+        $definition = parent::getDefaultInputDefinition();
+        $definition->addOptions([
+            new InputOption('config', 'c', InputOption::VALUE_OPTIONAL, 'The configuration file, support json,ini,xml and yaml format'),
+            new InputOption('address', 'a', InputOption::VALUE_REQUIRED, 'The server address'),
+        ]);
+
+        return $definition;
     }
 }

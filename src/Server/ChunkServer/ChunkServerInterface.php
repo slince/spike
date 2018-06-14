@@ -12,6 +12,7 @@
 namespace Spike\Server\ChunkServer;
 
 use React\Socket\ConnectionInterface;
+use Spike\Client\ClientInterface;
 use Spike\Common\Tunnel\TunnelInterface;
 
 interface ChunkServerInterface
@@ -22,6 +23,12 @@ interface ChunkServerInterface
      * @return TunnelInterface
      */
     public function getTunnel();
+
+    /**
+     * Gets client
+     * @return ClientInterface
+     */
+    public function getClient();
 
     /**
      * Run the server

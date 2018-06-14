@@ -1,5 +1,5 @@
 {
-    "address": "127.0.0.1:8088",
+    "address": "0.0.0.0:8090",
     "log": {
         "file": "./server.log",
         "level": "info"

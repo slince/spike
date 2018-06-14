@@ -27,11 +27,11 @@ class RegisterProxyHandler extends RequireAuthHandler
         $this->getEventDispatcher()->dispatch(new Event(Events::REGISTER_PROXY, $this, [
             'message' => $message
         ]));
-        $tunnelServer = $this->server->getChunkServers()->findByTunnelInfo($message->getBody());
-        if (!$tunnelServer) {
+        $chunkServer = $this->server->getChunkServers()->findByTunnelInfo($message->getBody());
+        if (!$chunkServer) {
             throw new BadRequestException("Can not find the chunk server");
         }
         $this->connection->removeAllListeners();
-        $tunnelServer->setProxyConnection($message->getHeader('public-connection-id'), $this->connection);
+        $chunkServer->setProxyConnection($message->getHeader('public-connection-id'), $this->connection);
     }
 }

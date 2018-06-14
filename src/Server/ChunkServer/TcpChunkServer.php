@@ -85,7 +85,15 @@ class TcpChunkServer implements ChunkServerInterface
     /**
      * {@inheritdoc}
      */
-    public function close()
+    public function getClient()
+    {
+        return $this->client;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function stop()
     {
         //Close all public connection
         foreach ($this->publicConnections as $publicConnection) {

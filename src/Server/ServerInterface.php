@@ -13,7 +13,7 @@ namespace Spike\Server;
 
 use Doctrine\Common\Collections\Collection;
 use React\Socket\ConnectionInterface;
-use Slince\Event\Dispatcher;
+use Spike\Client\ClientInterface;
 
 interface ServerInterface
 {
@@ -28,6 +28,12 @@ interface ServerInterface
      * @return Collection
      */
     public function getChunkServers();
+
+    /**
+     * Stop client
+     * @param ClientInterface $client
+     */
+    public function stopClient(ClientInterface $client);
 
     /**
      * Starts the server

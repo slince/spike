@@ -11,8 +11,9 @@ foreach ([__DIR__ . '/../../../autoload.php',
         break;
     }
 }
-$configuration = new Configuration();
+
 $input = new ArgvInput();
+$configuration = new Configuration();
 if (true === $input->hasParameterOption(['--config'], true)) {
     $configFile = $input->getParameterOption('--config');
 } else {
@@ -25,5 +26,6 @@ if (true === $input->hasParameterOption(['--address'], true)) {
     $address && $configuration->set('address', $address);
 }
 
+//Sets timezone
 date_default_timezone_set($configuration->getTimezone());
 (new Server($configuration))->run($input);
