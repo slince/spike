@@ -22,7 +22,7 @@ use React\Socket\ConnectionInterface;
  * @method pause();
  * @method resume();
  */
-class PublicConnection implements ConnectionInterface
+class PublicConnection
 {
     /**
      * @var ConnectionInterface

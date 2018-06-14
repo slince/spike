@@ -30,19 +30,20 @@ class AuthHandler extends MessageActionHandler
             ) {
                 $client = new Client($message->getBody(), $this->connection);
                 $this->server->getClients()->add($client);
-                $response = new Spike('auth_response', $client->toArray());
+                $response = new Spike('auth_response', $client->toArray(), [
+                    'code' => 200
+                ]);
             } else {
                 $response = new Spike('auth_response', $auth, [
-                    'code' =>  200
+                    'code' =>  403
                 ]);
             }
         } catch (InvalidArgumentException $exception) {
             $response = new Spike('auth_response', $auth, [
-                'code' =>  200,
+                'code' =>  403,
                 'message' => $exception->getMessage()
             ]);
         }
-        echo $response;
         $this->connection->write($response);
     }
 }

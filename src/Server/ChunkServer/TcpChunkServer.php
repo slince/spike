@@ -18,6 +18,7 @@ use React\Socket\Server as Socket;
 use Slince\Event\Event;
 use Spike\Common\Exception\InvalidArgumentException;
 use Spike\Common\Protocol\Spike;
+use Spike\Common\Timer\TimersAware;
 use Spike\Common\Tunnel\TcpTunnel;
 use Spike\Common\Tunnel\TunnelInterface;
 use Spike\Server\Client;
@@ -27,6 +28,8 @@ use Spike\Server\ServerInterface;
 
 class TcpChunkServer implements ChunkServerInterface
 {
+    use TimersAware;
+
     /**
      * @var Collection|PublicConnection[]
      */
@@ -80,6 +83,7 @@ class TcpChunkServer implements ChunkServerInterface
             $this->publicConnections->add($publicConnection);
             $this->handlePublicConnection($publicConnection);
         });
+        $this->addTimer(new Timer\ReviewPublicConnection($this));
     }
 
     /**
@@ -88,6 +92,14 @@ class TcpChunkServer implements ChunkServerInterface
     public function getClient()
     {
         return $this->client;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPublicConnections()
+    {
+        return $this->publicConnections;
     }
 
     /**
@@ -129,7 +141,7 @@ class TcpChunkServer implements ChunkServerInterface
     {
         $publicConnection = $this->findPublicConnectionById($publicConnectionId);
         if (is_null($publicConnection)) {
-            throw new InvalidArgumentException(sprintf('Cannot find the public connection "%s"', $connectionId));
+            throw new InvalidArgumentException(sprintf('Cannot find the public connection "%s"', $publicConnectionId));
         }
         $startProxyMessage = new Spike('start_proxy');
         $proxyConnection->write($startProxyMessage);
@@ -164,6 +176,23 @@ class TcpChunkServer implements ChunkServerInterface
         $proxyConnection->on('error', $handleProxyConnectionClose);
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function getEventLoop()
+    {
+        return $this->server->getEventLoop();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function closePublicConnection(PublicConnection $publicConnection, $message = null)
+    {
+        $publicConnection->write($message ?: 'The chunk server is closed');
+        $this->publicConnections->removeElement($publicConnection);
+    }
+
     protected function sendToClient($data)
     {
         $this->client->getControlConnection()->write($data);
@@ -191,15 +220,5 @@ class TcpChunkServer implements ChunkServerInterface
     protected function resolveListenAddress()
     {
         return "0.0.0.0:{$this->tunnel->getServerPort()}";
-    }
-
-    /**
-     * Close public connection
-     * @param PublicConnection $publicConnection
-     * @param string|null $message
-     */
-    protected function closePublicConnection(PublicConnection $publicConnection, $message = null)
-    {
-        $publicConnection->write($message ?: 'The chunk server is closed');
     }
 }

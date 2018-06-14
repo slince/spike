@@ -8,20 +8,22 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace Spike\Server\Timer;
+namespace Spike\Client\Timer;
 
-class SummaryWatcher extends Timer
+use Spike\Common\Protocol\Spike;
+
+/**
+ * @codeCoverageIgnore
+ */
+class Heartbeat extends Timer
 {
+
     /**
      * {@inheritdoc}
      */
     public function __invoke()
     {
-        $message = sprintf('Client Total: %s; Chunk Server Total: %s',
-            count($this->server->getClients()),
-            count($this->server->getChunkServers())
-        );
-        $this->server->getLogger()->info($message);
+        $this->client->getControlConnection()->write(new Spike('ping'));
     }
 
     /**
@@ -29,6 +31,14 @@ class SummaryWatcher extends Timer
      */
     public function getInterval()
     {
-        return 5;
+        return 50;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isPeriodic()
+    {
+        return true;
     }
 }

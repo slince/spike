@@ -11,6 +11,7 @@
 
 namespace Spike\Server\ChunkServer;
 
+use Doctrine\Common\Collections\Collection;
 use React\Socket\ConnectionInterface;
 use Spike\Client\ClientInterface;
 use Spike\Common\Tunnel\TunnelInterface;
@@ -47,4 +48,19 @@ interface ChunkServerInterface
      * @param ConnectionInterface $proxyConnection
      */
     public function setProxyConnection($publicConnectionId, ConnectionInterface $proxyConnection);
+
+    /**
+     * Gets all public connections
+     *
+     * @return Collection|PublicConnection[]
+     */
+    public function getPublicConnections();
+
+    /**
+     * Close public connection
+     *
+     * @param PublicConnection $publicConnection
+     * @param string|null $message
+     */
+    public function closePublicConnection(PublicConnection $publicConnection, $message = null);
 }

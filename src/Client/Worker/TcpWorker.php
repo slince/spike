@@ -80,7 +80,7 @@ class TcpWorker implements WorkerInterface
     {
         $this->proxyConnection = $connection;
 
-        jsonBuffer($connection)->then(function($messages) use ($connection){
+        jsonBuffer($connection, function($messages) use ($connection){
             $message = Spike::fromArray(reset($messages));
             if ($message && $messages->getAction() === 'start_proxy') {
                 $connection->removeAllListeners('data');

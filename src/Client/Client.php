@@ -19,6 +19,7 @@ use React\Socket\Connector;
 use function Slince\Common\jsonBuffer;
 use Slince\Event\Dispatcher;
 use Slince\Event\DispatcherInterface;
+use Slince\Event\Event;
 use Spike\Client\Event\Events;
 use Spike\Client\Event\FilterActionHandlerEvent;
 use Spike\Client\Listener\ClientListener;
@@ -26,14 +27,16 @@ use Spike\Client\Listener\LoggerListener;
 use Spike\Client\Worker\WorkerInterface;
 use Spike\Common\Logger\Logger;
 use Spike\Common\Protocol\Spike;
+use Spike\Common\Timer\TimersAware;
 use Spike\Version;
-use Slince\Event\Event;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class Client extends Application implements ClientInterface
 {
+    use TimersAware;
+
     /**
      * @var string
      */
@@ -142,6 +145,7 @@ EOT;
     {
         $connector = new Connector($this->eventLoop);
         $connector->connect($this->configuration->getServerAddress())->then(function($connection){
+            $this->initializeTimers();
             $this->handleControlConnection($connection);
         }, function(){
             $this->eventDispatcher->dispatch(new Event(Events::CANNOT_CONNECT_SERVER, $this));
@@ -169,7 +173,8 @@ EOT;
         $connection->on('close', function(){
             $this->eventDispatcher->dispatch(new Event(Events::DISCONNECT_FROM_SERVER, $this));
         });
-        jsonBuffer($connection)->then(function($messages) use ($connection){
+
+        jsonBuffer($connection, function($messages) use ($connection){
             foreach ($messages as $messageData) {
                 if (!$messageData) {
                     continue;
@@ -184,7 +189,7 @@ EOT;
                     $actionHandler->handle($message);
                 }
             }
-        })->then(null, function($exception) use ($connection){
+        }, function($exception) use ($connection){
             $this->eventDispatcher->dispatch(new Event(Events::CONNECTION_ERROR, $this, [
                 'connection' => $connection,
                 'exception' => $exception
@@ -302,5 +307,14 @@ EOT;
     {
         $this->eventDispatcher->addSubscriber(new ClientListener());
         $this->eventDispatcher->addSubscriber(new LoggerListener($this));
+    }
+
+    /**
+     * Creates default timers
+     * @codeCoverageIgnore
+     */
+    protected function initializeTimers()
+    {
+        $this->addTimer(new Timer\Heartbeat($this));
     }
 }

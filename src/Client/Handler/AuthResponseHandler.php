@@ -22,7 +22,7 @@ class AuthResponseHandler extends MessageActionHandler
      */
     public function handle(SpikeInterface $message)
     {
-        if ($message->getHeader('code') !== 0) {
+        if ($message->getHeader('code') !== 200) {
             $this->getEventDispatcher()->dispatch(new Event(Events::AUTH_ERROR, $this->client, [
                 'message' => $message
             ]));
@@ -32,6 +32,7 @@ class AuthResponseHandler extends MessageActionHandler
             ]));
             $clientInfo = $message->getBody();
             $this->client->setId($clientInfo['id']);
+            Spike::setGlobalHeader('client-id', $clientInfo['id']);
             $this->registerTunnels();
         }
     }

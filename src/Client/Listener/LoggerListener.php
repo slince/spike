@@ -53,6 +53,7 @@ class LoggerListener implements SubscriberInterface
             Events::CLIENT_ACTION => 'onReceiveMessage',
             Events::CONNECTION_ERROR => 'onConnectionError',
             Events::AUTH_ERROR => 'onAuthError',
+            Events::AUTH_SUCCESS => 'onAuthSuccess',
             Events::REGISTER_TUNNEL_ERROR => 'onRegisterTunnelError',
             Events::DISCONNECT_FROM_SERVER => 'onDisconnectFromServer'
         ];
@@ -61,6 +62,11 @@ class LoggerListener implements SubscriberInterface
     public function onAuthError(Event $event)
     {
         $this->getLogger()->error('Auth error, please checks your configuration file');
+    }
+
+    public function onAuthSuccess(Event $event)
+    {
+        $this->getLogger()->error('Auth success');
     }
 
     public function onRegisterTunnelError(Event $event)

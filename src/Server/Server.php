@@ -143,6 +143,7 @@ EOT;
 
         $this->initializeTimers();
         $this->eventLoop->run();
+        return 0;
     }
 
     /**
@@ -173,7 +174,7 @@ EOT;
      */
     public function handleControlConnection(ConnectionInterface $connection)
     {
-        jsonBuffer($connection)->then(function($messages) use ($connection){
+        jsonBuffer($connection, function($messages) use ($connection){
             foreach ($messages as $messageData) {
                 if (!$messageData) {
                     continue;
@@ -187,10 +188,25 @@ EOT;
                     $actionHandler->handle($message);
                 }
             }
-        })->then(null, function($exception) use ($connection){
+        }, function($exception) use ($connection){
             $this->eventDispatcher->dispatch(new Event(Events::CONNECTION_ERROR, $this, [
                 'connection' => $connection,
                 'exception' => $exception
+            ]));
+        });
+        //Distinct
+        $connection->on('close', function() use($connection){
+            //If client has been registered and then close it.
+            $client = $this->clients->filter(function(ClientInterface $client) use ($connection){
+                return $client->getControlConnection() === $connection;
+            })->first();
+            if ($client) {
+                $this->stopClient($client);
+            } else {
+                $connection->end();
+            }
+            $this->eventDispatcher->dispatch(new Event(Events::CLIENT_CLOSE, $this, [
+                'connection' => $connection,
             ]));
         });
     }

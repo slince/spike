@@ -25,6 +25,7 @@ class RegisterTunnelHandler extends RequireAuthHandler
      */
     public function handle(SpikeInterface $message)
     {
+        var_dump('register tunnel');
         parent::handle($message);
         $tunnelInfo = $message->getBody();
         $chunkServer = $this->server->getChunkServers()->findByTunnelInfo($tunnelInfo);
@@ -33,7 +34,7 @@ class RegisterTunnelHandler extends RequireAuthHandler
             try {
                 $chunkServer = $this->createChunkServer($tunnel);
                 $response = new Spike('register_tunnel_response', $tunnel->toArray(), [
-                    'code' => 0
+                    'code' => 200
                 ]);
                 $chunkServer->start();
             } catch (\Exception $exception) {
@@ -50,6 +51,7 @@ class RegisterTunnelHandler extends RequireAuthHandler
                 'code' => 1
             ]);
         }
+        var_dump($response);
         $this->sendToClient($response);
     }
 

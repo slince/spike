@@ -10,23 +10,26 @@
  */
 namespace Spike\Server\ChunkServer\Timer;
 
+use Spike\Common\Timer\TimerInterface;
 use Spike\Server\ChunkServer\ChunkServerInterface;
-use Spike\Timer\PeriodicTimer as BasePeriodicTimer;
 
-abstract class PeriodicTimer extends BasePeriodicTimer
+abstract class Timer implements TimerInterface
 {
-    protected $tunnelServer;
+    /**
+     * @var ChunkServerInterface
+     */
+    protected $chunkServer;
 
     public function __construct(ChunkServerInterface $tunnelServer)
     {
-        $this->tunnelServer = $tunnelServer;
+        $this->chunkServer = $tunnelServer;
     }
 
     /**
      * @return ChunkServerInterface
      */
-    public function getTunnelServer()
+    public function getChunkServer()
     {
-        return $this->tunnelServer;
+        return $this->chunkServer;
     }
 }

@@ -42,6 +42,14 @@ abstract class Tunnel implements TunnelInterface
     /**
      * {@inheritdoc}
      */
+    public function jsonSerialize()
+    {
+        return $this->toArray();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function __toString()
     {
         return json_encode($this->toArray());

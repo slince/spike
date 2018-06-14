@@ -10,7 +10,7 @@
  */
 namespace Spike\Common\Tunnel;
 
-interface TunnelInterface
+interface TunnelInterface extends \JsonSerializable
 {
     /**
      * Gets the tunnel server port

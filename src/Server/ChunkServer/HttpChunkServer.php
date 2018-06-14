@@ -59,8 +59,9 @@ class HttpChunkServer extends TcpChunkServer
     /**
      * {@inheritdoc}
      */
-    protected function closePublicConnection(PublicConnection $publicConnection, $message = null)
+    public function closePublicConnection(PublicConnection $publicConnection, $message = null)
     {
         $publicConnection->end(Psr7\str($this->makeErrorResponse(500, $message ?: 'Timeout')));
+        $this->publicConnections->removeElement($publicConnection);
     }
 }
