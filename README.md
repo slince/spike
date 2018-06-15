@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="https://raw.githubusercontent.com/slince/spike/master/logo.png"/>
+    <img src="https://raw.githubusercontent.com/slince/spike/master/resources/logo.png"/>
 </p>
 
 <p align="center">
@@ -26,8 +26,7 @@ Spike is a fast reverse proxy built on top of [ReactPHP](https://github.com/reac
 
 ## Installation
 
-Use the following command to install
-
+Install via composer
 
 ```bash
 composer global require slince/spike
@@ -35,6 +34,11 @@ composer global require slince/spike
 
 > Both the server and local machine need to install this.
 
+## Schematic diagram;
+
+<p align="center">
+    <img src="https://raw.githubusercontent.com/slince/spike/master/resources/diagram.png"/>
+</p>
 
 ## Configure the server
 
@@ -161,6 +165,10 @@ Open the configuration file for the client and modify parameters for "auth". Kee
 
 The default to open the console and file two forms of the log; the first will print the logs to the console; the second 
 will write all the logs to the specified file;  Default log level is "info"; You can adjust this in the configuration file.
+
+## Changelog
+
+See [CHANGELOG.md](./CHANGELOG.md)
 
 ## License
  

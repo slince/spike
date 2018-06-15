@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="https://raw.githubusercontent.com/slince/spike/master/logo.png"/>
+    <img src="https://raw.githubusercontent.com/slince/spike/master/resources/logo.png"/>
 </p>
 
 <p align="center">
@@ -24,7 +24,7 @@ Spike是一个可以用来将你的内网服务暴露在公网的快速的反向
 
 ## 安装
 
-通过composer安装
+通过 composer 安装
 
 ```bash
 composer global require slince/spike *@beta
@@ -32,6 +32,12 @@ composer global require slince/spike *@beta
 
 > 服务器与本地都需要执行此命令安装
 
+
+## 原理图
+
+<p align="center">
+    <img src="https://raw.githubusercontent.com/slince/spike/master/resources/diagram.png"/>
+</p>
 
 ## 配置服务端
 
@@ -156,6 +162,10 @@ $ mysql -h 服务器地址 -P 8087
 
 默认开启屏幕输出与文件两种形式的日志；前者会打印到控制台；后者会写入到指定文件；默认日志等级是"info"，此项信息可以通过
 修改配置文件"log"一项调整；
+
+## Changelog
+
+查看 [CHANGELOG.md](./CHANGELOG.md)
 
 ## License
  

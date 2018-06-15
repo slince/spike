@@ -35,7 +35,7 @@ class InitCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $templateConfigFile = __DIR__.'/../../../spike-template.json';
+        $templateConfigFile = __DIR__.'/../../../resources/spike-template.json';
         $config = new Config($templateConfigFile);
         $dstPath = $input->getOption('dir');
         $extension = $input->getOption('format');
