@@ -66,7 +66,7 @@ class LoggerListener implements SubscriberInterface
 
     public function onAuthSuccess(Event $event)
     {
-        $this->getLogger()->error('Auth success');
+        $this->getLogger()->info('Auth success');
     }
 
     public function onRegisterTunnelError(Event $event)
