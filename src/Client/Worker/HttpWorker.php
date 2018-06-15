@@ -12,8 +12,10 @@
 namespace Spike\Client\Worker;
 
 use GuzzleHttp\Psr7;
+use Spike\Client\Client;
 use Spike\Common\Tunnel\HttpTunnel;
 use Spike\Common\Tunnel\TunnelInterface;
+use Spike\Version;
 
 class HttpWorker extends TcpWorker
 {
@@ -49,6 +51,7 @@ class HttpWorker extends TcpWorker
 
         return new Psr7\Response($code, [
             'Content-Length' => strlen($message),
+            'X-Spike' => Client::NAME .' '. Version::VERSION,
         ], $message);
     }
 

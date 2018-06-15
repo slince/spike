@@ -15,6 +15,8 @@ use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7;
 use function Slince\Common\httpHeaderBuffer;
 use Spike\Common\Protocol\HttpHeaderParser;
+use Spike\Server\Server;
+use Spike\Version;
 
 /**
  * @codeCoverageIgnore
@@ -62,6 +64,7 @@ class HttpChunkServer extends TcpChunkServer
 
         return new Response($code, [
             'Content-Length' => strlen($message),
+            'X-Spiked' => Server::NAME .' '. Version::VERSION,
         ], $message);
     }
 
