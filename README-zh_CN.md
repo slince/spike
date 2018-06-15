@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="https://raw.githubusercontent.com/slince/spike/master/resources/logo.png" width="240"/>
+    <img src="https://raw.githubusercontent.com/slince/spike/master/resources/logo.png" width="200"/>
 </p>
 
 <p align="center">
