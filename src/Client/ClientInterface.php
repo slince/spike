@@ -21,7 +21,7 @@ interface ClientInterface
     public function start();
 
     /**
-     * Starts the client
+     * Closes the client
      */
     public function close();
 

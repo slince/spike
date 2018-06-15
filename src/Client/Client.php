@@ -97,6 +97,17 @@ EOT;
      */
     protected $logger;
 
+    /**
+     * @var bool
+     */
+    protected $running = false;
+
+    /**
+     * Whether connect to server.
+     * @var bool
+     */
+    protected $connected = false;
+
     public function __construct(Configuration $configuration, LoopInterface $eventLoop = null)
     {
         $this->configuration = $configuration;
@@ -145,13 +156,17 @@ EOT;
      */
     public function start()
     {
-        $connector = new Connector($this->eventLoop);
+        $connector = new Connector($this->eventLoop, [
+            'timeout' => $this->configuration->get('timeout', 5)
+        ]);
         $connector->connect($this->configuration->getServerAddress())->then(function($connection){
+            $this->connected = true; //Set connect status
             $this->initializeTimers();
             $this->handleControlConnection($connection);
         }, function(){
             $this->eventDispatcher->dispatch(new Event(Events::CANNOT_CONNECT_SERVER, $this));
         });
+        $this->running = true; //Set running status
         $this->eventDispatcher->dispatch(Events::CLIENT_RUN);
         $this->eventLoop->run();
 
@@ -163,24 +178,40 @@ EOT;
      */
     public function close()
     {
+        if (!$this->running) {
+            return;
+        }
+        //Reset the client
+        $this->reset();
+        if ($this->controlConnection) {
+            //don't trigger "close" event if closed by client
+            $this->controlConnection->removeListener('close', [$this, 'handleDisconnectServer']);
+            $this->controlConnection->end();
+        }
+        $this->running = false;
+    }
+
+
+    protected function reset()
+    {
+        $this->connected = false;
         foreach ($this->getTimers() as $timer) {
             $this->cancelTimer($timer);
         }
+        $this->timers = [];
         foreach ($this->workers as $worker) {
             $worker->close();
         }
-        if ($this->controlConnection) {
-//            $this->controlConnection->removeListener('close', [$this, 'handleDisconnectServer']);
-            $this->controlConnection->end();
-        }
+        $this->workers = new ArrayCollection();
     }
 
     /**
-     * Handle disconnect
+     * Reconnect if disconnect from server.
      */
     public function handleDisconnectServer()
     {
         $this->eventDispatcher->dispatch(new Event(Events::DISCONNECT_FROM_SERVER, $this));
+        $this->close();
     }
 
     /**

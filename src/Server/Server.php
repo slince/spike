@@ -165,7 +165,7 @@ EOT;
             $chunkServer->stop();
             $this->chunkServers->removeElement($chunkServer);
         }
-        $client->getControlConnection()->end(); //Distinct
+        $client->close(); //Close the client
         $this->clients->removeElement($client); //Removes the client
     }
 

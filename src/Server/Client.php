@@ -84,14 +84,6 @@ class Client implements ClientInterface
     }
 
     /**
-     * Close the client.
-     */
-    public function close()
-    {
-        $this->controlConnection->end();
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function setActiveAt($activeAt)
@@ -117,5 +109,20 @@ class Client implements ClientInterface
         return array_replace($this->info, [
             'id' => $this->getId(),
         ]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function start()
+    {
+    }
+
+    /**
+     * Close the client.
+     */
+    public function close()
+    {
+        $this->controlConnection->end();
     }
 }

@@ -27,7 +27,7 @@ class AuthResponseHandler extends MessageActionHandler
             $this->getEventDispatcher()->dispatch(new Event(Events::AUTH_ERROR, $this->client, [
                 'message' => $message,
             ]));
-            //Close client
+            //Close client if auth error
             $this->client->close();
         } else {
             $this->getEventDispatcher()->dispatch(new Event(Events::AUTH_SUCCESS, $this->client, [

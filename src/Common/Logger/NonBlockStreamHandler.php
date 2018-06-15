@@ -14,6 +14,7 @@ namespace Spike\Common\Logger;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use React\EventLoop\LoopInterface;
+use React\Stream\WritableResourceStream;
 
 class NonBlockStreamHandler extends StreamHandler
 {
@@ -21,6 +22,11 @@ class NonBlockStreamHandler extends StreamHandler
      * @var LoopInterface
      */
     protected $eventLoop;
+
+    /**
+     * @var WritableResourceStream
+     */
+    protected $nonBlockStream;
 
     public function __construct(LoopInterface $eventLoop, $stream, $level = Logger::DEBUG, $bubble = true, $filePermission = null, $useLocking = false)
     {
@@ -33,16 +39,14 @@ class NonBlockStreamHandler extends StreamHandler
      */
     protected function streamWrite($stream, array $record)
     {
-        $data = (string) $record['formatted'];
-        fwrite(STDOUT, $data);
-        return;
-        $this->eventLoop->addWriteStream($stream, function ($stream) use(&$data){
-            $written = fwrite($stream, $data);
-            if ($written === strlen($data)) {
-                $this->eventLoop->removeWriteStream($stream);
-            } else {
-                $data = substr($data, $written);
+        try{
+            if ($this->nonBlockStream === null) {
+                $this->nonBlockStream = new WritableResourceStream($stream, $this->eventLoop);
             }
-        });
+            $this->nonBlockStream->write((string) $record['formatted']);
+        } catch (\RuntimeException $exception) {
+            //Polyfill
+            parent::streamWrite($stream, $record);
+        }
     }
 }

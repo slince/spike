@@ -61,7 +61,7 @@ class LoggerListener implements SubscriberInterface
 
     public function onAuthError(Event $event)
     {
-        $this->getLogger()->error('Auth error, please checks your configuration file');
+        $this->getLogger()->error('Auth error, please check your configuration file');
     }
 
     public function onAuthSuccess(Event $event)
@@ -71,7 +71,7 @@ class LoggerListener implements SubscriberInterface
 
     public function onRegisterTunnelError(Event $event)
     {
-        $this->getLogger()->error(sprintf('Registers the tunnel "%s" error, message: %s',
+        $this->getLogger()->error(sprintf('Registers tunnel "%s" error, message: "%s"',
             $event->getArgument('tunnel'),
             $event->getArgument('errorMessage')
         ));
