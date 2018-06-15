@@ -1,11 +1,13 @@
-# Spike
+<p align="center">
+    <img src="https://raw.githubusercontent.com/slince/spike/master/logo.png"/>
+</p>
+
+Spike是一个可以用来将你的内网服务暴露在公网的快速的反向代理，基于[ReactPHP](https://github.com/reactphp)，采用IO多路复用模型。
 
 [![Build Status](https://img.shields.io/travis/slince/spike/master.svg?style=flat-square)](https://travis-ci.org/slince/spike)
 [![Coverage Status](https://img.shields.io/codecov/c/github/slince/spike.svg?style=flat-square)](https://codecov.io/github/slince/spike)
 [![Latest Stable Version](https://img.shields.io/packagist/v/slince/spike.svg?style=flat-square&label=stable)](https://packagist.org/packages/slince/spike)
 [![Scrutinizer](https://img.shields.io/scrutinizer/g/slince/spike.svg?style=flat-square)](https://scrutinizer-ci.com/g/slince/spike/?branch=master)
-
-Spike是一个可以用来将你的内网服务暴露在公网的快速的反向代理，基于[ReactPHP](https://github.com/reactphp)，采用IO多路复用模型。
 
 ## 安装
 
