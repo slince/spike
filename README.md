@@ -4,10 +4,23 @@
 
 Spike is a fast reverse proxy built on top of [ReactPHP](https://github.com/reactphp) that helps to expose your local services to the internet.
 
-[![Build Status](https://img.shields.io/travis/slince/spike/master.svg?style=flat-square)](https://travis-ci.org/slince/spike)
-[![Coverage Status](https://img.shields.io/codecov/c/github/slince/spike.svg?style=flat-square)](https://codecov.io/github/slince/spike)
-[![Latest Stable Version](https://img.shields.io/packagist/v/slince/spike.svg?style=flat-square&label=stable)](https://packagist.org/packages/slince/spike)
-[![Scrutinizer](https://img.shields.io/scrutinizer/g/slince/spike.svg?style=flat-square)](https://scrutinizer-ci.com/g/slince/spike/?branch=master)
+<p align="center">
+    <a href="LICENSE" target="_blank">
+        <img alt="Software License" src="https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square">
+    </a>
+    <a href="https://travis-ci.org/slince/spike">
+        <img src="https://img.shields.io/travis/slince/spike/master.svg?style=flat-square" alt="Build Status">
+    </a>
+    <a href="https://codecov.io/github/slince/spike">
+        <img src="https://img.shields.io/codecov/c/github/slince/spike.svg?style=flat-square" alt="Coverage Status">
+    </a>
+    <a href="https://packagist.org/packages/slince/spike">
+        <img src="https://img.shields.io/packagist/v/slince/spike.svg?style=flat-square&amp;label=stable" alt="Latest Stable Version">
+    </a>
+    <a href="https://scrutinizer-ci.com/g/slince/spike/?branch=master">
+        <img src="https://img.shields.io/scrutinizer/g/slince/spike.svg?style=flat-square" alt="Scrutinizer">
+    </a>
+</p>
 
 [简体中文](./README-zh_CN.md)
 
