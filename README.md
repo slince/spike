@@ -34,7 +34,7 @@ composer global require slince/spike
 
 > Both the server and local machine need to install this.
 
-## Schematic diagram;
+## Schematic diagram
 
 <p align="center">
     <img src="https://raw.githubusercontent.com/slince/spike/master/resources/diagram.png"/>
