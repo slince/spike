@@ -12,7 +12,7 @@
 namespace Spike\Common\Logger;
 
 use Monolog\Handler\StreamHandler;
-use Monolog\Logger;
+use Monolog\Logger as Monologer;
 use React\EventLoop\LoopInterface;
 use React\Stream\WritableResourceStream;
 
@@ -28,7 +28,7 @@ class NonBlockStreamHandler extends StreamHandler
      */
     protected $nonBlockStream;
 
-    public function __construct(LoopInterface $eventLoop, $stream, $level = Logger::DEBUG, $bubble = true, $filePermission = null, $useLocking = false)
+    public function __construct(LoopInterface $eventLoop, $stream, $level = Monologer::DEBUG, $bubble = true, $filePermission = null, $useLocking = false)
     {
         $this->eventLoop = $eventLoop;
         parent::__construct($stream, $level, $bubble, $filePermission, $useLocking);
