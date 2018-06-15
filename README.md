@@ -162,8 +162,6 @@ Open the configuration file for the client and modify parameters for "auth". Kee
 The default to open the console and file two forms of the log; the first will print the logs to the console; the second 
 will write all the logs to the specified file;  Default log level is "info"; You can adjust this in the configuration file.
 
-> Because the log reads and writes are synchronized, increasing the log level to reduce IO can help improve service performance
-
 ## License
  
 The MIT license. See [MIT](https://opensource.org/licenses/MIT)

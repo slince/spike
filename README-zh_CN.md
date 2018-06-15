@@ -157,8 +157,6 @@ $ mysql -h 服务器地址 -P 8087
 默认开启屏幕输出与文件两种形式的日志；前者会打印到控制台；后者会写入到指定文件；默认日志等级是"info"，此项信息可以通过
 修改配置文件"log"一项调整；
 
-> 日志是同步读写的，所以提升日志等级减少日志IO有助于提升服务的性能
-
 ## License
  
 The MIT license. See [MIT](https://opensource.org/licenses/MIT)
