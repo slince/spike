@@ -22,7 +22,7 @@ class ReviewPublicConnection extends Timer
     public function __invoke()
     {
         foreach ($this->chunkServer->getPublicConnections() as $publicConnection) {
-            if ($publicConnection->getWaitingDuration() > 120) {
+            if ($publicConnection->getWaitingDuration() > 60) {
                 $this->chunkServer->closePublicConnection($publicConnection, 'Waiting for more than 60 seconds without responding');
             }
         }

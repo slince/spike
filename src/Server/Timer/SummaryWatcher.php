@@ -30,6 +30,6 @@ class SummaryWatcher extends Timer
      */
     public function getInterval()
     {
-        return 5;
+        return 30;
     }
 }

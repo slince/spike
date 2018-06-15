@@ -187,7 +187,11 @@ EOT;
                 $event = new FilterActionHandlerEvent($this, $message, $connection);
                 $this->eventDispatcher->dispatch($event);
                 if ($actionHandler = $event->getActionHandler()) {
-                    $actionHandler->handle($message);
+                    try {
+                        $actionHandler->handle($message);
+                    } catch (\Exception $exception) {
+                        //Ignore bad message
+                    }
                 }
             }
         }, function($exception) use ($connection){

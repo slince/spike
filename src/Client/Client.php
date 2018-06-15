@@ -200,7 +200,7 @@ EOT;
         }
         $this->timers = [];
         foreach ($this->workers as $worker) {
-            $worker->close();
+            $worker->stop();
         }
         $this->workers = new ArrayCollection();
     }
