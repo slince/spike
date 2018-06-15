@@ -166,6 +166,38 @@ Open the configuration file for the client and modify parameters for "auth". Kee
 The default to open the console and file two forms of the log; the first will print the logs to the console; the second 
 will write all the logs to the specified file;  Default log level is "info"; You can adjust this in the configuration file.
 
+## List Commands
+
+```bash
+$ spike list
+   _____   _____   _   _   _    _____
+  /  ___/ |  _  \ | | | | / /  | ____|
+  | |___  | |_| | | | | |/ /   | |__
+  \___  \ |  ___/ | | | |\ \   |  __|
+   ___| | | |     | | | | \ \  | |___
+  /_____/ |_|     |_| |_|  \_\ |_____|
+  
+  Spike Client 0.0.1
+  
+  Usage:
+    command [options] [arguments]
+  
+  Options:
+    -h, --help            Display this help message
+    -q, --quiet           Do not output any message
+    -V, --version         Display this application version
+        --ansi            Force ANSI output
+        --no-ansi         Disable ANSI output
+    -n, --no-interaction  Do not ask any interactive question
+    -v|vv|vvv, --verbose  Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug
+  
+  Available commands:
+    help        Displays help for a command
+    init        Create a configuration file in the specified directory
+    list        Lists commands
+    list-proxy  Lists all supported proxy hosts by the client
+```
+
 ## Changelog
 
 See [CHANGELOG.md](./CHANGELOG.md)

@@ -163,6 +163,38 @@ $ mysql -h 服务器地址 -P 8087
 默认开启屏幕输出与文件两种形式的日志；前者会打印到控制台；后者会写入到指定文件；默认日志等级是"info"，此项信息可以通过
 修改配置文件"log"一项调整；
 
+## 查看所有命令
+
+```bash
+$ spike list
+   _____   _____   _   _   _    _____
+  /  ___/ |  _  \ | | | | / /  | ____|
+  | |___  | |_| | | | | |/ /   | |__
+  \___  \ |  ___/ | | | |\ \   |  __|
+   ___| | | |     | | | | \ \  | |___
+  /_____/ |_|     |_| |_|  \_\ |_____|
+  
+  Spike Client 0.0.1
+  
+  Usage:
+    command [options] [arguments]
+  
+  Options:
+    -h, --help            Display this help message
+    -q, --quiet           Do not output any message
+    -V, --version         Display this application version
+        --ansi            Force ANSI output
+        --no-ansi         Disable ANSI output
+    -n, --no-interaction  Do not ask any interactive question
+    -v|vv|vvv, --verbose  Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug
+  
+  Available commands:
+    help        Displays help for a command
+    init        Create a configuration file in the specified directory
+    list        Lists commands
+    list-proxy  Lists all supported proxy hosts by the client
+```
+
 ## Changelog
 
 查看 [CHANGELOG.md](./CHANGELOG.md)
