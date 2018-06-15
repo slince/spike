@@ -2,8 +2,6 @@
     <img src="https://raw.githubusercontent.com/slince/spike/master/logo.png"/>
 </p>
 
-Spike is a fast reverse proxy built on top of [ReactPHP](https://github.com/reactphp) that helps to expose your local services to the internet.
-
 <p align="center">
     <a href="LICENSE" target="_blank">
         <img alt="Software License" src="https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square">
@@ -21,6 +19,8 @@ Spike is a fast reverse proxy built on top of [ReactPHP](https://github.com/reac
         <img src="https://img.shields.io/scrutinizer/g/slince/spike.svg?style=flat-square" alt="Scrutinizer">
     </a>
 </p>
+
+Spike is a fast reverse proxy built on top of [ReactPHP](https://github.com/reactphp) that helps to expose your local services to the internet.
 
 [简体中文](./README-zh_CN.md)
 

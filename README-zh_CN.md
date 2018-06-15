@@ -2,8 +2,6 @@
     <img src="https://raw.githubusercontent.com/slince/spike/master/logo.png"/>
 </p>
 
-Spike是一个可以用来将你的内网服务暴露在公网的快速的反向代理，基于[ReactPHP](https://github.com/reactphp)，采用IO多路复用模型。
-
 <p align="center">
     <a href="LICENSE" target="_blank">
         <img alt="Software License" src="https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square">
@@ -21,6 +19,8 @@ Spike是一个可以用来将你的内网服务暴露在公网的快速的反向
         <img src="https://img.shields.io/scrutinizer/g/slince/spike.svg?style=flat-square" alt="Scrutinizer">
     </a>
 </p>
+
+Spike是一个可以用来将你的内网服务暴露在公网的快速的反向代理，基于[ReactPHP](https://github.com/reactphp)，采用IO多路复用模型。
 
 ## 安装
 
