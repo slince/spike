@@ -1,7 +1,7 @@
 <?php
 namespace Spike\Tests\Client\Handler;
 
-use Slince\Event\Event;
+use Slince\EventDispatcher\Event;
 use Spike\Client\Event\Events;
 use Spike\Client\Handler\AuthResponseHandler;
 use Spike\Common\Protocol\Spike;

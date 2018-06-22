@@ -15,7 +15,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use React\Socket\ConnectionInterface;
 use React\Socket\Server as Socket;
-use Slince\Event\Event;
+use Slince\EventDispatcher\Event;
 use Spike\Common\Exception\InvalidArgumentException;
 use Spike\Common\Protocol\Spike;
 use Spike\Common\Timer\TimersAware;

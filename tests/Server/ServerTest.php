@@ -2,7 +2,7 @@
 namespace Spike\Tests\Server;
 
 use React\EventLoop\LoopInterface;
-use Slince\Event\Dispatcher;
+use Slince\EventDispatcher\Dispatcher;
 use Spike\Common\Tunnel\HttpTunnel;
 use Spike\Common\Tunnel\TcpTunnel;
 use Spike\Server\Client;

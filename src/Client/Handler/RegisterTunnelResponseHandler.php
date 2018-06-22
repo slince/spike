@@ -11,7 +11,7 @@
 
 namespace Spike\Client\Handler;
 
-use Slince\Event\Event;
+use Slince\EventDispatcher\Event;
 use Spike\Client\Event\Events;
 use Spike\Common\Exception\InvalidArgumentException;
 use Spike\Common\Protocol\SpikeInterface;

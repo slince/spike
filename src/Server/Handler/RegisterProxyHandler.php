@@ -11,7 +11,7 @@
 
 namespace Spike\Server\Handler;
 
-use Slince\Event\Event;
+use Slince\EventDispatcher\Event;
 use Spike\Common\Exception\BadRequestException;
 use Spike\Common\Protocol\SpikeInterface;
 use Spike\Server\Event\Events;

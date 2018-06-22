@@ -2,7 +2,7 @@
 namespace Spike\Tests\Stub;
 
 use React\EventLoop\Factory;
-use Slince\Event\Dispatcher;
+use Slince\EventDispatcher\Dispatcher;
 use Spike\Common\Authentication\PasswordAuthentication;
 use Spike\Common\Logger\Logger;
 use Spike\Server\Configuration;

@@ -12,7 +12,7 @@
 namespace Spike\Server\Handler;
 
 use React\Socket\ConnectionInterface;
-use Slince\Event\Dispatcher;
+use Slince\EventDispatcher\Dispatcher;
 use Spike\Server\Server;
 
 abstract class MessageActionHandler implements ActionHandlerInterface

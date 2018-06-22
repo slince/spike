@@ -14,7 +14,7 @@ namespace Spike\Client\Handler;
 use Spike\Client\Event\Events;
 use Spike\Common\Protocol\Spike;
 use Spike\Common\Protocol\SpikeInterface;
-use Slince\Event\Event;
+use Slince\EventDispatcher\Event;
 
 class AuthResponseHandler extends MessageActionHandler
 {

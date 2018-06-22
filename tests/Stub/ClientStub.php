@@ -2,7 +2,7 @@
 namespace Spike\Tests\Stub;
 
 use React\EventLoop\Factory;
-use Slince\Event\Dispatcher;
+use Slince\EventDispatcher\Dispatcher;
 use Spike\Client\Client;
 use Spike\Client\Configuration;
 use Spike\Common\Logger\Logger;

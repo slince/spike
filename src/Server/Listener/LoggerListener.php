@@ -11,8 +11,8 @@
 
 namespace Spike\Server\Listener;
 
-use Slince\Event\Event;
-use Slince\Event\SubscriberInterface;
+use Slince\EventDispatcher\Event;
+use Slince\EventDispatcher\SubscriberInterface;
 use Spike\Common\Logger\Logger;
 use Spike\Server\Event\Events;
 use Spike\Server\Event\FilterActionHandlerEvent;
@@ -38,7 +38,7 @@ class LoggerListener implements SubscriberInterface
         return $this->server->getLogger();
     }
 
-    public function getEvents()
+    public static function getSubscribedEvents()
     {
         return [
             Events::SERVER_RUN => 'onServerRun',

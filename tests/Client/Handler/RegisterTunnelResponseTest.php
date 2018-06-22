@@ -5,7 +5,7 @@ use Spike\Client\Event\Events;
 use Spike\Client\Handler\RegisterTunnelResponseHandler;
 use Spike\Common\Protocol\Spike;
 use Spike\Tests\TestCase;
-use Slince\Event\Event;
+use Slince\EventDispatcher\Event;
 
 class RegisterTunnelResponseTest extends TestCase
 {

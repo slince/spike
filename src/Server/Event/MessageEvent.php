@@ -12,7 +12,7 @@
 namespace Spike\Server\Event;
 
 use React\Socket\ConnectionInterface;
-use Slince\Event\Event;
+use Slince\EventDispatcher\Event;
 use Spike\Common\Protocol\SpikeInterface;
 
 class MessageEvent extends Event

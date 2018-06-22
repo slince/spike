@@ -12,7 +12,7 @@
 namespace Spike\Client\Listener;
 
 use React\Socket\ConnectionInterface;
-use Slince\Event\SubscriberInterface;
+use Slince\EventDispatcher\SubscriberInterface;
 use Spike\Client\Client;
 use Spike\Common\Exception\InvalidArgumentException;
 use Spike\Common\Protocol\SpikeInterface;
@@ -25,7 +25,7 @@ class ClientListener implements SubscriberInterface
     /**
      * {@inheritdoc}
      */
-    public function getEvents()
+    public static function getSubscribedEvents()
     {
         return [
             Events::CLIENT_ACTION => 'onClientAction',

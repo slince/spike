@@ -12,7 +12,7 @@
 namespace Spike\Client\Event;
 
 use React\Socket\ConnectionInterface;
-use Slince\Event\Event;
+use Slince\EventDispatcher\Event;
 use Spike\Common\Protocol\SpikeInterface;
 use Spike\Client\Handler\ActionHandlerInterface;
 

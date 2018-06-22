@@ -11,8 +11,8 @@
 
 namespace Spike\Client\Listener;
 
-use Slince\Event\Event;
-use Slince\Event\SubscriberInterface;
+use Slince\EventDispatcher\Event;
+use Slince\EventDispatcher\SubscriberInterface;
 use Spike\Client\Client;
 use Spike\Client\Event\Events;
 use Spike\Client\Event\FilterActionHandlerEvent;
@@ -44,7 +44,7 @@ class LoggerListener implements SubscriberInterface
     /**
      * {@inheritdoc}
      */
-    public function getEvents()
+    public static function getSubscribedEvents()
     {
         return [
             Events::CLIENT_RUN => 'onClientRun',

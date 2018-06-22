@@ -6,7 +6,7 @@ use Spike\Client\Handler\RequestProxyHandler;
 use Spike\Common\Exception\InvalidArgumentException;
 use Spike\Common\Protocol\Spike;
 use Spike\Tests\TestCase;
-use Slince\Event\Event;
+use Slince\EventDispatcher\Event;
 
 class RequestProxyHandlerTest extends TestCase
 {
