@@ -26,7 +26,7 @@ use Spike\Client\Event\FilterActionHandlerEvent;
 use Spike\Client\Worker\WorkerInterface;
 use Spike\Common\Logger\Logger;
 use Spike\Common\Protocol\Spike;
-use Spike\Common\Timer\MemoryWatcher;
+use Spike\Common\Timer\MemoryWatchTimer;
 use Spike\Common\Timer\TimersAware;
 use Spike\Version;
 use Symfony\Component\Console\Application;
@@ -378,7 +378,7 @@ EOT;
      */
     protected function initializeTimers()
     {
-        $this->addTimer(new Timer\Heartbeat($this));
-        $this->addTimer(new MemoryWatcher($this->getLogger()));
+        $this->addTimer(new Timer\HeartbeatTimer($this));
+        $this->addTimer(new MemoryWatchTimer($this->getLogger()));
     }
 }

@@ -1,17 +1,16 @@
 <?php
 namespace Spike\Tests\Server\Timer;
 
-use Spike\Server\Client;
-use Spike\Server\Timer\ReviewClient;
+use Spike\Server\Timer\SummaryWatchTimer;
 use Spike\Tests\Common\Timer\TestCase;
 use Spike\Tests\Common\Timer\CallableTimer;
 
-class ReviewClientTest extends TestCase
+class SummaryWatchTimerTest extends TestCase
 {
     public function testGetter()
     {
         $server = $this->getServerMock();
-        $timer = new ReviewClient($server);
+        $timer = new SummaryWatchTimer($server);
         $this->assertEquals($server, $timer->getServer());
 
         $this->assertGreaterThan(0, $timer->getInterval());
@@ -19,24 +18,22 @@ class ReviewClientTest extends TestCase
 
     public function testConstruct()
     {
-        $server = $this->getServerMock();
-        $timer = $this->getMockBuilder(ReviewClient::class)
+        $server = $this->getServerStub();
+        $logger = $this->getLoggerStub();
+        $server->setLogger($logger);
+        $timer = $this->getMockBuilder(SummaryWatchTimer::class)
             ->setMethods(['getInterval'])
             ->setConstructorArgs([
                 $server
             ])
             ->getMock();
         $timer->method('getInterval')->willReturn(0.1);
-        $client = new Client([], $this->getConnectionMock());
-        $server->getClients()->add($client);
-        $this->assertGreaterThan(0, count($server->getClients()));
-        $client->setActiveAt(new \DateTime('-5 hours'));
         $this->addTimer($timer);
-
         $this->addTimer(new CallableTimer(0.2, function() use ($timer){
             $this->cancelTimer($timer);
+            $this->getEventLoop()->stop();
         }));
         $this->getEventLoop()->run();
-        $this->assertCount(0, $server->getClients());
+        $this->assertContains('Client Total: 0', file_get_contents($logger->getFile()));
     }
 }

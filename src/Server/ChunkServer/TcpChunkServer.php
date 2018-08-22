@@ -92,7 +92,7 @@ class TcpChunkServer implements ChunkServerInterface
             $this->publicConnections->add($publicConnection);
             $this->handlePublicConnection($publicConnection);
         });
-        $this->addTimer(new Timer\ReviewPublicConnection($this));
+        $this->addTimer(new Timer\PublicConnectionScanTimer($this));
     }
 
     /**

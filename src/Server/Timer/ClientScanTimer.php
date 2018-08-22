@@ -9,21 +9,20 @@
  * file that was distributed with this source code.
  */
 
-namespace Spike\Client\Timer;
+namespace Spike\Server\Timer;
 
-use Spike\Common\Protocol\Spike;
-
-/**
- * @codeCoverageIgnore
- */
-class Heartbeat extends Timer
+class ClientScanTimer extends ServerTimer
 {
     /**
      * {@inheritdoc}
      */
     public function __invoke()
     {
-        $this->client->getControlConnection()->write(new Spike('ping'));
+        foreach ($this->server->getClients() as $client) {
+            if (time() - $client->getActiveAt()->getTimestamp() > 60 * 5) {
+                $this->server->stopClient($client);
+            }
+        }
     }
 
     /**
@@ -31,14 +30,6 @@ class Heartbeat extends Timer
      */
     public function getInterval()
     {
-        return 50;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isPeriodic()
-    {
-        return true;
+        return 5 * 60;
     }
 }

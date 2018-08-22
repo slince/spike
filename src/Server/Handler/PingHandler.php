@@ -11,18 +11,6 @@
 
 namespace Spike\Server\Handler;
 
-use Spike\Common\Protocol\SpikeInterface;
-
 class PingHandler extends RequireAuthHandler
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function handle(SpikeInterface $message)
-    {
-        parent::handle($message);
-        if ($this->client) {
-            $this->client->setActiveAt(new \DateTime());
-        }
-    }
 }

@@ -24,7 +24,7 @@ use Slince\EventDispatcher\Event;
 use Spike\Client\ClientInterface;
 use Spike\Common\Logger\Logger;
 use Spike\Common\Protocol\Spike;
-use Spike\Common\Timer\MemoryWatcher;
+use Spike\Common\Timer\MemoryWatchTimer;
 use Spike\Common\Timer\TimersAware;
 use Spike\Server\ChunkServer\ChunkServerCollection;
 use Spike\Server\ChunkServer\ChunkServerInterface;
@@ -292,9 +292,9 @@ EOT;
      */
     protected function initializeTimers()
     {
-        $this->addTimer(new Timer\ReviewClient($this));
-        $this->addTimer(new Timer\SummaryWatcher($this));
-        $this->addTimer(new MemoryWatcher($this->getLogger()));
+        $this->addTimer(new Timer\ClientScanTimer($this));
+        $this->addTimer(new Timer\SummaryWatchTimer($this));
+        $this->addTimer(new MemoryWatchTimer($this->getLogger()));
     }
 
     /**

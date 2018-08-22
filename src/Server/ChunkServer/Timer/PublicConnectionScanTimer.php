@@ -14,7 +14,7 @@ namespace Spike\Server\ChunkServer\Timer;
 /**
  * @codeCoverageIgnore
  */
-class ReviewPublicConnection extends ChunkServerTimer
+class PublicConnectionScanTimer extends ChunkServerTimer
 {
     /**
      * {@inheritdoc}

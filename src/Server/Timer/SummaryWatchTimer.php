@@ -11,7 +11,7 @@
 
 namespace Spike\Server\Timer;
 
-class SummaryWatcher extends ServerTimer
+class SummaryWatchTimer extends ServerTimer
 {
     /**
      * {@inheritdoc}

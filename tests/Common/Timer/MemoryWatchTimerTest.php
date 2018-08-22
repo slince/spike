@@ -1,20 +1,20 @@
 <?php
 namespace Spike\Tests\Common\Timer;
 
-use Spike\Common\Timer\MemoryWatcher;
+use Spike\Common\Timer\MemoryWatchTimer;
 
-class MemoryWatcherTest extends TestCase
+class MemoryWatchTimerTest extends TestCase
 {
     public function testConstruct()
     {
-        $watcher = new MemoryWatcher($this->getLoggerStub());
+        $watcher = new MemoryWatchTimer($this->getLoggerStub());
         $this->assertEquals(60, $watcher->getInterval());
     }
 
     public function testExecute()
     {
         $logger = $this->getLoggerStub();
-        $timer = $this->getMockBuilder(MemoryWatcher::class)
+        $timer = $this->getMockBuilder(MemoryWatchTimer::class)
             ->setMethods(['getInterval'])
             ->setConstructorArgs([$logger])
             ->getMock();

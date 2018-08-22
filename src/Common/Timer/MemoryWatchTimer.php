@@ -13,7 +13,7 @@ namespace Spike\Common\Timer;
 
 use Spike\Common\Logger\Logger;
 
-class MemoryWatcher implements TimerInterface
+class MemoryWatchTimer implements TimerInterface
 {
     /**
      * @var Logger
