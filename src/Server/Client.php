@@ -123,6 +123,9 @@ class Client implements ClientInterface
      */
     public function close()
     {
-        $this->controlConnection->end();
+        if ($this->controlConnection) {
+            $this->controlConnection->removeAllListeners('close');
+            $this->controlConnection->end();
+        }
     }
 }

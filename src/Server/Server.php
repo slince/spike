@@ -28,6 +28,7 @@ use Spike\Common\Timer\MemoryWatchTimer;
 use Spike\Common\Timer\TimersAware;
 use Spike\Server\ChunkServer\ChunkServerCollection;
 use Spike\Server\ChunkServer\ChunkServerInterface;
+use Spike\Server\Event\ClientTerminateEvent;
 use Spike\Server\Event\Events;
 use Spike\Server\Event\FilterActionHandlerEvent;
 use Symfony\Component\Console\Application;
@@ -149,17 +150,18 @@ EOT;
     /**
      * {@inheritdoc}
      */
-    public function stopClient(ClientInterface $client)
+    public function stopClient(ClientInterface $client, $closedBy = null)
     {
         $chunkServers = $this->chunkServers->filter(function(ChunkServerInterface $chunkServer) use ($client){
             return $client === $chunkServer->getClient();
         });
-        $this->eventDispatcher->dispatch(new Event(Events::CLIENT_CLOSE, $this, [
-            'client' => $client,
-            'chunkServers' => $chunkServers,
-        ]));
+
+        //Fires the client terminate event
+        $event = new ClientTerminateEvent($client, $chunkServers, $closedBy);
+        $this->eventDispatcher->dispatch($event);
+
         foreach ($chunkServers as $chunkServer) {
-            //Close the tunnel server and removes it
+            //Close the tunnel server and remove it
             $chunkServer->stop();
             $this->chunkServers->removeElement($chunkServer);
         }
@@ -198,20 +200,17 @@ EOT;
                 'exception' => $exception,
             ]));
         });
-        //Distinct
+        //Disconnect
         $connection->on('close', function() use($connection){
             //If client has been registered and then close it.
             $client = $this->clients->filter(function(ClientInterface $client) use ($connection){
                 return $client->getControlConnection() === $connection;
             })->first();
             if ($client) {
-                $this->stopClient($client);
+                $this->stopClient($client, ClientTerminateEvent::CLOSED_BY_REMOTE);
             } else {
                 $connection->end();
             }
-            $this->eventDispatcher->dispatch(new Event(Events::CLIENT_CLOSE, $this, [
-                'connection' => $connection,
-            ]));
         });
     }
 

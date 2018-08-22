@@ -33,8 +33,10 @@ interface ServerInterface
      * Stop client.
      *
      * @param ClientInterface $client
+     *
+     * @param string $closedBy
      */
-    public function stopClient(ClientInterface $client);
+    public function stopClient(ClientInterface $client, $closedBy = null);
 
     /**
      * Starts the server.

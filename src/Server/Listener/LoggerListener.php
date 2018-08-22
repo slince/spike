@@ -14,6 +14,7 @@ namespace Spike\Server\Listener;
 use Slince\EventDispatcher\Event;
 use Slince\EventDispatcher\SubscriberInterface;
 use Spike\Common\Logger\Logger;
+use Spike\Server\Event\ClientTerminateEvent;
 use Spike\Server\Event\Events;
 use Spike\Server\Event\FilterActionHandlerEvent;
 use Spike\Server\Server;
@@ -46,6 +47,7 @@ class LoggerListener implements SubscriberInterface
             Events::SERVER_ACTION => 'onReceiveMessage',
             Events::SOCKET_ERROR => 'onSocketError',
             Events::CONNECTION_ERROR => 'onConnectionError',
+            Events::CLIENT_CLOSE => 'onClientClose'
         ];
     }
 
@@ -76,5 +78,16 @@ class LoggerListener implements SubscriberInterface
             $event->getArgument('exception')->getMessage(),
             $event->getArgument('connection')->getRemoteAddress()
         ));
+    }
+
+    public function onClientClose(ClientTerminateEvent $event)
+    {
+        $client = $event->getClient();
+        $message = sprintf('The client "%s[%s]" is closed by %s',
+            $client->getId(),
+            $client->getControlConnection()->getRemoteAddress(),
+            $event->getClosedBy()
+        );
+        $this->getLogger()->warning($message);
     }
 }

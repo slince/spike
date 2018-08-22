@@ -11,6 +11,8 @@
 
 namespace Spike\Server\Timer;
 
+use Spike\Server\Event\ClientTerminateEvent;
+
 class ClientScanTimer extends ServerTimer
 {
     /**
@@ -20,7 +22,7 @@ class ClientScanTimer extends ServerTimer
     {
         foreach ($this->server->getClients() as $client) {
             if (time() - $client->getActiveAt()->getTimestamp() > 60 * 5) {
-                $this->server->stopClient($client);
+                $this->server->stopClient($client, ClientTerminateEvent::CLOSED_BY_TIMER);
             }
         }
     }
