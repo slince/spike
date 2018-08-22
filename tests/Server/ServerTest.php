@@ -3,6 +3,7 @@ namespace Spike\Tests\Server;
 
 use React\EventLoop\LoopInterface;
 use Slince\EventDispatcher\Dispatcher;
+use Spike\Common\Logger\Logger;
 use Spike\Common\Tunnel\HttpTunnel;
 use Spike\Common\Tunnel\TcpTunnel;
 use Spike\Server\Client;
@@ -17,7 +18,7 @@ class ServerTest extends TestCase
         $this->assertCount(0, $server->getClients());
         $this->assertCount(0, $server->getChunkServers());
         $this->assertInstanceOf(LoopInterface::class, $server->getEventLoop());
-        $this->assertNull($server->getLogger());
+        $this->assertInstanceOf(Logger::class, $server->getLogger());
     }
 
 

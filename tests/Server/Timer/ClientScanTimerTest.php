@@ -26,6 +26,7 @@ class ClientScanTimerTest extends TestCase
                 $server
             ])
             ->getMock();
+
         $timer->method('getInterval')->willReturn(0.1);
         $client = new Client([], $this->getConnectionMock());
         $server->getClients()->add($client);
@@ -36,6 +37,7 @@ class ClientScanTimerTest extends TestCase
         $this->addTimer(new CallableTimer(0.2, function() use ($timer){
             $this->cancelTimer($timer);
         }));
+
         $this->getEventLoop()->run();
         $this->assertCount(0, $server->getClients());
     }

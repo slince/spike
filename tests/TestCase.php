@@ -54,10 +54,15 @@ class TestCase extends BaseTestCase
         $configuration = new Configuration();
         $configuration->merge($config);
 
-        return $this->getMockBuilder(Server::class)
+        $mock = $this->getMockBuilder(Server::class)
             ->setConstructorArgs([$configuration, $this->getEventLoop()])
-            ->setMethods(null)
+            ->setMethods(['getLogger', 'initializeEvents'])
             ->getMock();
+
+        $mock->method('getLogger')
+            ->willReturn($this->getLoggerStub());
+
+        return $mock;
     }
 
     public function getClientStub()
