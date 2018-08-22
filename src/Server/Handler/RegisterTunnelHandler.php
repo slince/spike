@@ -32,21 +32,24 @@ class RegisterTunnelHandler extends RequireAuthHandler
             $tunnel = TunnelFactory::fromArray($tunnelInfo);
             try {
                 $chunkServer = $this->createChunkServer($tunnel);
+                $chunkServer->start();
+
                 $response = new Spike('register_tunnel_response', $tunnel->toArray(), [
                     'code' => 200,
                 ]);
-                $chunkServer->start();
             } catch (\Exception $exception) {
-                $response = new Spike('register_tunnel_response', array_merge($tunnel->toArray(), [
-                    'error' => $exception->getMessage(),
-                ]), [
+                $body = array_merge($tunnel->toArray(), [
+                    'error' => iconv ('UTF-8', 'UTF-8//IGNORE', $exception->getMessage())
+                ]);
+                $response = new Spike('register_tunnel_response', $body, [
                     'code' => $exception->getCode() ?: 1,
                 ]);
             }
         } else {
-            $response = new Spike('register_tunnel_response', array_merge($tunnelInfo, [
-                'error' => 'The tunnel has been registered',
-            ]), [
+            $body = array_merge($tunnelInfo, [
+                'error' => 'The tunnel has been registered'
+            ]);
+            $response = new Spike('register_tunnel_response', $body, [
                 'code' => 1,
             ]);
         }

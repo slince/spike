@@ -119,7 +119,7 @@ class Spike implements SpikeInterface
             'body' => $this->body,
         ];
 
-        return json_encode($data);
+        return (string)json_encode($data);
     }
 
     /**
