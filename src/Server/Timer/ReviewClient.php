@@ -11,7 +11,7 @@
 
 namespace Spike\Server\Timer;
 
-class ReviewClient extends Timer
+class ReviewClient extends ServerTimer
 {
     /**
      * {@inheritdoc}

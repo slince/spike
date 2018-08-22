@@ -23,11 +23,10 @@ use Slince\EventDispatcher\DispatcherInterface;
 use Slince\EventDispatcher\Event;
 use Spike\Client\Event\Events;
 use Spike\Client\Event\FilterActionHandlerEvent;
-use Spike\Client\Listener\ClientListener;
-use Spike\Client\Listener\LoggerListener;
 use Spike\Client\Worker\WorkerInterface;
 use Spike\Common\Logger\Logger;
 use Spike\Common\Protocol\Spike;
+use Spike\Common\Timer\MemoryWatcher;
 use Spike\Common\Timer\TimersAware;
 use Spike\Version;
 use Symfony\Component\Console\Application;
@@ -229,7 +228,7 @@ EOT;
         ]));
         //Sends auth request
         $this->sendAuthRequest($connection);
-        //Distinct from server
+        //Disconnect from server
         $connection->on('close', [$this, 'handleDisconnectServer']);
 
         jsonBuffer($connection, function($messages) use ($connection){
@@ -244,7 +243,11 @@ EOT;
                 $this->eventDispatcher->dispatch($event);
 
                 if ($actionHandler = $event->getActionHandler()) {
-                    $actionHandler->handle($message);
+                    try {
+                        $actionHandler->handle($message);
+                    } catch (\Exception $exception) {
+                        //ignore bad message
+                    }
                 }
             }
         }, function($exception) use ($connection){
@@ -364,8 +367,8 @@ EOT;
 
     protected function initializeEvents()
     {
-        $this->eventDispatcher->addSubscriber(new ClientListener());
-        $this->eventDispatcher->addSubscriber(new LoggerListener($this));
+        $this->eventDispatcher->addSubscriber(new Listener\ClientListener());
+        $this->eventDispatcher->addSubscriber(new Listener\LoggerListener($this));
     }
 
     /**
@@ -376,5 +379,6 @@ EOT;
     protected function initializeTimers()
     {
         $this->addTimer(new Timer\Heartbeat($this));
+        $this->addTimer(new MemoryWatcher($this->getLogger()));
     }
 }

@@ -14,7 +14,7 @@ namespace Spike\Server\ChunkServer\Timer;
 use Spike\Common\Timer\TimerInterface;
 use Spike\Server\ChunkServer\ChunkServerInterface;
 
-abstract class Timer implements TimerInterface
+abstract class ChunkServerTimer implements TimerInterface
 {
     /**
      * @var ChunkServerInterface

@@ -30,8 +30,6 @@ use Spike\Server\ChunkServer\ChunkServerCollection;
 use Spike\Server\ChunkServer\ChunkServerInterface;
 use Spike\Server\Event\Events;
 use Spike\Server\Event\FilterActionHandlerEvent;
-use Spike\Server\Listener\LoggerListener;
-use Spike\Server\Listener\ServerListener;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -283,8 +281,8 @@ EOT;
 
     protected function initializeEvents()
     {
-        $this->eventDispatcher->addSubscriber(new ServerListener());
-        $this->eventDispatcher->addSubscriber(new LoggerListener($this));
+        $this->eventDispatcher->addSubscriber(new Listener\ServerListener());
+        $this->eventDispatcher->addSubscriber(new Listener\LoggerListener($this));
     }
 
     /**

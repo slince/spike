@@ -14,7 +14,7 @@ namespace Spike\Server\Timer;
 use Spike\Common\Timer\TimerInterface;
 use Spike\Server\Server;
 
-abstract class Timer implements TimerInterface
+abstract class ServerTimer implements TimerInterface
 {
     /**
      * @var Server
