@@ -17,7 +17,7 @@ abstract class AbstractServer extends EventEmitter implements ServerInterface
     protected $options;
 
     /**
-     * @var WorkerPool
+     * @var WorkerPool|Worker
      */
     protected $pool;
 
