@@ -34,8 +34,8 @@ class StreamRelay implements RelayInterface
         if (!$this->assertWritable($output)) {
             throw new InvalidArgumentException("resource `out` must be writable");
         }
-
     }
+
     /**
      * {@inheritdoc}
      */

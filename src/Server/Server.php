@@ -32,5 +32,6 @@ EOT;
     public function handleConnection(ConnectionInterface $connection)
     {
         $this->clients[] = $connection;
+
     }
 }
