@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the slince/spike package.
  *
@@ -16,5 +18,5 @@ final class Version
     /**
      * @var string
      */
-    const VERSION = '0.1.1';
+    const VERSION = '0.2.1';
 }
