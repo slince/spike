@@ -4,6 +4,7 @@
 namespace Spike;
 
 use Symfony\Component\Console\Application as BaseApplication;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class Application extends BaseApplication
 {
@@ -22,6 +23,11 @@ EOT;
     const NAME = 'Spiked';
 
     const VERSION = '0.2.0';
+
+    /**
+     * @var SerializerInterface
+     */
+    protected $serializer;
 
     public function __construct()
     {

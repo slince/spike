@@ -4,6 +4,7 @@ namespace Spike\Server\Handler;
 
 use Slince\EventDispatcher\Event;
 use Spike\Common\Protocol\SpikeInterface;
+use Spike\Io\Message;
 use Spike\Server\Client;
 use Spike\Server\Event\Events;
 
@@ -17,7 +18,7 @@ class RequireAuthHandler extends MessageMessageHandler
     /**
      * {@inheritdoc}
      */
-    public function handle(SpikeInterface $message)
+    public function handle(Message $message)
     {
         $clientId = $message->getHeader('client-id');
         $client = $this->server->getClientById($clientId);
