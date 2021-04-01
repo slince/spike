@@ -12,7 +12,7 @@ class ClientTest extends TestCase
         $client = new Client([
             'OS' => 'win'
         ], $this->createMock(ConnectionInterface::class));
-        $this->assertInstanceOf(ConnectionInterface::class, $client->getControlConnection());
+        $this->assertInstanceOf(ConnectionInterface::class, $client->getConnection());
         $this->assertArrayHasKey('OS', $client->toArray());
         $this->assertArrayHasKey('id', $client->toArray());
     }
@@ -22,8 +22,8 @@ class ClientTest extends TestCase
         $client = new Client([
             'OS' => 'win'
         ], $this->createMock(ConnectionInterface::class));
-        $connection = $client->getControlConnection();
-        $client->setControlConnection($this->createMock(ConnectionInterface::class));
-        $this->assertFalse($connection === $client->getControlConnection());
+        $connection = $client->getConnection();
+        $client->setConnection($this->createMock(ConnectionInterface::class));
+        $this->assertFalse($connection === $client->getConnection());
     }
 }
