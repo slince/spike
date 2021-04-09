@@ -31,8 +31,7 @@
     "autoload": {
         "psr-4": {
             "Spike\\": "./src"
-        },
-        "files": ["./src/Common/functions.php"]
+        }
     },
     "autoload-dev": {
         "psr-4": {

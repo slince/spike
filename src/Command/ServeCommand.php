@@ -33,7 +33,7 @@ class ServeCommand extends ServerCommand
             'address' => $configuration->getAddress(),
             'max_workers' => $configuration->getMaxWorkers()
         ]);
-        $this->server
+        $this->server->serve();
         return 0;
     }
 
