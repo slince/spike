@@ -4,6 +4,12 @@
 namespace Spike;
 
 use Symfony\Component\Console\Application as BaseApplication;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Encoder\XmlEncoder;
+use Symfony\Component\Serializer\Encoder\YamlEncoder;
+use Symfony\Component\Serializer\Normalizer\JsonSerializableNormalizer;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\SerializerInterface;
 
 class Application extends BaseApplication
@@ -25,13 +31,36 @@ EOT;
     const VERSION = '0.2.0';
 
     /**
-     * @var SerializerInterface
+     * @var SerializerInterface 
      */
     protected $serializer;
 
     public function __construct()
     {
         parent::__construct(static::NAME, static::VERSION);
+    }
+
+    protected function createSerializer()
+    {
+        return new Serializer([
+            new ObjectNormalizer(),
+            new JsonSerializableNormalizer(),
+        ], [
+            new XmlEncoder(),
+            new JsonEncoder(),
+            new YamlEncoder()
+        ]);
+    }
+
+    /**
+     * @return SerializerInterface
+     */
+    public function getSerializer(): SerializerInterface
+    {
+        if (null === $this->serializer) {
+            $this->serializer = $this->createSerializer();
+        }
+        return $this->serializer;
     }
 
     /**
@@ -45,7 +74,7 @@ EOT;
     protected function getDefaultCommands()
     {
         return array_merge([
-
+            new Command\ServeCommand()
         ], parent::getDefaultCommands());
     }
 }

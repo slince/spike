@@ -9,12 +9,22 @@ class Configuration
     /**
      * @var string
      */
-    protected $address = '0.0.0.0:8090';
+    protected $address;
+
+    /**
+     * @var int
+     */
+    protected $maxWorkers = 4;
 
     protected $log = [
         'file' => './server.log',
         'level' => 'info'
     ];
+
+    public function __construct(string $address = '0.0.0.0:8090')
+    {
+        $this->address = $address;
+    }
 
     protected $users = [
         [
@@ -37,6 +47,22 @@ class Configuration
     public function setAddress(string $address): void
     {
         $this->address = $address;
+    }
+
+    /**
+     * @return int
+     */
+    public function getMaxWorkers(): int
+    {
+        return $this->maxWorkers;
+    }
+
+    /**
+     * @param int $maxWorkers
+     */
+    public function setMaxWorkers(int $maxWorkers): void
+    {
+        $this->maxWorkers = $maxWorkers;
     }
 
     /**
