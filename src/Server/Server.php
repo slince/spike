@@ -5,12 +5,12 @@ namespace Spike\Server;
 
 use React\EventLoop\LoopInterface;
 use React\Socket\ConnectionInterface;
+use Spike\Handler\DelegatingHandler;
+use Spike\Handler\MessageHandlerInterface;
 use Spike\Io\Message;
 use Spike\Io\MessageParser;
-use Spike\Server\Handler\DelegatingHandler;
 use Spike\Server\Handler\LoginHandler;
-use Spike\Server\Handler\MessageHandlerInterface;
-use Spike\Server\Handler\PingAwareHandler;
+use Spike\Server\Handler\PingHandler;
 use Spike\Server\Handler\RegisterProxyAwareHandler;
 use Spike\Server\Handler\RegisterTunnelAwareHandler;
 use Spike\TcpServer;
@@ -66,7 +66,7 @@ final class Server extends TcpServer
     {
         return new DelegatingHandler([
             new LoginHandler($this, $this->configuration),
-            new PingAwareHandler($this),
+            new PingHandler($this),
             new RegisterTunnelAwareHandler($this),
             new RegisterProxyAwareHandler($this),
         ]);

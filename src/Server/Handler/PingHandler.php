@@ -11,6 +11,15 @@
 
 namespace Spike\Server\Handler;
 
-class PingAwareHandler extends AuthAwareHandler
+use Spike\Io\Message;
+
+class PingHandler extends AuthAwareHandler
 {
+    /**
+     * @inheritDoc
+     */
+    public function supports(Message $message)
+    {
+        return 'ping' === $message->getAction();
+    }
 }

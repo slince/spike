@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the slince/spike package.
  *
@@ -29,5 +31,13 @@ class RegisterProxyAwareHandler extends AuthAwareHandler
         }
         $connection->removeAllListeners();
         $chunkServer->setProxyConnection($message->getHeader('public-connection-id'), $connection);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function supports(Message $message)
+    {
+        return 'register_proxy' === $message->getAction();
     }
 }

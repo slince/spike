@@ -3,8 +3,6 @@
 
 namespace Spike\Server\Handler;
 
-namespace Spike\Server\Handler;
-
 use React\Socket\ConnectionInterface;
 use Spike\Io\Message;
 use Spike\Server\Client;
@@ -24,16 +22,6 @@ class LoginHandler extends MessageMessageHandler
         $this->configuration = $configuration;
     }
 
-    protected function checkUser(string $username, string $password)
-    {
-        foreach ($this->configuration->getUsers() as $user) {
-            if ($user['username'] === $username && $user['password'] === $password) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     /**
      * {@inheritdoc}
      */
@@ -48,5 +36,23 @@ class LoginHandler extends MessageMessageHandler
             $response = new Message('login_response', ['error' => 'Wrong username or password']);
         }
         $connection->write($response);
+    }
+
+    protected function checkUser(string $username, string $password)
+    {
+        foreach ($this->configuration->getUsers() as $user) {
+            if ($user['username'] === $username && $user['password'] === $password) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function supports(Message $message)
+    {
+        return 'login' === $message->getAction();
     }
 }

@@ -70,4 +70,13 @@ class RegisterTunnelAwareHandler extends AuthAwareHandler
 
         return $chunkServer;
     }
+
+
+    /**
+     * @inheritDoc
+     */
+    public function supports(Message $message)
+    {
+        return 'register_tunnel' === $message->getAction();
+    }
 }

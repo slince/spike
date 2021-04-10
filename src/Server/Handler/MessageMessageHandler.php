@@ -11,6 +11,7 @@
 
 namespace Spike\Server\Handler;
 
+use Spike\Handler\MessageHandlerInterface;
 use Spike\Server\Server;
 
 abstract class MessageMessageHandler implements MessageHandlerInterface
