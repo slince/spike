@@ -25,10 +25,10 @@ class RequireAuthHandler extends MessageMessageHandler
         if (!$client){
             $event = new Event(Events::UNAUTHORIZED_CLIENT, $this, [
                 'clientId' => $clientId,
-                'connection' => $this->connection,
+                'connection' => $connection,
             ]);
             $this->getEventDispatcher()->dispatch($event);
-            $this->connection->close();
+            $connection->close();
         } else {
             $this->client = $client;
             $this->client->setActiveAt(new \DateTime()); //Update last active time.

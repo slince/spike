@@ -26,9 +26,9 @@ class Message
      */
     protected $payload = [];
 
-    public function __construct(int $flag, string $action, array $payload = [])
+    public function __construct(string $action, array $payload = [])
     {
-        $this->flag = $flag;
+//        $this->flag = $flag;
         $this->action = $action;
         $this->payload = $payload;
     }

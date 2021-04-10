@@ -22,25 +22,25 @@ class ServeCommand extends ServerCommand
         $this->setName('serve')
             ->setDescription('Create a spike server.')
             ->addArgument('address', InputArgument::OPTIONAL)
-            ->addOption('config', 'c', InputOption::VALUE_OPTIONAL, 'The configuration file, support json,ini,xml and yaml format.')
+            ->addOption('config', 'c', InputOption::VALUE_REQUIRED, 'The configuration file, support json,ini,xml and yaml format.')
             ->addOption('daemon', 'd', InputOption::VALUE_NONE, 'Daemon');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $configuration = $this->createConfiguration($input);
-        $this->server->configure([
+        $server = $this->getServer();
+        $server->configure([
             'address' => $configuration->getAddress(),
             'max_workers' => $configuration->getMaxWorkers()
         ]);
-        $this->server->serve();
+        $server->serve();
         return 0;
     }
 
     protected function createConfiguration(InputInterface $input)
     {
-        if ($input->hasOption('config')) {
-            $configFile = $input->getOption('config');
+        if ($configFile = $input->getOption('config')) {
             if (!file_exists($configFile)) {
                 throw new \RuntimeException(sprintf('The config file "%s" is not exists', $configFile));
             }
@@ -49,8 +49,8 @@ class ServeCommand extends ServerCommand
                 Configuration::class,
                 pathinfo($configFile, PATHINFO_EXTENSION)
             );
-        } elseif ($input->hasArgument('address')) {
-            $configuration = new Configuration($input->getArgument('address'));
+        } elseif ($address = $input->getArgument('address')) {
+            $configuration = new Configuration($address);
         } else {
             throw new \RuntimeException('Either --config or --address must be provided');
         }

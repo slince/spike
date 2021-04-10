@@ -53,7 +53,7 @@ class RegisterTunnelHandler extends RequireAuthHandler
                 'code' => 1,
             ]);
         }
-        $this->connection->write($response);
+        $connection->write($response);
     }
 
     /**

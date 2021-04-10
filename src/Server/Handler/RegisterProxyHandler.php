@@ -32,7 +32,7 @@ class RegisterProxyHandler extends RequireAuthHandler
         if (!$chunkServer) {
             throw new BadRequestException('Can not find the chunk server');
         }
-        $this->connection->removeAllListeners();
-        $chunkServer->setProxyConnection($message->getHeader('public-connection-id'), $this->connection);
+        $connection->removeAllListeners();
+        $chunkServer->setProxyConnection($message->getHeader('public-connection-id'), $connection);
     }
 }

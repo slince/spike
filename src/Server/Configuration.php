@@ -16,22 +16,28 @@ class Configuration
      */
     protected $maxWorkers = 4;
 
+    /**
+     * @var array
+     */
     protected $log = [
         'file' => './server.log',
         'level' => 'info'
     ];
 
-    public function __construct(string $address = '0.0.0.0:8090')
-    {
-        $this->address = $address;
-    }
-
+    /**
+     * @var array
+     */
     protected $users = [
         [
             'username' => 'admin',
             'password' => 'admin'
         ]
     ];
+
+    public function __construct(string $address = '0.0.0.0:8090')
+    {
+        $this->address = $address;
+    }
 
     /**
      * @return string

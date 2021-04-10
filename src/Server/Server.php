@@ -3,6 +3,7 @@
 
 namespace Spike\Server;
 
+use React\EventLoop\LoopInterface;
 use React\Socket\ConnectionInterface;
 use Spike\Io\Message;
 use Spike\Io\MessageParser;
@@ -31,6 +32,22 @@ final class Server extends TcpServer
      */
     protected $messageHandler;
 
+    /**
+     * @var Configuration
+     */
+    protected $configuration;
+
+    public function __construct(Configuration $configuration, ?LoopInterface $loop = null)
+    {
+        $this->configuration = $configuration;
+        parent::__construct($loop);
+    }
+
+    public function addClient(Client $client)
+    {
+        $this->clients[] =  $client;
+    }
+
     protected function initialize()
     {
         $this->messageHandler = $this->createMessageHandler();
@@ -43,13 +60,17 @@ final class Server extends TcpServer
     protected function createMessageHandler()
     {
         return new DelegatingHandler([
-            new LoginHandler($this),
+            new LoginHandler($this, $this->configuration),
             new PingHandler($this),
             new RegisterTunnelHandler($this),
             new RegisterProxyHandler($this),
         ]);
     }
 
+    /**
+     * @internal
+     * @param ConnectionInterface $connection
+     */
     public function handleConnection(ConnectionInterface $connection)
     {
         $this->clients[] = $connection;

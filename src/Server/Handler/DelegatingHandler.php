@@ -3,6 +3,7 @@
 
 namespace Spike\Server\Handler;
 
+use React\Socket\ConnectionInterface;
 use Spike\Exception\InvalidArgumentException;
 use Spike\Io\Message;
 
@@ -18,7 +19,7 @@ class DelegatingHandler implements MessageHandlerInterface
         $this->handlers = $handlers;
     }
 
-    public function handle(Message $message)
+    public function handle(Message $message, ConnectionInterface $connection)
     {
         if (false === $loader = $this->resolve($message)) {
             throw new LoaderLoadException($resource, null, 0, null, $type);

@@ -38,12 +38,12 @@ final class Client
      */
     protected $createdAt;
 
-    public function __construct($id, ConnectionInterface $connection)
+    public function __construct(ConnectionInterface $connection)
     {
-        $this->id = $id;
         $this->connection = $connection;
         $this->createdAt = new \DateTime();
         $this->activeAt = new \DateTime();
+        $this->id = spl_object_hash($this);
     }
 
     /**
@@ -70,7 +70,7 @@ final class Client
      */
     public function getId()
     {
-        return $this->id ?: ($this->id = spl_object_hash($this));
+        return $this->id;
     }
 
     /**

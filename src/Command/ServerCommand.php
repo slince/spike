@@ -20,6 +20,17 @@ class ServerCommand extends Command
     }
 
     /**
+     * @return Server
+     */
+    protected function getServer()
+    {
+        if (null === $this->server) {
+            $this->server = new Server();
+        }
+        return $this->server;
+    }
+
+    /**
      * @return Application
      */
     public function getApplication()
