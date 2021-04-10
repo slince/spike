@@ -3,6 +3,8 @@
 
 namespace Spike\Relay;
 
+use React\Stream\ReadableStreamInterface;
+use React\Stream\WritableStreamInterface;
 use Spike\Exception\InvalidArgumentException;
 use Spike\Exception\MetaException;
 use Spike\Exception\TransportException;
@@ -10,12 +12,12 @@ use Spike\Exception\TransportException;
 class StreamRelay implements RelayInterface
 {
     /**
-     * @var resource
+     * @var ReadableStreamInterface
      */
     protected $input;
 
     /**
-     * @var resource
+     * @var WritableStreamInterface
      */
     protected $output;
 
@@ -49,10 +51,7 @@ class StreamRelay implements RelayInterface
         if (!($flags & self::PAYLOAD_NONE)) {
             $body .= $payload;
         }
-        if (fwrite($this->output, $body, 17 + $size) === false) {
-            throw new TransportException("unable to write payload to the stream");
-        }
-        return $this;
+        $this->output->write($body);
     }
 
     /**
