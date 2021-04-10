@@ -2,7 +2,7 @@
 namespace Spike\Tests\Server\Handler;
 
 use Spike\Common\Protocol\Spike;
-use Spike\Server\Handler\AuthHandler;
+use Spike\Server\Handler\LoginHandler;
 use Spike\Tests\TestCase;
 
 class AuthHandlerTest extends TestCase
@@ -10,7 +10,7 @@ class AuthHandlerTest extends TestCase
     public function testHandle()
     {
         $server = $this->getServerMock();
-        $handler = new AuthHandler($server, $this->getConnectionMock());
+        $handler = new LoginHandler($server, $this->getConnectionMock());
         $message = new Spike('auth', [
             'os' => PHP_OS,
             'version' => '',
@@ -30,7 +30,7 @@ class AuthHandlerTest extends TestCase
             'password' => 'baz'
         ]);
         $server = $this->getServerMock();
-        $handler = new AuthHandler($server, $this->getConnectionMock());
+        $handler = new LoginHandler($server, $this->getConnectionMock());
         $handler->handle($message);
         $this->assertCount(0, $server->getClients());
 
@@ -43,7 +43,7 @@ class AuthHandlerTest extends TestCase
             'password' => 'baz'
         ]);
         $server = $this->getServerMock();
-        $handler = new AuthHandler($server, $this->getConnectionMock());
+        $handler = new LoginHandler($server, $this->getConnectionMock());
         $handler->handle($message);
         $this->assertCount(0, $server->getClients());
     }
