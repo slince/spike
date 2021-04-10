@@ -4,6 +4,7 @@
 namespace Spike\Command;
 
 use Spike\Application;
+use Spike\Server\Configuration;
 use Spike\Server\Server;
 use Symfony\Component\Console\Command\Command;
 
@@ -20,12 +21,13 @@ class ServerCommand extends Command
     }
 
     /**
+     * @param Configuration $configuration
      * @return Server
      */
-    protected function getServer()
+    protected function getServer(Configuration $configuration)
     {
         if (null === $this->server) {
-            $this->server = new Server();
+            $this->server = new Server($configuration);
         }
         return $this->server;
     }

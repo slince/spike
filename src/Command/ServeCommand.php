@@ -29,7 +29,7 @@ class ServeCommand extends ServerCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $configuration = $this->createConfiguration($input);
-        $server = $this->getServer();
+        $server = $this->getServer($configuration);
         $server->configure([
             'address' => $configuration->getAddress(),
             'max_workers' => $configuration->getMaxWorkers()
