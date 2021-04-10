@@ -10,9 +10,9 @@ use Spike\Io\MessageParser;
 use Spike\Server\Handler\DelegatingHandler;
 use Spike\Server\Handler\LoginHandler;
 use Spike\Server\Handler\MessageHandlerInterface;
-use Spike\Server\Handler\PingHandler;
-use Spike\Server\Handler\RegisterProxyHandler;
-use Spike\Server\Handler\RegisterTunnelHandler;
+use Spike\Server\Handler\PingAwareHandler;
+use Spike\Server\Handler\RegisterProxyAwareHandler;
+use Spike\Server\Handler\RegisterTunnelAwareHandler;
 use Spike\TcpServer;
 
 final class Server extends TcpServer
@@ -45,7 +45,12 @@ final class Server extends TcpServer
 
     public function addClient(Client $client)
     {
-        $this->clients[] =  $client;
+        $this->clients[$client->getId()] =  $client;
+    }
+
+    public function getClientById(string $id)
+    {
+        return $this->clients[$id] ?? null;
     }
 
     protected function initialize()
@@ -61,9 +66,9 @@ final class Server extends TcpServer
     {
         return new DelegatingHandler([
             new LoginHandler($this, $this->configuration),
-            new PingHandler($this),
-            new RegisterTunnelHandler($this),
-            new RegisterProxyHandler($this),
+            new PingAwareHandler($this),
+            new RegisterTunnelAwareHandler($this),
+            new RegisterProxyAwareHandler($this),
         ]);
     }
 

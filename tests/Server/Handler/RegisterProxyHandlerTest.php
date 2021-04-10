@@ -5,7 +5,7 @@ use Spike\Common\Exception\BadRequestException;
 use Spike\Common\Protocol\Spike;
 use Spike\Server\ChunkServer\PublicConnection;
 use Spike\Server\Client;
-use Spike\Server\Handler\RegisterProxyHandler;
+use Spike\Server\Handler\RegisterProxyAwareHandler;
 use Spike\Tests\TestCase;
 
 class RegisterProxyHandlerTest extends TestCase
@@ -23,7 +23,7 @@ class RegisterProxyHandlerTest extends TestCase
         $publicConnection = new PublicConnection($this->getConnectionMock());
         $chunkServer->getPublicConnections()->add($publicConnection);
 
-        $handler = new RegisterProxyHandler($server, $client->getControlConnection());
+        $handler = new RegisterProxyAwareHandler($server, $client->getControlConnection());
 
 
         $message = new Spike('register_proxy', [

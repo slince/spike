@@ -56,4 +56,9 @@ class Message
     {
         return $this->payload;
     }
+
+    public function getArgument(string $name)
+    {
+        return $this->payload[$name] ?? null;
+    }
 }

@@ -11,23 +11,18 @@
 
 namespace Spike\Server\Handler;
 
-use Slince\EventDispatcher\Event;
-use Spike\Common\Exception\BadRequestException;
-use Spike\Common\Protocol\SpikeInterface;
-use Spike\Server\Event\Events;
+use React\Socket\ConnectionInterface;
+use Spike\Io\Message;
 
-class RegisterProxyHandler extends RequireAuthHandler
+class RegisterProxyAwareHandler extends AuthAwareHandler
 {
     /**
      * {@inheritdoc}
      */
-    public function handle(SpikeInterface $message)
+    public function handle(Message $message, ConnectionInterface $connection)
     {
-        parent::handle($message);
+        parent::handle($message, $connection);
         //Fires 'register_proxy' event
-        $this->getEventDispatcher()->dispatch(new Event(Events::REGISTER_PROXY, $this, [
-            'message' => $message,
-        ]));
         $chunkServer = $this->server->getChunkServers()->findByTunnelInfo($message->getBody());
         if (!$chunkServer) {
             throw new BadRequestException('Can not find the chunk server');

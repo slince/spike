@@ -3,7 +3,7 @@ namespace Spike\Tests\Server\Handler;
 
 use Spike\Common\Protocol\Spike;
 use Spike\Server\Client;
-use Spike\Server\Handler\PingHandler;
+use Spike\Server\Handler\PingAwareHandler;
 use Spike\Tests\TestCase;
 
 class PingHandlerTest extends TestCase
@@ -18,7 +18,7 @@ class PingHandlerTest extends TestCase
         $server->getClients()->add($client);
         $activeAt = $client->getActiveAt();
 
-        $handler = new PingHandler($server, $this->getConnectionMock());
+        $handler = new PingAwareHandler($server, $this->getConnectionMock());
         $message = new Spike('ping', null, [
             'client-id' => $client->getId()
         ]);

@@ -11,19 +11,15 @@
 
 namespace Spike\Server\Handler;
 
-use Spike\Common\Protocol\Spike;
-use Spike\Common\Protocol\SpikeInterface;
-use Spike\Common\Tunnel\HttpTunnel;
-use Spike\Common\Tunnel\TunnelFactory;
-use Spike\Common\Tunnel\TunnelInterface;
-use Spike\Server\ChunkServer;
+use React\Socket\ConnectionInterface;
+use Spike\Io\Message;
 
-class RegisterTunnelHandler extends RequireAuthHandler
+class RegisterTunnelAwareHandler extends AuthAwareHandler
 {
     /**
      * {@inheritdoc}
      */
-    public function handle(SpikeInterface $message)
+    public function handle(Message $message, ConnectionInterface $connection)
     {
         parent::handle($message);
         $tunnelInfo = $message->getBody();

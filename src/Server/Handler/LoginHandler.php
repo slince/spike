@@ -13,7 +13,6 @@ use Spike\Server\Server;
 
 class LoginHandler extends MessageMessageHandler
 {
-
     /**
      * @var Configuration
      */

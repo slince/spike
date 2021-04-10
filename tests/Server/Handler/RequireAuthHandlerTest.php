@@ -4,7 +4,7 @@ namespace Spike\Tests\Server\Handler;
 use Spike\Common\Exception\ForbiddenException;
 use Spike\Common\Protocol\Spike;
 use Spike\Server\Client;
-use Spike\Server\Handler\RequireAuthHandler;
+use Spike\Server\Handler\AuthAwareHandler;
 use Spike\Tests\TestCase;
 
 class RequireAuthHandlerTest extends TestCase
@@ -17,7 +17,7 @@ class RequireAuthHandlerTest extends TestCase
         ], $this->getConnectionMock());
         $server = $this->getServerMock();
         $server->getClients()->add($client);
-        $handler = new RequireAuthHandler($server, $this->getConnectionMock());
+        $handler = new AuthAwareHandler($server, $this->getConnectionMock());
         $message = new Spike('ping', null, [
             'client-id' => $client->getId()
         ]);
@@ -32,7 +32,7 @@ class RequireAuthHandlerTest extends TestCase
         $message = new Spike('ping', null, [
             'client-id' => 'foo'
         ]);
-        $handler = new RequireAuthHandler($server, $this->getConnectionMock());
+        $handler = new AuthAwareHandler($server, $this->getConnectionMock());
         $handler->handle($message);
         $this->assertNull($handler->getClient());
     }

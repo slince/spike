@@ -35,13 +35,13 @@ class DelegatingHandler implements MessageHandlerInterface
                 $handler = new LoginHandler($server);
                 break;
             case 'ping':
-                $handler = new PingHandler($server);
+                $handler = new PingAwareHandler($server);
                 break;
             case 'register_tunnel':
-                $handler = new RegisterTunnelHandler($server);
+                $handler = new RegisterTunnelAwareHandler($server);
                 break;
             case 'register_proxy':
-                $handler = new RegisterProxyHandler($server);
+                $handler = new RegisterProxyAwareHandler($server);
                 break;
             default:
                 throw new InvalidArgumentException(sprintf('Cannot find handler for message type: "%s"',

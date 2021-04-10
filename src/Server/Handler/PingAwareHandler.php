@@ -11,6 +11,6 @@
 
 namespace Spike\Server\Handler;
 
-class PingHandler extends RequireAuthHandler
+class PingAwareHandler extends AuthAwareHandler
 {
 }
