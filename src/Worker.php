@@ -33,7 +33,7 @@ final class Worker
     /**
      * @var callable[]
      */
-    protected $signals;
+    protected $signals = [];
 
     public function __construct(LoopInterface $loop, ServerInterface $server, Socket $socket)
     {
@@ -93,8 +93,10 @@ final class Worker
 
     protected function initialize()
     {
-        $this->onSignal(SIGTERM, [$this, 'close']);
-        $this->onSignal(SIGUSR1, [$this, 'retry']);
+        if (function_exists('pcntl_signal')) {
+            $this->onSignal(SIGTERM, [$this, 'close']);
+            $this->onSignal(SIGUSR1, [$this, 'retry']);
+        }
     }
 
     protected static function createProcess(callable $callback)
