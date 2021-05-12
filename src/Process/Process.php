@@ -1,11 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Spike\Process;
 
 use Spike\Exception\RuntimeException;
 
-class Process implements ProcessInterface
+class Process extends AbstractProcess
 {
+    /**
+     * Whether the process is running
+     * @var bool
+     */
+    protected $running = false;
+
     /**
      * @var callable
      */
@@ -17,33 +25,12 @@ class Process implements ProcessInterface
      */
     protected $pid;
 
-    /**
-     * Whether the process is running
-     * @var bool
-     */
-    protected $running = false;
-
-    /**
-     * Signal Handler
-     *
-     * @var array
-     */
-    protected $signalHandlers = [];
-
     public function __construct(callable $callback)
     {
         if (!function_exists('pcntl_fork')) {
             throw new RuntimeException(sprintf('Please install ext-pcntl'));
         }
         $this->callback = $callback;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function onSignal($signal, callable $handler)
-    {
-        $this->signalHandlers[$signal] = $handler;
     }
 
     /**

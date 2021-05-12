@@ -60,9 +60,14 @@ final class Worker
         $this->process->stop();
     }
 
+    public function restart()
+    {
+        $this->process->stop();
+        $this->start();;
+    }
+
     /**
      * Register signal handler.
-     *
      * @param $signal
      * @param callable $handler
      */
