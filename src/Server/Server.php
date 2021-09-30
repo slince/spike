@@ -3,6 +3,7 @@
 
 namespace Spike\Server;
 
+use Psr\Log\LoggerInterface;
 use React\EventLoop\LoopInterface;
 use React\Socket\ConnectionInterface;
 use Spike\Handler\DelegatingHandler;
@@ -37,9 +38,15 @@ final class Server extends TcpServer
      */
     protected $configuration;
 
-    public function __construct(Configuration $configuration, ?LoopInterface $loop = null)
+    /**
+     * @var LoggerInterface
+     */
+    protected $logger;
+
+    public function __construct(Configuration $configuration, LoggerInterface $logger, ?LoopInterface $loop = null)
     {
         $this->configuration = $configuration;
+        $this->logger = $logger;
         parent::__construct($loop);
     }
 

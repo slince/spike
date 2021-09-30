@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Spike\Process;
 
 class FakeProcess implements ProcessInterface

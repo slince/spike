@@ -3,6 +3,7 @@
 
 namespace Spike;
 
+use Monolog\Logger;
 use Symfony\Component\Console\Application as BaseApplication;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
@@ -40,6 +41,17 @@ EOT;
         parent::__construct(static::NAME, static::VERSION);
     }
 
+    /**
+     * @return SerializerInterface
+     */
+    public function getSerializer(): SerializerInterface
+    {
+        if (null === $this->serializer) {
+            $this->serializer = $this->createSerializer();
+        }
+        return $this->serializer;
+    }
+
     protected function createSerializer()
     {
         return new Serializer([
@@ -52,15 +64,9 @@ EOT;
         ]);
     }
 
-    /**
-     * @return SerializerInterface
-     */
-    public function getSerializer(): SerializerInterface
+    protected function createLogger()
     {
-        if (null === $this->serializer) {
-            $this->serializer = $this->createSerializer();
-        }
-        return $this->serializer;
+        $logger = new Logger()
     }
 
     /**
