@@ -2,11 +2,12 @@
 
 namespace Spike\Handler;
 
-use React\Socket\ConnectionInterface;
+use Spike\Command\CommandInterface;
+use Spike\Connection\ConnectionInterface;
 use Spike\Exception\InvalidArgumentException;
 use Spike\Protocol\Message;
 
-final class DelegatingHandler implements MessageHandlerInterface
+final class DelegatingHandler implements CommandHandlerInterface
 {
     /**
      * @var HandlerResolver
@@ -21,22 +22,22 @@ final class DelegatingHandler implements MessageHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function handle(Message $message, ConnectionInterface $connection)
+    public function handle(CommandInterface $command, ConnectionInterface $connection)
     {
-        if (false === $loader = $this->resolver->resolve($message)) {
-            throw new InvalidArgumentException(sprintf('Cannot find handler for message type: "%s"',
-                get_class($message)
+        if (false === $loader = $this->resolver->resolve($command)) {
+            throw new InvalidArgumentException(sprintf('Cannot find handler for command type: "%s"',
+                get_class($command)
             ));
         }
 
-        return $loader->handle($message, $connection);
+        return $loader->handle($command, $connection);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function supports(Message $message): bool
+    public function supports(CommandInterface $command): bool
     {
-        return false !== $this->resolve($message);
+        return false !== $this->resolve($command);
     }
 }

@@ -65,12 +65,18 @@ abstract class AbstractServer extends EventEmitter implements ServerInterface
      */
     public function serve()
     {
+        $this->boot();
+        $this->pool->run();
+        $this->loop->run();
+    }
+
+    private function boot()
+    {
         $socket = $this->createSocket();
         $this->pool = $this->createWorkers($socket);
         $this->socket = $socket;
-        $this->initializeServer();
-        $this->pool->run();
-        $this->loop->run();
+        $this->initialize();
+        $this->emit('start', [$this]);
     }
 
     /**
@@ -108,11 +114,6 @@ abstract class AbstractServer extends EventEmitter implements ServerInterface
         );
     }
 
-    protected function createSocketContext(): array
-    {
-        return [];
-    }
-
     protected function createWorkers($socket): WorkerPool
     {
         $pool = new WorkerPool();
@@ -122,7 +123,15 @@ abstract class AbstractServer extends EventEmitter implements ServerInterface
         return $pool;
     }
 
-    protected function initializeServer()
+    protected function createSocketContext(): array
+    {
+        return [];
+    }
+
+    /**
+     * Initialize the server.
+     */
+    protected function initialize()
     {
     }
 }

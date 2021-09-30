@@ -11,10 +11,10 @@
 
 namespace Spike\Server\Handler;
 
-use Spike\Handler\MessageHandlerInterface;
+use Spike\Handler\CommandHandlerInterface;
 use Spike\Server\Server;
 
-abstract class MessageMessageHandler implements MessageHandlerInterface
+abstract class MessageCommandHandler implements CommandHandlerInterface
 {
     /**
      * @var Server

@@ -2,12 +2,12 @@
 
 namespace Spike\Handler;
 
-use Spike\Protocol\Message;
+use Spike\Command\CommandInterface;
 
 final class HandlerResolver
 {
     /**
-     * @var MessageHandlerInterface[]
+     * @var CommandHandlerInterface[]
      */
     private $handlers;
 
@@ -17,15 +17,15 @@ final class HandlerResolver
     }
 
     /**
-     * Returns a handler able to load the resource.
+     * Returns a handler able to handle the command.
      *
-     * @param Message $message
+     * @param CommandInterface $command
      * @return bool
      */
-    public function resolve(Message $message)
+    public function resolve(CommandInterface $command)
     {
         foreach ($this->handlers as $handler) {
-            if ($handler->supports($message)) {
+            if ($handler->supports($command)) {
                 return $handler;
             }
         }
@@ -34,11 +34,11 @@ final class HandlerResolver
     }
 
     /**
-     * Add a message handler.
+     * Add a command handler.
      *
-     * @param MessageHandlerInterface $handler
+     * @param CommandHandlerInterface $handler
      */
-    public function addHandler(MessageHandlerInterface $handler)
+    public function addHandler(CommandHandlerInterface $handler)
     {
         $this->handlers[] = $handler;
     }

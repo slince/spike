@@ -47,6 +47,11 @@ class Message
         return $this->payload;
     }
 
+    public function getArgument(string $name, $defaults = null)
+    {
+        return $this->payload[$name] ?? $defaults;
+    }
+
     /**
      * Pack the given message.
      * 

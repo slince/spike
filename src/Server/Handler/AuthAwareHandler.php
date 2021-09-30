@@ -7,7 +7,7 @@ use Spike\Protocol\ErrorMessage;
 use Spike\Protocol\Message;
 use Spike\Server\Client;
 
-abstract class AuthAwareHandler extends MessageMessageHandler
+abstract class AuthAwareHandler extends MessageCommandHandler
 {
     /**
      * @var Client

@@ -9,7 +9,7 @@ use Spike\Server\Client;
 use Spike\Server\Configuration;
 use Spike\Server\Server;
 
-class LoginHandler extends MessageMessageHandler
+class LoginHandler extends MessageCommandHandler
 {
     /**
      * @var Configuration
