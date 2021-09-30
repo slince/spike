@@ -1,6 +1,6 @@
 <?php
 
-namespace Spike;
+namespace Spike\Socket;
 
 use React\Socket\ConnectionInterface;
 

@@ -3,6 +3,8 @@
 
 namespace Spike\Protocol;
 
+use Spike\Exception\MetaException;
+
 class Message
 {
     public const BUFFER_SIZE = 65536;
@@ -65,5 +67,34 @@ class Message
             $body .= $payload;
         }
         return $body;
+    }
+
+    /**
+     * Parse message payload.
+     *
+     * @param string $payload
+     * @return array
+     */
+    public static function parsePayload(string $payload): array
+    {
+        return \json_decode($payload, true) ?: [];
+    }
+
+    /**
+     * Parse message header.
+     *
+     * @param string $header
+     * @return array|false
+     */
+    public static function parseHeader(string $header)
+    {
+        $result = unpack("Cflags/Psize/Jrevs", $header);
+        if (!is_array($result)) {
+            throw new MetaException("invalid meta");
+        }
+        if ($result['size'] != $result['revs']) {
+            throw new MetaException("invalid meta (checksum)");
+        }
+        return $result;
     }
 }

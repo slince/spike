@@ -3,7 +3,7 @@
 
 namespace Spike\Server;
 
-use React\Socket\ConnectionInterface;
+use Spike\Connection\ConnectionInterface;
 
 final class Client
 {
@@ -50,7 +50,7 @@ final class Client
      * Sets the control connection for the client.
      * @param ConnectionInterface $connection
      */
-    public function setConnection($connection)
+    public function setConnection(ConnectionInterface $connection)
     {
         $this->connection = $connection;
     }
@@ -60,21 +60,21 @@ final class Client
      *
      * @return ConnectionInterface
      */
-    public function getConnection()
+    public function getConnection(): ConnectionInterface
     {
         return $this->connection;
     }
 
     /**
-     * {@inheritdoc}
+     * Gets the client id
      */
-    public function getId()
+    public function getId(): string
     {
         return $this->id;
     }
 
     /**
-     * {@inheritdoc}
+     * Sets the id for the client.
      */
     public function setId($id)
     {
@@ -82,15 +82,15 @@ final class Client
     }
 
     /**
-     * {@inheritdoc}
+     * Refresh the client
      */
-    public function setActiveAt($activeAt)
+    public function refresh()
     {
-        $this->activeAt = $activeAt;
+        $this->activeAt = new \DateTime();
     }
 
     /**
-     * {@inheritdoc}
+     * Gets the active datetime.
      */
     public function getActiveAt()
     {

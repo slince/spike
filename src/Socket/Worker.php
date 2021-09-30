@@ -1,10 +1,10 @@
 <?php
 
-namespace Spike;
+namespace Spike\Socket;
 
-use Spike\Process\FakeProcess;
-use Spike\Process\Process;
-use Spike\Process\ProcessInterface;
+use Spike\Socket\Process\FakeProcess;
+use Spike\Socket\Process\Process;
+use Spike\Socket\Process\ProcessInterface;
 use React\EventLoop\LoopInterface;
 use React\Socket\ServerInterface as Socket;
 
@@ -47,7 +47,7 @@ final class Worker
      */
     public function start()
     {
-        $this->process = static::createProcess([$this, 'work']);
+        $this->process = Worker::createProcess([$this, 'work']);
         $this->initialize();
         $this->process->start(false);
     }
@@ -71,7 +71,7 @@ final class Worker
      * @param $signal
      * @param callable $handler
      */
-    public function onSignal($signal, $handler)
+    public function onSignal($signal, callable $handler)
     {
         $this->signals[$signal] = $handler;
     }
@@ -81,7 +81,7 @@ final class Worker
      *
      * @return int
      */
-    public function getPid()
+    public function getPid(): int
     {
         return $this->process->getPid();
     }

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Spike\Process;
+namespace Spike\Socket\Process;
 
 use Spike\Exception\RuntimeException;
 

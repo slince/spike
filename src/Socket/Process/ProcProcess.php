@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Spike\Process;
+namespace Spike\Socket\Process;
 
 class ProcProcess extends AbstractProcess
 {

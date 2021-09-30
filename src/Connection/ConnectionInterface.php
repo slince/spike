@@ -7,11 +7,6 @@ use Spike\Command\CommandInterface;
 interface ConnectionInterface
 {
     /**
-     * Opens the connection to Spiked.
-     */
-    public function connect();
-
-    /**
      * Closes the connection to Spiked.
      */
     public function disconnect();
@@ -32,4 +27,18 @@ interface ConnectionInterface
      * @return mixed
      */
     public function executeCommand(CommandInterface $command);
+
+    /**
+     * Register the message handler to handle raw message.
+     *
+     * @param callable $callback
+     */
+    public function listenRaw(callable $callback);
+
+    /**
+     * Register the message handler.
+     *
+     * @param callable $callback
+     */
+    public function listen(callable $callback);
 }

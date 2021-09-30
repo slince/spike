@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Spike\Process;
+namespace Spike\Socket\Process;
 
 class FakeProcess implements ProcessInterface
 {

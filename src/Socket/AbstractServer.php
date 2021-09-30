@@ -1,12 +1,12 @@
 <?php
 
-namespace Spike;
+namespace Spike\Socket;
 
 use Evenement\EventEmitter;
+use React\EventLoop\Loop;
+use React\Socket\SocketServer;
 use Spike\Exception\InvalidArgumentException;
-use React\EventLoop\Factory as LoopFactory;
 use React\EventLoop\LoopInterface;
-use React\Socket\Server;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 abstract class AbstractServer extends EventEmitter implements ServerInterface
@@ -34,7 +34,7 @@ abstract class AbstractServer extends EventEmitter implements ServerInterface
     public function __construct(?LoopInterface $loop = null)
     {
         if (null === $loop) {
-            $loop = LoopFactory::create();
+            $loop = Loop::get();
         }
         $this->loop = $loop;
     }
@@ -52,7 +52,7 @@ abstract class AbstractServer extends EventEmitter implements ServerInterface
     /**
      * {@inheritdoc}
      */
-    public function on($event, callable $listener)
+    public function on(string $event, callable $listener)
     {
         if (!in_array($event, $this->options['event_names'])) {
             throw new InvalidArgumentException(sprintf('The event "%s" is not supported.', $event));
@@ -67,8 +67,9 @@ abstract class AbstractServer extends EventEmitter implements ServerInterface
     {
         $socket = $this->createSocket();
         $this->pool = $this->createWorkers($socket);
-        $this->initialize();
-        $this->runWorkers();
+        $this->socket = $socket;
+        $this->initializeServer();
+        $this->pool->run();
         $this->loop->run();
     }
 
@@ -98,12 +99,21 @@ abstract class AbstractServer extends EventEmitter implements ServerInterface
             ->setRequired(['address']);
     }
 
-    protected function createSocket()
+    protected function createSocket(): SocketServer
     {
-        return new Server($this->options['address'], $this->loop);
+        return new SocketServer(
+            $this->options['address'],
+            $this->createSocketContext(),
+            $this->loop
+        );
     }
 
-    protected function createWorkers($socket)
+    protected function createSocketContext(): array
+    {
+        return [];
+    }
+
+    protected function createWorkers($socket): WorkerPool
     {
         $pool = new WorkerPool();
         for ($i = 0; $i < $this->options['max_workers']; $i++) {
@@ -112,14 +122,7 @@ abstract class AbstractServer extends EventEmitter implements ServerInterface
         return $pool;
     }
 
-    protected function runWorkers()
-    {
-        foreach ($this->pool as $worker) {
-            $worker->start();
-        }
-    }
-
-    protected function initialize()
+    protected function initializeServer()
     {
     }
 }

@@ -5,6 +5,7 @@ namespace Spike\Connection;
 use React\Stream\DuplexStreamInterface;
 use Spike\Command\CommandInterface;
 use Spike\Protocol\Message;
+use Spike\Protocol\MessageParser;
 
 class StreamConnection implements ConnectionInterface
 {
@@ -18,16 +19,10 @@ class StreamConnection implements ConnectionInterface
         $this->stream = $stream;
     }
 
-    public function connect()
-    {
-
-    }
-
     public function disconnect()
     {
         $this->stream->close();
     }
-
 
     public function writeRequest(CommandInterface $command)
     {
@@ -38,5 +33,17 @@ class StreamConnection implements ConnectionInterface
     public function executeCommand(CommandInterface $command)
     {
         $this->writeRequest($command);
+    }
+
+    public function listenRaw(callable $callback)
+    {
+        $this->stream->on('data', $callback);
+    }
+
+    public function listen(callable $callback)
+    {
+        $parser = new MessageParser($this);
+        $parser->on('message', $callback);
+        $parser->parse();
     }
 }

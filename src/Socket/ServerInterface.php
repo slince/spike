@@ -1,18 +1,18 @@
 <?php
 
-namespace Spike;
+namespace Spike\Socket;
 
 use React\Socket\ConnectionInterface;
 
 interface ServerInterface
 {
     /**
-     * Add an listener.
+     * Add an event listener.
      *
      * @param string $event
      * @param callable $listener
      */
-    public function on($event, callable $listener);
+    public function on(string $event, callable $listener);
 
     /**
      * Configure the server.
@@ -27,8 +27,7 @@ interface ServerInterface
     public function serve();
 
     /**
-     * @param ConnectionInterface $connection
-     * {@internal }
+     * {@internal}
      */
     public function handleConnection(ConnectionInterface $connection);
 }

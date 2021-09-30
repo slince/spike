@@ -1,6 +1,6 @@
 <?php
 
-namespace Spike;
+namespace Spike\Socket;
 
 class WorkerPool implements \IteratorAggregate, \Countable
 {
@@ -40,5 +40,15 @@ class WorkerPool implements \IteratorAggregate, \Countable
     public function getIterator(): \Iterator
     {
         return new \ArrayIterator($this->workers);
+    }
+
+    /**
+     * Starts the work pool.
+     */
+    public function run()
+    {
+        foreach ($this->workers as $worker) {
+            $worker->start();
+        }
     }
 }

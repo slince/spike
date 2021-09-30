@@ -4,51 +4,43 @@
 namespace Spike\Protocol;
 
 use Evenement\EventEmitter;
-use React\Stream\DuplexStreamInterface;
-use Spike\Exception\MetaException;
+use Spike\Connection\ConnectionInterface;
 
 final class MessageParser extends EventEmitter
 {
-    public function handle(DuplexStreamInterface $connection)
+    /**
+     * @var ConnectionInterface
+     */
+    protected $connection;
+
+    public function __construct(ConnectionInterface $connection)
+    {
+        $this->connection = $connection;
+    }
+
+    public function parse()
     {
         $buffer = '';
         $readSize = 0;
         $meta = null;
-        $connection->on('data', function($data) use(&$buffer, &$readSize, &$meta, $connection){
+        $this->connection->listenRaw(function($data) use(&$buffer, &$readSize, &$meta){
             $buffer .= $data;
             $readSize += strlen($data);
             if (null === $meta && $readSize >= 17) {
-                $meta = $this->parseMeta(substr($buffer, 0, 17));
+                $meta = Message::parseHeader(substr($buffer, 0, 17));
                 $this->emit('meta', $meta);
                 $buffer = substr($buffer, 17); // reset buffer
                 $readSize = strlen($buffer);
             }
             if (null !== $meta && $readSize >= $meta['size']) {
                 $body = substr($buffer, 0, $meta['size']);
-                $payload = $this->parsePayload($body);
+                $payload = Message::parsePayload($body);
                 $message = new Message($meta['flags'], $payload['payload']);
-                $this->emit('message', [$message, $connection, $meta]);
+                $this->emit('message', [$message, $this->connection, $meta]);
                 $buffer = substr($buffer, $meta['size']); // reset buffer
                 $readSize = strlen($buffer);
                 $meta = null;
             }
         });
-    }
-
-    protected function parsePayload(string $payload)
-    {
-        return \json_decode($payload, true) ?: [];
-    }
-
-    protected function parseMeta(string $data)
-    {
-        $result = unpack("Cflags/Psize/Jrevs", $data);
-        if (!is_array($result)) {
-            throw new MetaException("invalid meta");
-        }
-        if ($result['size'] != $result['revs']) {
-            throw new MetaException("invalid meta (checksum)");
-        }
-        return $result;
     }
 }
