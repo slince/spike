@@ -26,7 +26,7 @@ final class MessageParser extends EventEmitter
             if (null !== $meta && $readSize >= $meta['size']) {
                 $body = substr($buffer, 0, $meta['size']);
                 $payload = $this->parsePayload($body);
-                $message = new Message($meta['flags'], $payload['action'], $payload['payload']);
+                $message = new Message($meta['flags'], $payload['payload']);
                 $this->emit('message', [$message, $connection, $meta]);
                 $buffer = substr($buffer, $meta['size']); // reset buffer
                 $readSize = strlen($buffer);
