@@ -1,15 +1,15 @@
 <?php
 
 
-namespace Spike\Io;
+namespace Spike\Protocol;
 
 use Evenement\EventEmitter;
+use React\Stream\DuplexStreamInterface;
 use Spike\Exception\MetaException;
-use React\Socket\ConnectionInterface;
 
-class MessageParser extends EventEmitter
+final class MessageParser extends EventEmitter
 {
-    public function handle(ConnectionInterface $connection)
+    public function handle(DuplexStreamInterface $connection)
     {
         $buffer = '';
         $readSize = 0;

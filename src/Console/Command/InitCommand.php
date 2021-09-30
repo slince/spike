@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Spike\Command;
+namespace Spike\Console\Command;
 
 use Slince\Config\Config;
 use Symfony\Component\Console\Command\Command;

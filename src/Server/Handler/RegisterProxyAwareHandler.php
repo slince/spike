@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Spike\Server\Handler;
 
 use React\Socket\ConnectionInterface;
-use Spike\Io\Message;
+use Spike\Protocol\Message;
 
 class RegisterProxyAwareHandler extends AuthAwareHandler
 {

@@ -4,26 +4,26 @@ namespace Spike\Handler;
 
 use React\Socket\ConnectionInterface;
 use Spike\Exception\InvalidArgumentException;
-use Spike\Io\Message;
+use Spike\Protocol\Message;
 
-class DelegatingHandler implements MessageHandlerInterface
+final class DelegatingHandler implements MessageHandlerInterface
 {
     /**
-     * @var MessageHandlerInterface[]
+     * @var HandlerResolver
      */
-    protected $handlers;
+    protected $resolver;
 
-    public function __construct(array $handlers)
+    public function __construct(HandlerResolver $resolver)
     {
-        $this->handlers = $handlers;
+        $this->resolver = $resolver;
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function handle(Message $message, ConnectionInterface $connection)
     {
-        if (false === $loader = $this->resolve($message)) {
+        if (false === $loader = $this->resolver->resolve($message)) {
             throw new InvalidArgumentException(sprintf('Cannot find handler for message type: "%s"',
                 get_class($message)
             ));
@@ -32,21 +32,10 @@ class DelegatingHandler implements MessageHandlerInterface
         return $loader->handle($message, $connection);
     }
 
-    protected function resolve(Message $message)
-    {
-        foreach ($this->handlers as $handler) {
-            if ($handler->supports($message)) {
-                return $handler;
-            }
-        }
-
-        return false;
-    }
-
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
-    public function supports(Message $message)
+    public function supports(Message $message): bool
     {
         return false !== $this->resolve($message);
     }

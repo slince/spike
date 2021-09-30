@@ -4,7 +4,7 @@
 namespace Spike\Handler;
 
 use React\Socket\ConnectionInterface;
-use Spike\Io\Message;
+use Spike\Protocol\Message;
 
 interface MessageHandlerInterface
 {
@@ -20,5 +20,5 @@ interface MessageHandlerInterface
      * @param Message $message
      * @return bool
      */
-    public function supports(Message $message);
+    public function supports(Message $message): bool;
 }

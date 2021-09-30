@@ -12,7 +12,7 @@
 namespace Spike\Server\Handler;
 
 use React\Socket\ConnectionInterface;
-use Spike\Io\Message;
+use Spike\Protocol\Message;
 
 class RegisterTunnelAwareHandler extends AuthAwareHandler
 {

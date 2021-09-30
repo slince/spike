@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Spike\Command;
+namespace Spike\Console\Command;
 
 use Spike\Server\Configuration;
 use Symfony\Component\Console\Input\InputArgument;

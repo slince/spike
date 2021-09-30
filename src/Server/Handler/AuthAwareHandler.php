@@ -3,8 +3,8 @@
 namespace Spike\Server\Handler;
 
 use React\Socket\ConnectionInterface;
-use Spike\Io\ErrorMessage;
-use Spike\Io\Message;
+use Spike\Protocol\ErrorMessage;
+use Spike\Protocol\Message;
 use Spike\Server\Client;
 
 abstract class AuthAwareHandler extends MessageMessageHandler

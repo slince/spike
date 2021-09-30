@@ -11,7 +11,7 @@
 
 namespace Spike\Server\Handler;
 
-use Spike\Io\Message;
+use Spike\Protocol\Message;
 
 class PingHandler extends AuthAwareHandler
 {
