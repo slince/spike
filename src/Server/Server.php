@@ -67,7 +67,7 @@ final class Server extends TcpServer
      */
     public function handleConnection(ConnectionInterface $connection)
     {
-        $connection = ConnectionFactory::createConnection($connection);
+        $connection = ConnectionFactory::wrapConnection($connection);
         $this->clients->add(new Client($connection));
         $connection->listen(function(Message $message, $connection){
             $command = $this->commands->createCommand($message);

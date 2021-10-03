@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Spike\Socket\Process;
+namespace Spike\Process;
 
 class FakeProcess implements ProcessInterface
 {
@@ -19,7 +19,7 @@ class FakeProcess implements ProcessInterface
     /**
      * {@inheritdoc }
      */
-    public function start($blocking = true)
+    public function start(bool $blocking = true)
     {
         call_user_func($this->callback);
     }

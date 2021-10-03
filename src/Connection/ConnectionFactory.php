@@ -12,7 +12,7 @@ final class ConnectionFactory
      * @param DuplexStreamInterface $stream
      * @return ConnectionInterface
      */
-    public static function createConnection(DuplexStreamInterface $stream): ConnectionInterface
+    public static function wrapConnection(DuplexStreamInterface $stream): ConnectionInterface
     {
         return new StreamConnection($stream);
     }

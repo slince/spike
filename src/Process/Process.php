@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Spike\Socket\Process;
+namespace Spike\Process;
 
 use Spike\Exception\RuntimeException;
 
@@ -36,7 +36,7 @@ class Process extends AbstractProcess
     /**
      * {@inheritdoc}
      */
-    public function start($blocking = true)
+    public function start(bool $blocking = true)
     {
         if ($this->isRunning()) {
             throw new RuntimeException("The process is already running");
