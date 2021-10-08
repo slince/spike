@@ -7,6 +7,13 @@ use Spike\Protocol\Message;
 interface CommandInterface
 {
     /**
+     * Returns the command arguments.
+     *
+     * @return array
+     */
+    public function getArguments(): array;
+
+    /**
      * Create the message instance.
      *
      * @return Message

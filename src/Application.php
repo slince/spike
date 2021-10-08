@@ -80,6 +80,7 @@ EOT;
     protected function getDefaultCommands(): array
     {
         return array_merge([
+            new Console\Command\InitCommand(),
             new Console\Command\ServeCommand()
         ], parent::getDefaultCommands());
     }

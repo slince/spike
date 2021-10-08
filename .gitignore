@@ -6,7 +6,7 @@ composer.lock
 .idea
 tmp/
 *.log
-spike.json
-spiked.json
+./spike.json
+./spiked.json
 .php_cs.cache
 resources/workerman

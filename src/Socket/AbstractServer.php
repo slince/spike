@@ -52,12 +52,12 @@ abstract class AbstractServer extends EventEmitter implements ServerInterface
     /**
      * {@inheritdoc}
      */
-    public function on(string $event, callable $listener)
+    public function on($event, callable $listener)
     {
         if (!in_array($event, $this->options['event_names'])) {
             throw new InvalidArgumentException(sprintf('The event "%s" is not supported.', $event));
         }
-        parent::on($event, $listener);
+        return parent::on($event, $listener);
     }
 
     /**

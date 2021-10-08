@@ -102,9 +102,6 @@ final class Client
      */
     public function close()
     {
-        if ($this->connection) {
-            $this->connection->removeAllListeners('close');
-            $this->connection->end();
-        }
+        $this->connection->disconnect();
     }
 }

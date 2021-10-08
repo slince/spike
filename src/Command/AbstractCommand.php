@@ -9,11 +9,19 @@ abstract class AbstractCommand implements CommandInterface
     /**
      * @var array
      */
-    protected $payload = [];
+    protected $arguments = [];
 
-    public function __construct(array $payload = [])
+    public function __construct(array $arguments = [])
     {
-        $this->payload = ['_cid_' => $this->getCommandId()] + $payload;
+        $this->arguments = ['_cid_' => $this->getCommandId()] + $arguments;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getArguments(): array
+    {
+        return $this->arguments;
     }
 
     /**
@@ -21,7 +29,7 @@ abstract class AbstractCommand implements CommandInterface
      */
     public function createMessage(): Message
     {
-        return new Message(Message::PAYLOAD_CONTROL, $this->payload);
+        return new Message(Message::PAYLOAD_CONTROL, $this->arguments);
     }
 
     /**

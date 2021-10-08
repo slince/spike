@@ -3,7 +3,9 @@
 
 namespace Spike\Handler\Server;
 
-use React\Socket\ConnectionInterface;
+use Spike\Command\Client\REGISTER;
+use Spike\Command\CommandInterface;
+use Spike\Connection\ConnectionInterface;
 use Spike\Protocol\Message;
 use Spike\Server\Client;
 use Spike\Server\Configuration;
@@ -25,10 +27,10 @@ class LoginHandler extends MessageHandler
     /**
      * {@inheritdoc}
      */
-    public function handle(Message $message, ConnectionInterface $connection)
+    public function handle(CommandInterface $command, ConnectionInterface $connection)
     {
-        $user = $message->getPayload();
-        if ($this->checkUser($user['username'], $user['password'])) {
+        $user = $command->getArguments();
+        if ($this->authenticate($user['username'], $user['password'])) {
             $client = new Client($connection);
             $this->server->addClient($client);
             $response = new Message('login_response', ['id' => $client->getId()]);
@@ -38,7 +40,7 @@ class LoginHandler extends MessageHandler
         $connection->write($response);
     }
 
-    protected function checkUser(string $username, string $password)
+    protected function authenticate(string $username, string $password): bool
     {
         foreach ($this->configuration->getUsers() as $user) {
             if ($user['username'] === $username && $user['password'] === $password) {
@@ -51,8 +53,8 @@ class LoginHandler extends MessageHandler
     /**
      * {@inheritdoc}
      */
-    public function supports(Message $message)
+    protected function getSubscribedCommands(): array
     {
-        return 'login' === $message->getAction();
+        return [REGISTER::class];
     }
 }
