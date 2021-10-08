@@ -10,18 +10,15 @@ use Spike\Command\CommandFactory;
 use Spike\Connection\ConnectionFactory;
 use Spike\Handler\DelegatingHandler;
 use Spike\Handler\HandlerResolver;
-use Spike\Handler\CommandHandlerInterface;
+use Spike\Handler\HandlerInterface;
+use Spike\Handler\Server as ServerHandler;
 use Spike\Protocol\Message;
-use Spike\Server\Handler\LoginHandler;
-use Spike\Server\Handler\PingHandler;
-use Spike\Server\Handler\RegisterProxyAwareHandler;
-use Spike\Server\Handler\RegisterTunnelAwareHandler;
 use Spike\Socket\TcpServer;
 
 final class Server extends TcpServer
 {
     /**
-     * @var CommandHandlerInterface
+     * @var HandlerInterface
      */
     protected $handler;
 
@@ -45,7 +42,7 @@ final class Server extends TcpServer
      */
     protected $commands;
 
-    public function __construct(Configuration $configuration, LoggerInterface $logger, ?LoopInterface $loop = null)
+    public function __construct(Configuration $configuration, ?LoggerInterface $logger = null, ?LoopInterface $loop = null)
     {
         $this->configuration = $configuration;
         $this->logger = $logger;
@@ -78,15 +75,15 @@ final class Server extends TcpServer
     /**
      * Create default command handler for the server.
      *
-     * @return CommandHandlerInterface
+     * @return HandlerInterface
      */
-    protected function createCommandHandler(): CommandHandlerInterface
+    protected function createCommandHandler(): HandlerInterface
     {
         return new DelegatingHandler(new HandlerResolver([
-            new LoginHandler($this, $this->configuration),
-            new PingHandler($this),
-            new RegisterTunnelAwareHandler($this),
-            new RegisterProxyAwareHandler($this),
+            new ServerHandler\LoginHandler($this, $this->configuration),
+            new ServerHandler\PingHandler($this),
+            new ServerHandler\RegisterTunnelAwareHandler($this),
+            new ServerHandler\RegisterProxyAwareHandler($this),
         ]));
     }
 }

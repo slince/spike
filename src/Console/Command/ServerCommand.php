@@ -24,19 +24,11 @@ class ServerCommand extends Command
      * @param Configuration $configuration
      * @return Server
      */
-    protected function getServer(Configuration $configuration)
+    protected function getServer(Configuration $configuration): Server
     {
         if (null === $this->server) {
             $this->server = new Server($configuration);
         }
         return $this->server;
-    }
-
-    /**
-     * @return Application
-     */
-    public function getApplication()
-    {
-        return parent::getApplication();
     }
 }

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Spike\Server\Handler;
+namespace Spike\Handler\Server;
 
 use React\Socket\ConnectionInterface;
 use Spike\Protocol\Message;
@@ -9,7 +9,7 @@ use Spike\Server\Client;
 use Spike\Server\Configuration;
 use Spike\Server\Server;
 
-class LoginHandler extends MessageCommandHandler
+class LoginHandler extends MessageHandler
 {
     /**
      * @var Configuration

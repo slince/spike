@@ -6,7 +6,7 @@ namespace Spike\Handler;
 use Spike\Command\CommandInterface;
 use Spike\Connection\ConnectionInterface;
 
-interface CommandHandlerInterface
+interface HandlerInterface
 {
     /**
      * Handling the command.

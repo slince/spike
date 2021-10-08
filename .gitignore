@@ -9,3 +9,4 @@ tmp/
 spike.json
 spiked.json
 .php_cs.cache
+resources/workerman

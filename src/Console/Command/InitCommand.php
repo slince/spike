@@ -56,7 +56,7 @@ class InitCommand extends Command
      *
      * @return array
      */
-    protected function getSupportedFormats()
+    protected function getSupportedFormats(): array
     {
         return [
             'json', 'yaml', 'xml',
@@ -68,7 +68,7 @@ class InitCommand extends Command
      *
      * @codeCoverageIgnore
      */
-    public function getNativeDefinition()
+    public function getNativeDefinition(): InputDefinition
     {
         return $this->createDefinition();
     }
@@ -76,7 +76,7 @@ class InitCommand extends Command
     /**
      * {@inheritdoc}
      */
-    private function createDefinition()
+    private function createDefinition(): InputDefinition
     {
         return new InputDefinition(array(
             new InputOption('server', 's', InputOption::VALUE_NONE,

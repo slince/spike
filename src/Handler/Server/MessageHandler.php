@@ -9,12 +9,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Spike\Server\Handler;
+namespace Spike\Handler\Server;
 
-use Spike\Handler\CommandHandlerInterface;
+use Spike\Handler\HandlerInterface;
 use Spike\Server\Server;
 
-abstract class MessageCommandHandler implements CommandHandlerInterface
+abstract class MessageHandler implements HandlerInterface
 {
     /**
      * @var Server

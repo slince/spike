@@ -11,7 +11,7 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Spike\Server\Handler;
+namespace Spike\Handler\Server;
 
 use React\Socket\ConnectionInterface;
 use Spike\Protocol\Message;

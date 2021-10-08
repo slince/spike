@@ -17,6 +17,9 @@ class ServeCommand extends ServerCommand
      */
     protected $serializer;
 
+    /**
+     * {@inheritdoc}
+     */
     protected function configure()
     {
         $this->setName('serve')
@@ -26,6 +29,9 @@ class ServeCommand extends ServerCommand
             ->addOption('daemon', 'd', InputOption::VALUE_NONE, 'Daemon');
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $configuration = $this->createConfiguration($input);
@@ -38,7 +44,7 @@ class ServeCommand extends ServerCommand
         return 0;
     }
 
-    protected function createConfiguration(InputInterface $input)
+    protected function createConfiguration(InputInterface $input): Configuration
     {
         if ($configFile = $input->getOption('config')) {
             if (!file_exists($configFile)) {

@@ -7,7 +7,7 @@ use Spike\Command\CommandInterface;
 final class HandlerResolver
 {
     /**
-     * @var CommandHandlerInterface[]
+     * @var HandlerInterface[]
      */
     private $handlers;
 
@@ -36,9 +36,9 @@ final class HandlerResolver
     /**
      * Add a command handler.
      *
-     * @param CommandHandlerInterface $handler
+     * @param HandlerInterface $handler
      */
-    public function addHandler(CommandHandlerInterface $handler)
+    public function addHandler(HandlerInterface $handler)
     {
         $this->handlers[] = $handler;
     }

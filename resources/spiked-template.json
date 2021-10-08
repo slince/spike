@@ -4,9 +4,10 @@
         "file": "./server.log",
         "level": "info"
     },
-    "auth": {
-        "type": "simple_password",
-        "username": "spike",
-        "password": "spike"
-    }
+    "users": [
+        {
+            "username": "spike",
+            "password": "spike"
+        }
+    ]
 }

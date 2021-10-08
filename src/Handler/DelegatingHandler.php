@@ -7,7 +7,7 @@ use Spike\Connection\ConnectionInterface;
 use Spike\Exception\InvalidArgumentException;
 use Spike\Protocol\Message;
 
-final class DelegatingHandler implements CommandHandlerInterface
+final class DelegatingHandler implements HandlerInterface
 {
     /**
      * @var HandlerResolver

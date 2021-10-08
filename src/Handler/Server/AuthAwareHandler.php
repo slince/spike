@@ -1,13 +1,13 @@
 <?php
 
-namespace Spike\Server\Handler;
+namespace Spike\Handler\Server;
 
 use React\Socket\ConnectionInterface;
 use Spike\Protocol\ErrorMessage;
 use Spike\Protocol\Message;
 use Spike\Server\Client;
 
-abstract class AuthAwareHandler extends MessageCommandHandler
+abstract class AuthAwareHandler extends MessageHandler
 {
     /**
      * @var Client

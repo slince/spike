@@ -52,7 +52,7 @@ EOT;
         return $this->serializer;
     }
 
-    protected function createSerializer()
+    protected function createSerializer(): SerializerInterface
     {
         return new Serializer([
             new ObjectNormalizer(),
@@ -66,21 +66,21 @@ EOT;
 
     protected function createLogger()
     {
-        $logger = new Logger()
+//        $logger = new Logger();
     }
 
     /**
      * {@inheritDoc}
      */
-    public function getHelp()
+    public function getHelp(): string
     {
         return static::LOGO . parent::getHelp();
     }
 
-    protected function getDefaultCommands()
+    protected function getDefaultCommands(): array
     {
         return array_merge([
-            new Command\ServeCommand()
+            new Console\Command\ServeCommand()
         ], parent::getDefaultCommands());
     }
 }
