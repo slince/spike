@@ -14,7 +14,7 @@ namespace Spike\Handler\Server;
 use React\Socket\ConnectionInterface;
 use Spike\Protocol\Message;
 
-class RegisterTunnelAwareHandler extends AuthAwareHandler
+class RegisterTunnelAwareHandler extends AuthAwareHandlerServer
 {
     /**
      * {@inheritdoc}

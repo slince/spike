@@ -32,7 +32,7 @@ class ServeCommand extends ServerCommand
     /**
      * {@inheritdoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $configuration = $this->createConfiguration($input);
         $server = $this->getServer($configuration);

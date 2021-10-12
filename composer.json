@@ -26,7 +26,8 @@
         "react/child-process": "^0.6",
         "symfony/process": "^5.3",
         "walkor/workerman": "^4.0",
-        "symfony/yaml": "^5.3"
+        "symfony/yaml": "^5.3",
+        "symfony/property-access": "^5.3"
     },
     "require-dev": {
         "phpunit/phpunit": "^7.5|^8.0|^9.0"

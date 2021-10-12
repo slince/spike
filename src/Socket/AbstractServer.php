@@ -50,6 +50,21 @@ abstract class AbstractServer extends EventEmitter implements ServerInterface
     }
 
     /**
+     * Configure options resolver for the server.
+     *
+     * @param OptionsResolver $resolver
+     */
+    protected function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver
+            ->setDefaults([
+                'max_workers' => 1,
+                'event_names' => ['start', 'end', 'client-connect']
+            ])
+            ->setRequired(['address']);
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function on($event, callable $listener)
@@ -70,7 +85,7 @@ abstract class AbstractServer extends EventEmitter implements ServerInterface
         $this->loop->run();
     }
 
-    private function boot()
+    protected function boot()
     {
         $socket = $this->createSocket();
         $this->pool = $this->createWorkers($socket);
@@ -88,21 +103,6 @@ abstract class AbstractServer extends EventEmitter implements ServerInterface
     public function getPool(): WorkerPool
     {
         return $this->pool;
-    }
-
-    /**
-     * Configure options resolver for the server.
-     *
-     * @param OptionsResolver $resolver
-     */
-    protected function configureOptions(OptionsResolver $resolver)
-    {
-        $resolver
-            ->setDefaults([
-                'max_workers' => 1,
-                'event_names' => ['start', 'end', 'client-connect']
-            ])
-            ->setRequired(['address']);
     }
 
     protected function createSocket(): SocketServer

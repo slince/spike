@@ -12,16 +12,17 @@ final class ClientRegistry
      */
     protected $clients = [];
 
-    protected $connectionMap;
+    protected $storage;
 
     public function __construct()
     {
-        $this->connectionMap = hash_ob
+        $this->storage = new \SplObjectStorage();
     }
 
     public function add(Client $client)
     {
-        $this->clients[$client->getId()] =  $client;
+        $this->clients[$client->getId()] = $client;
+        $this->storage->attach($client->getConnection(), $client);
     }
 
     public function get(string $id): ?Client
@@ -31,6 +32,7 @@ final class ClientRegistry
 
     public function search(ConnectionInterface $connection)
     {
-
+        return $this->storage->contains($connection)
+            ? $this->storage->offsetGet($connection) : null;
     }
 }

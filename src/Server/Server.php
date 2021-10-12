@@ -80,7 +80,7 @@ final class Server extends TcpServer
     protected function createCommandHandler(): HandlerInterface
     {
         return new DelegatingHandler(new HandlerResolver([
-            new ServerHandler\LoginHandler($this, $this->configuration),
+            new ServerHandler\LoginHandlerServer($this, $this->configuration),
             new ServerHandler\PingHandler($this),
             new ServerHandler\RegisterTunnelAwareHandler($this),
             new ServerHandler\RegisterProxyAwareHandler($this),

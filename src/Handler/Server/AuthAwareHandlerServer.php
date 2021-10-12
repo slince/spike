@@ -3,11 +3,10 @@
 namespace Spike\Handler\Server;
 
 use React\Socket\ConnectionInterface;
-use Spike\Protocol\ErrorMessage;
 use Spike\Protocol\Message;
 use Spike\Server\Client;
 
-abstract class AuthAwareHandler extends MessageHandler
+abstract class AuthAwareHandlerServer extends ServerCommandHandler
 {
     /**
      * @var Client

@@ -1,6 +1,15 @@
 <?php
 
+declare(strict_types=1);
 
+/*
+ * This file is part of the slince/spike package.
+ *
+ * (c) Slince <taosikai@yeah.net>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 namespace Spike\Handler\Server;
 
 use Spike\Command\Client\REGISTER;
@@ -11,7 +20,7 @@ use Spike\Server\Client;
 use Spike\Server\Configuration;
 use Spike\Server\Server;
 
-class LoginHandler extends MessageHandler
+class LoginHandlerServer extends ServerCommandHandler
 {
     /**
      * @var Configuration
