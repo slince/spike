@@ -47,15 +47,16 @@ class RegisterHandlerServer extends ServerCommandHandler
     public function handle(CommandInterface $command, ConnectionInterface $connection)
     {
         $user = $command->getArguments();
+        $client = $this->clients->search($connection);
+
         if ($this->authenticate($user['username'], $user['password'])) {
-            $client = $this->clients->search($connection);
             $response = new REGISTERBACK(REGISTERBACK::STATUS_OK, $client->getId());
+            $connection->executeCommand($response);
         } else {
             $response = new REGISTERBACK(REGISTERBACK::STATUS_FAIL);
+            $connection->executeCommand($response);
+            $this->clients->remove($client);
         }
-        $connection->executeCommand($response)->then(function() use ($connection){
-            $connection->disconnect();
-        });
     }
 
     protected function authenticate(string $username, string $password): bool

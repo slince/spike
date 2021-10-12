@@ -20,9 +20,20 @@ class StreamConnection implements ConnectionInterface
         $this->stream = $stream;
     }
 
-    public function disconnect()
+    /**
+     * {@inheritdoc}
+     */
+    public function disconnect(bool $force = false)
     {
-        $this->stream->close();
+        $force ? $this->stream->close() : $this->stream->end();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function executeCommand(CommandInterface $command): PromiseInterface
+    {
+        $this->writeRequest($command);
     }
 
     public function writeRequest(CommandInterface $command)
@@ -31,16 +42,17 @@ class StreamConnection implements ConnectionInterface
         $this->stream->write($message);
     }
 
-    public function executeCommand(CommandInterface $command): PromiseInterface
-    {
-        $this->writeRequest($command);
-    }
-
+    /**
+     * {@inheritdoc}
+     */
     public function listenRaw(callable $callback)
     {
         $this->stream->on('data', $callback);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function listen(callable $callback)
     {
         $parser = new MessageParser($this);

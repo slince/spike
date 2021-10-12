@@ -2,16 +2,16 @@
 
 namespace Spike\Connection;
 
-use React\Promise\Promise;
-use React\Promise\PromiseInterface;
 use Spike\Command\CommandInterface;
 
 interface ConnectionInterface
 {
     /**
      * Closes the connection to Spiked.
+     *
+     * @param bool $force
      */
-    public function disconnect();
+    public function disconnect(bool $force = false);
 
     /**
      * Writes the request for the given command over the connection.
@@ -24,10 +24,8 @@ interface ConnectionInterface
      * Writes a request for the given command over the connection.
      *
      * @param CommandInterface $command Command instance.
-     *
-     * @return PromiseInterface
      */
-    public function executeCommand(CommandInterface $command): PromiseInterface;
+    public function executeCommand(CommandInterface $command);
 
     /**
      * Register the message handler to handle raw message.

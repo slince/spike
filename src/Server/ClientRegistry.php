@@ -30,6 +30,13 @@ final class ClientRegistry
         return $this->clients[$id] ?? null;
     }
 
+    public function remove(Client $client)
+    {
+        $client->getConnection()->disconnect();
+        unset($this->clients[$client->getId()]);
+        $this->storage->detach($client->getConnection());
+    }
+
     /**
      * Search client that match the connection.
      *
