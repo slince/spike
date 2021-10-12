@@ -53,7 +53,9 @@ class RegisterHandlerServer extends ServerCommandHandler
         } else {
             $response = new REGISTERBACK(REGISTERBACK::STATUS_FAIL);
         }
-        $connection->executeCommand($response);
+        $connection->executeCommand($response)->then(function() use ($connection){
+            $connection->disconnect();
+        });
     }
 
     protected function authenticate(string $username, string $password): bool

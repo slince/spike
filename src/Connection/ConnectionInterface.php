@@ -2,6 +2,8 @@
 
 namespace Spike\Connection;
 
+use React\Promise\Promise;
+use React\Promise\PromiseInterface;
 use Spike\Command\CommandInterface;
 
 interface ConnectionInterface
@@ -19,14 +21,13 @@ interface ConnectionInterface
     public function writeRequest(CommandInterface $command);
 
     /**
-     * Writes a request for the given command over the connection and reads back
-     * the response returned by Redis.
+     * Writes a request for the given command over the connection.
      *
      * @param CommandInterface $command Command instance.
      *
-     * @return mixed
+     * @return PromiseInterface
      */
-    public function executeCommand(CommandInterface $command);
+    public function executeCommand(CommandInterface $command): PromiseInterface;
 
     /**
      * Register the message handler to handle raw message.

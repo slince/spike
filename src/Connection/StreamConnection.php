@@ -2,6 +2,7 @@
 
 namespace Spike\Connection;
 
+use React\Promise\PromiseInterface;
 use React\Stream\DuplexStreamInterface;
 use Spike\Command\CommandInterface;
 use Spike\Protocol\Message;
@@ -30,7 +31,7 @@ class StreamConnection implements ConnectionInterface
         $this->stream->write($message);
     }
 
-    public function executeCommand(CommandInterface $command)
+    public function executeCommand(CommandInterface $command): PromiseInterface
     {
         $this->writeRequest($command);
     }
