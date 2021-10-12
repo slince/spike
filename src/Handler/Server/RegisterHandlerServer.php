@@ -14,23 +14,31 @@ namespace Spike\Handler\Server;
 
 use Spike\Command\Client\REGISTER;
 use Spike\Command\CommandInterface;
+use Spike\Command\Server\REGISTERBACK;
 use Spike\Connection\ConnectionInterface;
 use Spike\Protocol\Message;
 use Spike\Server\Client;
+use Spike\Server\ClientRegistry;
 use Spike\Server\Configuration;
 use Spike\Server\Server;
 
-class LoginHandlerServer extends ServerCommandHandler
+class RegisterHandlerServer extends ServerCommandHandler
 {
     /**
      * @var Configuration
      */
     protected $configuration;
 
-    public function __construct(Server $server, Configuration $configuration)
+    /**
+     * @var ClientRegistry
+     */
+    protected $clients;
+
+    public function __construct(Server $server, Configuration $configuration, ClientRegistry $clients)
     {
         parent::__construct($server);
         $this->configuration = $configuration;
+        $this->clients = $clients;
     }
 
     /**
@@ -40,13 +48,12 @@ class LoginHandlerServer extends ServerCommandHandler
     {
         $user = $command->getArguments();
         if ($this->authenticate($user['username'], $user['password'])) {
-            $client = new Client($connection);
-            $this->server->addClient($client);
-            $response = new Message('login_response', ['id' => $client->getId()]);
+            $client = $this->clients->search($connection);
+            $response = new REGISTERBACK(REGISTERBACK::STATUS_OK, $client->getId());
         } else {
-            $response = new Message('login_response', ['error' => 'Wrong username or password']);
+            $response = new REGISTERBACK(REGISTERBACK::STATUS_FAIL);
         }
-        $connection->write($response);
+        $connection->executeCommand($response);
     }
 
     protected function authenticate(string $username, string $password): bool

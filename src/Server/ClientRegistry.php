@@ -30,7 +30,13 @@ final class ClientRegistry
         return $this->clients[$id] ?? null;
     }
 
-    public function search(ConnectionInterface $connection)
+    /**
+     * Search client that match the connection.
+     *
+     * @param ConnectionInterface $connection
+     * @return Client|null
+     */
+    public function search(ConnectionInterface $connection): ?Client
     {
         return $this->storage->contains($connection)
             ? $this->storage->offsetGet($connection) : null;

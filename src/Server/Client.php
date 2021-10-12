@@ -38,6 +38,11 @@ final class Client
      */
     protected $createdAt;
 
+    /**
+     * @var bool
+     */
+    protected $isAuthenticated = false;
+
     public function __construct(ConnectionInterface $connection)
     {
         $this->connection = $connection;
@@ -47,7 +52,18 @@ final class Client
     }
 
     /**
+     * Checks whether the client is authenticated.
+     *
+     * @return bool
+     */
+    public function isAuthenticated(): bool
+    {
+        return $this->isAuthenticated;
+    }
+
+    /**
      * Sets the control connection for the client.
+     *
      * @param ConnectionInterface $connection
      */
     public function setConnection(ConnectionInterface $connection)
