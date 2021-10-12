@@ -21,6 +21,7 @@ use Spike\Server\Client;
 use Spike\Server\ClientRegistry;
 use Spike\Server\Configuration;
 use Spike\Server\Server;
+use Spike\Server\Tunnel;
 
 class RegisterHandlerServer extends ServerCommandHandler
 {
@@ -57,6 +58,23 @@ class RegisterHandlerServer extends ServerCommandHandler
             $connection->executeCommand($response);
             $this->clients->remove($client);
         }
+    }
+
+    protected function createTunnelListener(CommandInterface $command)
+    {
+        $tunnels = $this->discoverTunnels($command);
+        foreach ($tunnels as $tunnel) {
+
+        }
+    }
+
+    protected function discoverTunnels(CommandInterface $command): array
+    {
+        $tunnels = [];
+        foreach ($command->getArguments('tunnels') as $detail) {
+            $tunnels[] = new Tunnel($detail['scheme'], $detail['port']);
+        }
+        return $tunnels;
     }
 
     protected function authenticate(string $username, string $password): bool
