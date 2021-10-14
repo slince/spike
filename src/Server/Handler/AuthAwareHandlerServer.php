@@ -1,6 +1,6 @@
 <?php
 
-namespace Spike\Handler\Server;
+namespace Spike\Server\Handler;
 
 use React\Socket\ConnectionInterface;
 use Spike\Protocol\Message;

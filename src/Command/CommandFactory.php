@@ -7,9 +7,12 @@ use Spike\Protocol\Message;
 
 final class CommandFactory
 {
-    protected $commandMap = [
-        'REGISTER' => Client\REGISTER::class
-    ];
+    protected $commandMap;
+
+    public function __construct(array $commandMap)
+    {
+        $this->commandMap = $commandMap;
+    }
 
     /**
      * Creates the command from message.

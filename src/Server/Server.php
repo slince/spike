@@ -56,7 +56,7 @@ final class Server extends TcpServer
     {
         $this->clients = new ClientRegistry();
         $this->handler = $this->createCommandHandler();
-        $this->commands = new CommandFactory();
+        $this->commands = $this->createCommandFactory();
     }
 
     /**
@@ -70,6 +70,18 @@ final class Server extends TcpServer
             $command = $this->commands->createCommand($message);
             $this->handler->handle($command, $connection);
         });
+    }
+
+    /**
+     * Create command factory for the server.
+     *
+     * @return CommandFactory
+     */
+    protected function createCommandFactory(): CommandFactory
+    {
+        return new CommandFactory([
+            'REGISTERBACK' => Command\REGISTERBACK::class
+        ]);
     }
 
     /**

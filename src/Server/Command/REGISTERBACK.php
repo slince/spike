@@ -1,6 +1,6 @@
 <?php
 
-namespace Spike\Command\Server;
+namespace Spike\Server\Command;
 
 use Spike\Command\AbstractCommand;
 use Spike\Command\CommandInterface;

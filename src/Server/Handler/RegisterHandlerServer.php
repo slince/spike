@@ -10,7 +10,7 @@ declare(strict_types=1);
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace Spike\Handler\Server;
+namespace Spike\Server\Handler;
 
 use Spike\Command\Client\REGISTER;
 use Spike\Command\CommandInterface;
@@ -22,6 +22,7 @@ use Spike\Server\ClientRegistry;
 use Spike\Server\Configuration;
 use Spike\Server\Server;
 use Spike\Server\Tunnel;
+use Spike\Server\TunnelListener;
 
 class RegisterHandlerServer extends ServerCommandHandler
 {
@@ -34,6 +35,11 @@ class RegisterHandlerServer extends ServerCommandHandler
      * @var ClientRegistry
      */
     protected $clients;
+
+    /**
+     * @var TunnelListener[]
+     */
+    protected $listeners;
 
     public function __construct(Server $server, Configuration $configuration, ClientRegistry $clients)
     {
@@ -53,6 +59,7 @@ class RegisterHandlerServer extends ServerCommandHandler
         if ($this->authenticate($user['username'], $user['password'])) {
             $response = new REGISTERBACK(REGISTERBACK::STATUS_OK, $client->getId());
             $connection->executeCommand($response);
+            $this->createTunnelListener($command);
         } else {
             $response = new REGISTERBACK(REGISTERBACK::STATUS_FAIL);
             $connection->executeCommand($response);
@@ -64,10 +71,18 @@ class RegisterHandlerServer extends ServerCommandHandler
     {
         $tunnels = $this->discoverTunnels($command);
         foreach ($tunnels as $tunnel) {
-
+            $listener = new TunnelListener($tunnel);
+            $listener->listen();
+            $this->listeners[$tunnel->getPort()]  = $listener;
         }
     }
 
+    /**
+     * Discover tunnels from command arguments.
+     *
+     * @param CommandInterface $command
+     * @return Tunnel[]
+     */
     protected function discoverTunnels(CommandInterface $command): array
     {
         $tunnels = [];

@@ -3,17 +3,35 @@
 namespace Spike\Socket;
 
 use React\EventLoop\LoopInterface;
+use React\Socket\SecureServer;
 use React\Socket\TcpServer as SocketServer;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class TcpServer extends AbstractServer
 {
-    protected function createSocket(string $address, LoopInterface $loop)
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function configureOptions(OptionsResolver $resolver)
     {
-        return new SocketServer($address, $loop, $this->createSocketContext());
+        parent::configureOptions($resolver);
+        $resolver->setDefaults([
+            'tcp_context' => [],
+            'tls' => false,
+            'tls_context' => []
+        ]);
     }
 
-    protected function createSocketContext(): array
+    /**
+     * {@inheritdoc}
+     */
+    protected function createSocket(string $address, LoopInterface $loop)
     {
-        return [];
+        $server = new SocketServer($address, $loop, $this->options['tcp_context']);
+        if ($this->options['tls']) {
+            $server = new SecureServer($server, $loop, $this->options['tls_context']);
+        }
+        return $server;
     }
 }

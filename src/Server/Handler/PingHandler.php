@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Spike\Handler\Server;
+namespace Spike\Server\Handler;
 
 use Spike\Protocol\Message;
 

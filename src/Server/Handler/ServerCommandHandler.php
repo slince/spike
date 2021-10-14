@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Spike\Handler\Server;
+namespace Spike\Server\Handler;
 
 use Spike\Handler\CommandHandler;
 use Spike\Server\Server;

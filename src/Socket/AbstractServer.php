@@ -5,7 +5,7 @@ namespace Spike\Socket;
 use Evenement\EventEmitter;
 use React\EventLoop\Loop;
 use React\Socket\ConnectionInterface;
-use React\Socket\SocketServer;
+use React\Socket\ServerInterface as SocketServer;
 use Spike\Exception\InvalidArgumentException;
 use React\EventLoop\LoopInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -60,7 +60,7 @@ abstract class AbstractServer extends EventEmitter implements ServerInterface
         $resolver
             ->setDefaults([
                 'max_workers' => 1,
-                'event_names' => ['start', 'end', 'client-connect']
+                'event_names' => ['start', 'end', 'client-connect'],
             ])
             ->setRequired(['address']);
     }
@@ -104,6 +104,13 @@ abstract class AbstractServer extends EventEmitter implements ServerInterface
         $this->emit('start', [$this]);
     }
 
+    /**
+     * Creates socket server for the given address.
+     *
+     * @param string $address
+     * @param LoopInterface $loop
+     * @return SocketServer
+     */
     abstract protected function createSocket(string $address, LoopInterface $loop);
 
     protected function createWorkers($socket): WorkerPool
