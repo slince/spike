@@ -3,9 +3,9 @@
 namespace Spike\Socket;
 
 use React\EventLoop\LoopInterface;
-use React\Socket\TcpServer as SocketServer;
+use React\Socket\UnixServer as SocketServer;
 
-class TcpServer extends AbstractServer
+class UnixServer extends AbstractServer
 {
     protected function createSocket(string $address, LoopInterface $loop)
     {
