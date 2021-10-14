@@ -40,4 +40,11 @@ interface ConnectionInterface
      * @param callable $callback
      */
     public function listen(callable $callback);
+
+    /**
+     *  Pipes all the data from this readable source into the given writable destination.
+     *
+     * @param ConnectionInterface $dest
+     */
+    public function pipe(ConnectionInterface $dest);
 }

@@ -3,7 +3,7 @@
 namespace Spike\Connection;
 
 use React\Promise\PromiseInterface;
-use React\Stream\DuplexStreamInterface;
+use React\Stream\DuplexStreamInterface as Stream;
 use Spike\Command\CommandInterface;
 use Spike\Protocol\Message;
 use Spike\Protocol\MessageParser;
@@ -11,11 +11,11 @@ use Spike\Protocol\MessageParser;
 class StreamConnection implements ConnectionInterface
 {
     /**
-     * @var DuplexStreamInterface
+     * @var Stream
      */
     protected $stream;
 
-    public function __construct(DuplexStreamInterface $stream)
+    public function __construct(Stream $stream)
     {
         $this->stream = $stream;
     }
@@ -58,5 +58,13 @@ class StreamConnection implements ConnectionInterface
         $parser = new MessageParser($this);
         $parser->on('message', $callback);
         $parser->parse();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function pipe(ConnectionInterface $dest)
+    {
+        $this->stream->pipe($dest);
     }
 }

@@ -1,0 +1,76 @@
+<?php
+
+namespace Spike\Server;
+
+use Spike\Connection\StreamConnection;
+
+class ProxyConnection extends StreamConnection
+{
+    const READY = 1;
+    const BUSY = 2;
+    const CLOSED = 3;
+    const LOCKED = 4;
+
+    /**
+     * Number of handled requests
+     *
+     * @var int
+     */
+    private $handledRequests = 0;
+
+    /**
+     * Connection status
+     *
+     * @var int
+     */
+    protected $status = self::READY;
+
+    public function getStatus(): int
+    {
+        return $this->status;
+    }
+
+    public function isReady(): bool
+    {
+        return static::READY === $this->status;
+    }
+
+    /**
+     * Ready a connection after bootstrap completed
+     *
+     * @return void
+     */
+    public function ready()
+    {
+        $this->status = self::READY;
+    }
+
+    /**
+     * Occupies a connection for request handling
+     *
+     * @return void
+     */
+    public function occupy()
+    {
+        if ($this->status !== self::READY) {
+            throw new \LogicException('Cannot occupy a connection that is not in ready state');
+        }
+
+        $this->status = self::BUSY;
+    }
+
+    /**
+     * Releases a connection from request handling
+     *
+     * @return void
+     */
+    public function release()
+    {
+        if ($this->status !== self::BUSY) {
+            throw new \LogicException('Cannot release a connection that is not in busy state');
+        }
+
+        $this->status = self::READY;
+        $this->handledRequests++;
+    }
+}

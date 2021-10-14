@@ -14,11 +14,9 @@ namespace Spike\Server\Handler;
 
 use Spike\Command\Client\REGISTER;
 use Spike\Command\CommandInterface;
-use Spike\Command\Server\REGISTERBACK;
 use Spike\Connection\ConnectionInterface;
-use Spike\Protocol\Message;
-use Spike\Server\Client;
 use Spike\Server\ClientRegistry;
+use Spike\Server\Command\REGISTERBACK;
 use Spike\Server\Configuration;
 use Spike\Server\Server;
 use Spike\Server\Tunnel;

@@ -60,7 +60,7 @@ abstract class AbstractServer extends EventEmitter implements ServerInterface
         $resolver
             ->setDefaults([
                 'max_workers' => 1,
-                'event_names' => ['start', 'end', 'client-connect'],
+                'event_names' => ['start', 'end', 'connection'],
             ])
             ->setRequired(['address']);
     }
@@ -113,7 +113,13 @@ abstract class AbstractServer extends EventEmitter implements ServerInterface
      */
     abstract protected function createSocket(string $address, LoopInterface $loop);
 
-    protected function createWorkers($socket): WorkerPool
+    /**
+     * Create worker pools.
+     *
+     * @param SocketServer $socket
+     * @return WorkerPool
+     */
+    protected function createWorkers(SocketServer $socket): WorkerPool
     {
         $pool = new WorkerPool();
         for ($i = 0; $i < $this->options['max_workers']; $i++) {
