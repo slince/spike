@@ -1,0 +1,13 @@
+{
+    "address": "0.0.0.0:8090",
+    "log": {
+        "file": "./server.log",
+        "level": "info"
+    },
+    "users": [
+        {
+            "username": "spike",
+            "password": "spike"
+        }
+    ]
+}
