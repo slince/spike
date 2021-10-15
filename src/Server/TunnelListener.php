@@ -65,14 +65,14 @@ final class TunnelListener
 
     public function listen()
     {
-        $server = $this->createPublicServer($this->tunnel);
+        $this->server = $this->createPublicServer($this->tunnel);
         $address = "0.0.0.0:{$this->tunnel->getPort()}";
-        $server->configure([
+        $this->server->configure([
             'address' => $address,
             'max_workers' => 4
         ]);
-        $server->on('connection', [$this, 'handleConnection']);
-        $server->serve();
+        $this->server->on('connection', [$this, 'handleConnection']);
+        $this->server->serve();
     }
 
     public function handleConnection(ConnectionInterface $connection)
@@ -82,6 +82,8 @@ final class TunnelListener
             // request to spike client.
             $connection->pause();
             $this->client->getConnection()->executeCommand(new REQUESTPROXY($this->tunnel->getPort()));
+            // suspend the listen.
+            $this->server->pause();
         } else {
             $proxyConnection->pipe($connection);
         }

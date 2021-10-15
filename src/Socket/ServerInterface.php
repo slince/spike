@@ -38,6 +38,16 @@ interface ServerInterface
     public function serve();
 
     /**
+     * Pause service.
+     */
+    public function pause();
+
+    /**
+     * Resume service.
+     */
+    public function resume();
+
+    /**
      * {@internal}
      */
     public function handleConnection(ConnectionInterface $connection);

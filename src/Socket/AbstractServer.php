@@ -34,7 +34,7 @@ abstract class AbstractServer extends EventEmitter implements ServerInterface
     protected $pool;
 
     /**
-     * @var resource
+     * @var SocketServer
      */
     protected $socket;
 
@@ -94,6 +94,22 @@ abstract class AbstractServer extends EventEmitter implements ServerInterface
     public function handleConnection(ConnectionInterface $connection)
     {
         $this->emit('connection', [$connection]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function pause()
+    {
+        $this->socket && $this->socket->pause();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function resume()
+    {
+        $this->socket && $this->socket->resume();
     }
 
     /**

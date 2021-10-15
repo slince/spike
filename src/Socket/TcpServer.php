@@ -20,7 +20,6 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class TcpServer extends AbstractServer
 {
-
     /**
      * {@inheritdoc}
      */
