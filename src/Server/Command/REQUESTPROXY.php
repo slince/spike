@@ -13,15 +13,27 @@ declare(strict_types=1);
 
 namespace Spike\Server\Command;
 
-use Spike\Command\FallbackCommand;
 use Spike\Command\CommandInterface;
 use Spike\Protocol\Message;
 
-class REQUESTPROXY extends FallbackCommand
+class REQUESTPROXY implements CommandInterface
 {
-    public function __construct(int $port)
+    /**
+     * @var int
+     */
+    protected $serverPort;
+
+    public function __construct(int $serverPort)
     {
-        parent::__construct(['server_port' => $port]);
+        $this->serverPort = $serverPort;
+    }
+
+    /**
+     * @return int
+     */
+    public function getServerPort(): int
+    {
+        return $this->serverPort;
     }
 
     /**
@@ -30,6 +42,16 @@ class REQUESTPROXY extends FallbackCommand
     public function getCommandId(): string
     {
         return 'REQUESTPROXY';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function createMessage(): Message
+    {
+        return new Message(Message::PAYLOAD_CONTROL, [
+            'server_port' => $this->serverPort
+        ]);
     }
 
     /**

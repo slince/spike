@@ -13,18 +13,44 @@ declare(strict_types=1);
 
 namespace Spike\Server\Command;
 
-use Spike\Command\FallbackCommand;
 use Spike\Command\CommandInterface;
 use Spike\Protocol\Message;
 
-class REGISTERBACK extends FallbackCommand
+class REGISTERBACK implements CommandInterface
 {
     const STATUS_OK = 'ok';
     const STATUS_FAIL = 'fail';
 
-    public function __construct(string $status, string $clientId = null)
+    /**
+     * @var string
+     */
+    protected $status;
+
+    /**
+     * @var string
+     */
+    protected $clientId;
+
+    public function __construct(string $status, string $clientId)
     {
-        parent::__construct(['status' => $status, 'client_id' => $clientId]);
+        $this->status = $status;
+        $this->clientId = $clientId;
+    }
+
+    /**
+     * @return string
+     */
+    public function getStatus(): string
+    {
+        return $this->status;
+    }
+
+    /**
+     * @return string
+     */
+    public function getClientId(): string
+    {
+        return $this->clientId;
     }
 
     /**
@@ -33,6 +59,17 @@ class REGISTERBACK extends FallbackCommand
     public function getCommandId(): string
     {
         return 'REGISTERBACK';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function createMessage(): Message
+    {
+        return new Message(Message::PAYLOAD_CONTROL, [
+            'status' => $this->status,
+            'client_id' => $this->clientId
+        ]);
     }
 
     /**

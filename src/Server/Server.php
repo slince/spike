@@ -21,7 +21,7 @@ use Spike\Connection\ConnectionFactory;
 use Spike\Handler\DelegatingHandler;
 use Spike\Handler\HandlerResolver;
 use Spike\Handler\HandlerInterface;
-use Spike\Handler\Server as ServerHandler;
+use Spike\Server\Handler as ServerHandler;
 use Spike\Protocol\Message;
 use Spike\Socket\TcpServer;
 
