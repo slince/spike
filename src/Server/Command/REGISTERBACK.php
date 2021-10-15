@@ -31,7 +31,7 @@ class REGISTERBACK implements CommandInterface
      */
     protected $clientId;
 
-    public function __construct(string $status, string $clientId)
+    public function __construct(string $status, string $clientId = null)
     {
         $this->status = $status;
         $this->clientId = $clientId;

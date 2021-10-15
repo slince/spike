@@ -55,6 +55,14 @@ final class TunnelListener
         $this->proxyConnections = new ConnectionPool();
     }
 
+    /**
+     * @return ConnectionPool
+     */
+    public function getProxyConnections(): ConnectionPool
+    {
+        return $this->proxyConnections;
+    }
+
     public function listen()
     {
         $server = $this->createPublicServer($this->tunnel);

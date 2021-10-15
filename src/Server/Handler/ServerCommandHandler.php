@@ -11,11 +11,10 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-declare(strict_types=1);
-
 namespace Spike\Server\Handler;
 
 use Spike\Handler\CommandHandler;
+use Spike\Server\ClientRegistry;
 use Spike\Server\Server;
 
 abstract class ServerCommandHandler extends CommandHandler
@@ -25,8 +24,14 @@ abstract class ServerCommandHandler extends CommandHandler
      */
     protected $server;
 
-    public function __construct(Server $server)
+    /**
+     * @var ClientRegistry
+     */
+    protected $clients;
+
+    public function __construct(Server $server, ClientRegistry $clients)
     {
         $this->server = $server;
+        $this->clients = $clients;
     }
 }

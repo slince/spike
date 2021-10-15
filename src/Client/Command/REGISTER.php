@@ -93,7 +93,10 @@ class REGISTER implements CommandInterface
      */
     public static function fromMessage(Message $message): CommandInterface
     {
-        $tunnels = [];
-        return new REGISTER($message->getArgument('username'), $message->getArgument('password'), $tunnels);
+        return new static(
+            $message->getArgument('username'),
+            $message->getArgument('password'),
+            $message->getArgument('tunnels')
+        );
     }
 }

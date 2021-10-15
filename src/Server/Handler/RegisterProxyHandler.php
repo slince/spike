@@ -13,17 +13,26 @@ declare(strict_types=1);
 
 namespace Spike\Server\Handler;
 
+use Spike\Client\Command\REGISTERPROXY;
 use Spike\Command\CommandInterface;
 use Spike\Connection\ConnectionInterface;
+use Spike\Server\ProxyConnection;
 
 class RegisterProxyHandler extends ServerCommandHandler
 {
+    use AuthenticationAwareTrait;
+
     /**
      * {@inheritdoc}
      */
     public function handle(CommandInterface $command, ConnectionInterface $connection)
     {
-
+        $clientId = $command->getClientId();
+        $this->ensureClientValid($clientId);
+        $client = $this->clients->get($clientId);
+        $listeners = $client->getTunnelListeners();
+        $listener = $listeners->get($command->getServerPort());
+        $listener->getProxyConnections()->add(new ProxyConnection($connection));
     }
 
     /**
@@ -31,6 +40,6 @@ class RegisterProxyHandler extends ServerCommandHandler
      */
     protected function getSubscribedCommands(): array
     {
-        return ['REGISTERPROXY'];
+        return [REGISTERPROXY::class];
     }
 }

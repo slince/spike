@@ -53,6 +53,11 @@ final class Client
      */
     protected $isAuthenticated = false;
 
+    /**
+     * @var TunnelListenerCollection
+     */
+    protected $tunnelListeners;
+
     public function __construct(ConnectionInterface $connection)
     {
         $this->connection = $connection;
@@ -129,5 +134,15 @@ final class Client
     public function close()
     {
         $this->connection->disconnect();
+    }
+
+    public function setTunnelListeners(TunnelListenerCollection $tunnelListeners)
+    {
+        $this->tunnelListeners = $tunnelListeners;
+    }
+
+    public function getTunnelListeners(): TunnelListenerCollection
+    {
+        return $this->tunnelListeners;
     }
 }

@@ -11,50 +11,31 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-declare(strict_types=1);
-
-/*
- * This file is part of the slince/spike package.
- *
- * (c) Slince <taosikai@yeah.net>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 namespace Spike\Server\Handler;
 
-use Spike\Command\Client\REGISTER;
+use Spike\Client\Command\REGISTER;
 use Spike\Command\CommandInterface;
 use Spike\Connection\ConnectionInterface;
+use Spike\Server\Client;
 use Spike\Server\ClientRegistry;
 use Spike\Server\Command\REGISTERBACK;
 use Spike\Server\Configuration;
 use Spike\Server\Server;
 use Spike\Server\Tunnel;
 use Spike\Server\TunnelListener;
+use Spike\Server\TunnelListenerCollection;
 
-class RegisterHandlerServer extends ServerCommandHandler
+class RegisterHandler extends ServerCommandHandler
 {
     /**
      * @var Configuration
      */
     protected $configuration;
 
-    /**
-     * @var ClientRegistry
-     */
-    protected $clients;
-
-    /**
-     * @var TunnelListener[]
-     */
-    protected $listeners;
-
-    public function __construct(Server $server, Configuration $configuration, ClientRegistry $clients)
+    public function __construct(Server $server, ClientRegistry $clients, Configuration $configuration)
     {
-        parent::__construct($server);
+        parent::__construct($server, $clients);
         $this->configuration = $configuration;
-        $this->clients = $clients;
     }
 
     /**
@@ -62,13 +43,14 @@ class RegisterHandlerServer extends ServerCommandHandler
      */
     public function handle(CommandInterface $command, ConnectionInterface $connection)
     {
-        $user = $command->getArguments();
         $client = $this->clients->search($connection);
 
-        if ($this->authenticate($user['username'], $user['password'])) {
+        if ($this->authenticate($command->getUsername(), $command->getPassword())) {
             $response = new REGISTERBACK(REGISTERBACK::STATUS_OK, $client->getId());
             $connection->executeCommand($response);
-            $this->createTunnelListener($command);
+            $listeners = $this->createTunnelListeners($client, $command);
+            $client->setTunnelListeners($listeners);
+            $this->runTunnelListeners($listeners);
         } else {
             $response = new REGISTERBACK(REGISTERBACK::STATUS_FAIL);
             $connection->executeCommand($response);
@@ -76,26 +58,37 @@ class RegisterHandlerServer extends ServerCommandHandler
         }
     }
 
-    protected function createTunnelListener(CommandInterface $command)
+    /**
+     * @param TunnelListenerCollection $listeners
+     */
+    protected function runTunnelListeners(TunnelListenerCollection $listeners)
+    {
+        foreach ($listeners as $listener) {
+            $listener->listen();
+        }
+    }
+
+    protected function createTunnelListeners(Client $client, REGISTER $command): TunnelListenerCollection
     {
         $tunnels = $this->discoverTunnels($command);
+        $listeners = [];
         foreach ($tunnels as $tunnel) {
-            $listener = new TunnelListener($tunnel);
-            $listener->listen();
-            $this->listeners[$tunnel->getPort()]  = $listener;
+            $listener = new TunnelListener($client, $tunnel);
+            $listeners[$tunnel->getPort()]  = $listener;
         }
+        return new TunnelListenerCollection($listeners);
     }
 
     /**
      * Discover tunnels from command arguments.
      *
-     * @param CommandInterface $command
+     * @param REGISTER $command
      * @return Tunnel[]
      */
-    protected function discoverTunnels(CommandInterface $command): array
+    protected function discoverTunnels(REGISTER $command): array
     {
         $tunnels = [];
-        foreach ($command->getArguments('tunnels') as $detail) {
+        foreach ($command->getTunnels() as $detail) {
             $tunnels[] = new Tunnel($detail['scheme'], $detail['port']);
         }
         return $tunnels;
