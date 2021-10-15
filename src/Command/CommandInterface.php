@@ -14,6 +14,14 @@ interface CommandInterface
     public function getArguments(): array;
 
     /**
+     * Return the given argument.
+     *
+     * @param string $name
+     * @return mixed
+     */
+    public function getArgument(string $name);
+
+    /**
      * Create the message instance.
      *
      * @return Message

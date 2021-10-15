@@ -27,6 +27,14 @@ abstract class AbstractCommand implements CommandInterface
     /**
      * {@inheritdoc}
      */
+    public function getArgument(string $name)
+    {
+        return $this->arguments[$name] ?? null;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function createMessage(): Message
     {
         return new Message(Message::PAYLOAD_CONTROL, $this->arguments);

@@ -64,7 +64,7 @@ final class TunnelListener
             $connection->pause();
             $this->client->getConnection()->executeCommand(new REQUESTPROXY($this->tunnel->getPort()));
         } else {
-            $proxyConnection->pipe();
+            $proxyConnection->pipe($connection);
         }
     }
 

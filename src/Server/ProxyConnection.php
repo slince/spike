@@ -2,9 +2,10 @@
 
 namespace Spike\Server;
 
-use Spike\Connection\StreamConnection;
+use Spike\Connection\ConnectionInterface;
+use React\Socket\ConnectionInterface as RawConnection;
 
-class ProxyConnection extends StreamConnection
+class ProxyConnection
 {
     const READY = 1;
     const BUSY = 2;
@@ -24,6 +25,16 @@ class ProxyConnection extends StreamConnection
      * @var int
      */
     protected $status = self::READY;
+
+    /**
+     * @var ConnectionInterface
+     */
+    protected $connection;
+
+    public function __construct(ConnectionInterface $connection)
+    {
+        $this->connection = $connection;
+    }
 
     public function getStatus(): int
     {
@@ -72,5 +83,18 @@ class ProxyConnection extends StreamConnection
 
         $this->status = self::READY;
         $this->handledRequests++;
+    }
+
+    public function pipe(RawConnection $dest)
+    {
+        $this->connection->getStream()->pipe($dest);
+        $dest->pipe($this->connection->getStream(), [
+            'end' => false
+        ]);
+    }
+
+    public function turnoff(RawConnection $dest)
+    {
+
     }
 }

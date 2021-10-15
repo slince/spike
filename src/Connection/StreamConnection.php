@@ -61,10 +61,10 @@ class StreamConnection implements ConnectionInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @return Stream
      */
-    public function pipe(ConnectionInterface $dest)
+    public function getStream(): Stream
     {
-        $this->stream->pipe($dest);
+        return $this->stream;
     }
 }

@@ -13,7 +13,7 @@ namespace Spike\Server\Handler;
 
 use Spike\Protocol\Message;
 
-class PingHandler extends AuthAwareHandlerServer
+class PingHandler extends AuthenticationAwareHandlerServer
 {
     /**
      * @inheritDoc
