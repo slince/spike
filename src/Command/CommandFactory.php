@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Spike\Command;
 
 use Spike\Exception\BadMessageException;

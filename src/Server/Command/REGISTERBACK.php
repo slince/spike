@@ -2,11 +2,11 @@
 
 namespace Spike\Server\Command;
 
-use Spike\Command\AbstractCommand;
+use Spike\Command\FallbackCommand;
 use Spike\Command\CommandInterface;
 use Spike\Protocol\Message;
 
-class REGISTERBACK extends AbstractCommand
+class REGISTERBACK extends FallbackCommand
 {
     const STATUS_OK = 'ok';
     const STATUS_FAIL = 'fail';

@@ -2,11 +2,11 @@
 
 namespace Spike\Server\Command;
 
-use Spike\Command\AbstractCommand;
+use Spike\Command\FallbackCommand;
 use Spike\Command\CommandInterface;
 use Spike\Protocol\Message;
 
-class REQUESTPROXY extends AbstractCommand
+class REQUESTPROXY extends FallbackCommand
 {
     public function __construct(int $port)
     {

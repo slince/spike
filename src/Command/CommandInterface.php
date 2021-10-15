@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Spike\Command;
 
 use Spike\Protocol\Message;
@@ -7,19 +9,11 @@ use Spike\Protocol\Message;
 interface CommandInterface
 {
     /**
-     * Returns the command arguments.
+     * Gets the command id.
      *
-     * @return array
+     * @return string
      */
-    public function getArguments(): array;
-
-    /**
-     * Return the given argument.
-     *
-     * @param string $name
-     * @return mixed
-     */
-    public function getArgument(string $name);
+    public function getCommandId(): string;
 
     /**
      * Create the message instance.
