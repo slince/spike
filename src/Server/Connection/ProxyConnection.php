@@ -11,10 +11,9 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Spike\Server;
+namespace Spike\Server\Connection;
 
 use Spike\Connection\ConnectionInterface;
-use React\Socket\ConnectionInterface as RawConnection;
 
 class ProxyConnection
 {
@@ -96,16 +95,11 @@ class ProxyConnection
         $this->handledRequests++;
     }
 
-    public function pipe(RawConnection $dest)
+    public function pipe(PublicConnection $dest)
     {
-        $this->connection->getStream()->pipe($dest);
-        $dest->pipe($this->connection->getStream(), [
+        $this->connection->getStream()->pipe($dest->getRawConnection());
+        $dest->getRawConnection()->pipe($this->connection->getStream(), [
             'end' => false
         ]);
-    }
-
-    public function turnoff(RawConnection $dest)
-    {
-
     }
 }

@@ -11,9 +11,9 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Spike\Server;
+namespace Spike\Server\Connection;
 
-final class ConnectionPool implements \Countable, \IteratorAggregate
+final class ProxyConnectionPool implements \Countable, \IteratorAggregate
 {
     /**
      * @var ProxyConnection[]

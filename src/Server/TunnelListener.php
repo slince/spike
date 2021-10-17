@@ -17,6 +17,9 @@ use React\EventLoop\Loop;
 use React\EventLoop\LoopInterface;
 use React\Socket\ConnectionInterface;
 use Spike\Server\Command\REQUESTPROXY;
+use Spike\Server\Connection\ProxyConnectionPool;
+use Spike\Server\Connection\PublicConnection;
+use Spike\Server\Connection\PublicConnectionPool;
 use Spike\Socket\ServerInterface;
 use Spike\Socket\TcpServer;
 
@@ -33,11 +36,6 @@ final class TunnelListener
     protected $tunnel;
 
     /**
-     * @var ConnectionPool
-     */
-    protected $proxyConnections;
-
-    /**
      * @var ServerInterface
      */
     protected $server;
@@ -47,18 +45,29 @@ final class TunnelListener
      */
     protected $loop;
 
+    /**
+     * @var ProxyConnectionPool
+     */
+    protected $proxyConnections;
+
+    /**
+     * @var PublicConnectionPool
+     */
+    protected $publicConnections;
+
     public function __construct(Client $client, Tunnel $tunnel, ?LoopInterface $loop = null)
     {
         $this->client = $client;
         $this->tunnel = $tunnel;
         $this->loop = $loop ?: Loop::get();
-        $this->proxyConnections = new ConnectionPool();
+        $this->proxyConnections = new ProxyConnectionPool();
+        $this->publicConnections = new PublicConnectionPool();
     }
 
     /**
-     * @return ConnectionPool
+     * @return ProxyConnectionPool
      */
-    public function getProxyConnections(): ConnectionPool
+    public function getProxyConnections(): ProxyConnectionPool
     {
         return $this->proxyConnections;
     }
@@ -75,18 +84,26 @@ final class TunnelListener
         $this->server->serve();
     }
 
+    /**
+     * {@internal}
+     */
     public function handleConnection(ConnectionInterface $connection)
     {
+        $publicConnection = new PublicConnection($connection);
+        $this->publicConnections->add($publicConnection);
         $proxyConnection = $this->proxyConnections->tryGet();
         if (null === $proxyConnection) {
             // request to spike client.
-            $connection->pause();
+            $publicConnection->pause();
             $this->client->getConnection()->executeCommand(new REQUESTPROXY($this->tunnel->getPort()));
-            // suspend the listen.
-            $this->server->pause();
         } else {
-            $proxyConnection->pipe($connection);
+            $proxyConnection->pipe($publicConnection);
         }
+    }
+
+    public function handle()
+    {
+
     }
 
     protected function createPublicServer(Tunnel $tunnel)
