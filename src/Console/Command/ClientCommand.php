@@ -53,7 +53,7 @@ class ClientCommand extends Command
         $logger = new Logger('spike');
         $logger->pushHandler(Utils::createLogFileHandler($log['file'], $log['level'], $this->loop));
         $console = $configuration->getConsole();
-        if (!$input->hasOption('quiet') && $console['enabled']) {
+        if (!$input->getOption('quiet') && $console['enabled']) {
             $logger->pushHandler(new ConsoleHandler($output, $console['level']));
         }
         return $logger;

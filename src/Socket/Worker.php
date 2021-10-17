@@ -13,9 +13,9 @@ declare(strict_types=1);
 
 namespace Spike\Socket;
 
-use Spike\Socket\Process\FakeProcess;
-use Spike\Socket\Process\Process;
-use Spike\Socket\Process\ProcessInterface;
+use Spike\Process\FakeProcess;
+use Spike\Process\Process;
+use Spike\Process\ProcessInterface;
 use React\EventLoop\LoopInterface;
 use React\Socket\ServerInterface as Socket;
 

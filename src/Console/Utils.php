@@ -3,7 +3,6 @@
 namespace Spike\Console;
 
 use React\EventLoop\LoopInterface;
-use React\Stream\WritableResourceStream;
 use Spike\Log\AsyncStreamHandler;
 
 final class Utils
@@ -32,7 +31,8 @@ final class Utils
      */
     public static function createLogHandler($resource, $level, LoopInterface $loop = null): AsyncStreamHandler
     {
-        $stream = new WritableResourceStream($resource, $loop);
-        return new AsyncStreamHandler($stream, $level);
+        $handler = new AsyncStreamHandler($resource, $level);
+        $handler->setLoop($loop);
+        return $handler;
     }
 }

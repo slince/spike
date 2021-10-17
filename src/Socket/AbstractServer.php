@@ -71,7 +71,7 @@ abstract class AbstractServer extends EventEmitter implements ServerInterface
         $resolver
             ->setDefaults([
                 'max_workers' => 1,
-                'event_names' => ['start', 'end', 'connection'],
+                'event_names' => ['start', 'end', 'worker_pool_start', 'connection'],
             ])
             ->setRequired(['address']);
     }
@@ -119,7 +119,7 @@ abstract class AbstractServer extends EventEmitter implements ServerInterface
     {
         $this->boot();
         $this->pool->run();
-        $this->loop->run();
+        $this->emit('worker_pool_start', [$this]);
     }
 
     protected function boot()

@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Spike\Process;
 
-use React\Stream\ReadableStreamInterface;
-use React\Stream\WritableStreamInterface;
+use Symfony\Component\Process\Exception\LogicException;
+use Symfony\Component\Process\Exception\RuntimeException;
 
 interface ProcessInterface
 {
@@ -37,13 +37,6 @@ interface ProcessInterface
     const STATUS_TERMINATED = 'terminated';
 
     /**
-     * Checks whether the process is running.
-     *
-     * @return bool
-     */
-    public function isRunning(): bool;
-
-    /**
      * Starts the process.
      *
      * @param bool $blocking
@@ -61,6 +54,17 @@ interface ProcessInterface
     public function stop();
 
     /**
+     * Sends a POSIX signal to the process.
+     *
+     * @param int $signal A valid POSIX signal (see https://php.net/pcntl.constants)
+     *
+     * @throws LogicException   In case the process is not running
+     * @throws RuntimeException In case --enable-sigchild is activated and the process can't be killed
+     * @throws RuntimeException In case of failure
+     */
+    public function signal(int $signal);
+
+    /**
      * Gets the process id.
      *
      * @return int
@@ -70,14 +74,51 @@ interface ProcessInterface
     /**
      * Gets the std iny stream for the process.
      *
-     * @return WritableStreamInterface
+     * @return resource
      */
-    public function getStdin(): WritableStreamInterface;
+    public function getStdin();
 
     /**
      * Gets the std out stream for the process.
      *
-     * @return ReadableStreamInterface
+     * @return resource
      */
-    public function getStdout(): ReadableStreamInterface;
+    public function getStdout();
+
+    /**
+     * Gets the std err stream for the process.
+     *
+     * @return resource
+     */
+    public function getStderr();
+
+    /**
+     * Checks whether the process is running.
+     *
+     * @return bool
+     */
+    public function isRunning(): bool;
+
+    /**
+     * Checks if the process has been started with no regard to the current state.
+     *
+     * @return bool true if status is ready, false otherwise
+     */
+    public function isStarted(): bool;
+
+    /**
+     * Checks if the process is terminated.
+     *
+     * @return bool true if process is terminated, false otherwise
+     */
+    public function isTerminated(): bool;
+
+    /**
+     * Gets the process status.
+     *
+     * The status is one of: ready, started, terminated.
+     *
+     * @return string The current process status
+     */
+    public function getStatus(): string;
 }

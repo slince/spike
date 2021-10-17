@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Spike\Connection;
 
 use React\Promise\PromiseInterface;
-use React\Stream\DuplexStreamInterface as Stream;
+use React\Socket\ConnectionInterface as RawConnection;
 use Spike\Command\CommandInterface;
 use Spike\Protocol\Message;
 use Spike\Protocol\MessageParser;
@@ -22,11 +22,11 @@ use Spike\Protocol\MessageParser;
 class StreamConnection implements ConnectionInterface
 {
     /**
-     * @var Stream
+     * @var RawConnection
      */
     protected $stream;
 
-    public function __construct(Stream $stream)
+    public function __construct(RawConnection $stream)
     {
         $this->stream = $stream;
     }
@@ -72,9 +72,9 @@ class StreamConnection implements ConnectionInterface
     }
 
     /**
-     * @return Stream
+     * @return RawConnection
      */
-    public function getStream(): Stream
+    public function getStream(): RawConnection
     {
         return $this->stream;
     }

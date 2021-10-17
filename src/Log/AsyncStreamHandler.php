@@ -13,28 +13,64 @@ declare(strict_types=1);
 
 namespace Spike\Log;
 
-use Monolog\Handler\AbstractProcessingHandler;
+use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
+use React\EventLoop\LoopInterface;
+use React\Stream\WritableResourceStream;
 use React\Stream\WritableStreamInterface;
 
-class AsyncStreamHandler extends AbstractProcessingHandler
+class AsyncStreamHandler extends StreamHandler
 {
+    /**
+     * @var LoopInterface
+     */
+    protected $loop;
+
     /**
      * @var WritableStreamInterface
      */
-    protected $stream;
+    protected $writableStream;
 
-    public function __construct($stream, $level = Logger::DEBUG, bool $bubble = true)
+    /**
+     * The value will be always true on ms window.
+     *
+     * @var bool
+     */
+    protected $fallback = false;
+
+    /**
+     * Sets loop instance.
+     *
+     * @param LoopInterface $loop
+     */
+    public function setLoop(LoopInterface $loop)
     {
-        $this->stream = $stream;
-        parent::__construct($level, $bubble);
+        $this->loop = $loop;
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
-    protected function write(array $record): void
+    protected function streamWrite($stream, array $record): void
     {
-        $this->stream->write((string) $record['formatted']);
+        if ($this->fallback) {
+            parent::streamWrite($stream, $record);
+            return;
+        }
+        try {
+            $this->getAsyncStream()->write((string) $record['formatted']);
+        } catch (\RuntimeException $exception) {
+            //Polyfill
+            $this->fallback = true;
+            parent::streamWrite($stream, $record);
+        }
+    }
+
+    protected function getAsyncStream()
+    {
+        if (null !== $this->writableStream) {
+            return $this->writableStream;
+        }
+        return $this->writableStream = new WritableResourceStream($this->getStream(), $this->loop);
     }
 }

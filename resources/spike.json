@@ -1,5 +1,7 @@
 {
     "server_address": "127.0.0.1:8090",
+    "timeout": 2,
+    "read_timeout": 10,
     "tunnels": [
         {
             "protocol": "tcp",

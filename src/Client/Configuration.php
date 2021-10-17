@@ -25,6 +25,16 @@ class Configuration
     /**
      * @var int
      */
+    protected $timeout = 2;
+
+    /**
+     * @var int
+     */
+    protected $readTimeout = 3;
+
+    /**
+     * @var int
+     */
     protected $maxWorkers = 4;
 
     /**
@@ -44,7 +54,7 @@ class Configuration
      * @var array
      */
     protected $log = [
-        'file' => './client.log',
+        'file' => './spike.log',
         'level' => 'info'
     ];
 
@@ -75,6 +85,38 @@ class Configuration
     public function setServerAddress(string $serverAddress)
     {
         $this->serverAddress = $serverAddress;
+    }
+
+    /**
+     * @return int
+     */
+    public function getTimeout(): int
+    {
+        return $this->timeout;
+    }
+
+    /**
+     * @param int $timeout
+     */
+    public function setTimeout(int $timeout): void
+    {
+        $this->timeout = $timeout;
+    }
+
+    /**
+     * @return int
+     */
+    public function getReadTimeout(): int
+    {
+        return $this->readTimeout;
+    }
+
+    /**
+     * @param int $readTimeout
+     */
+    public function setReadTimeout(int $readTimeout): void
+    {
+        $this->readTimeout = $readTimeout;
     }
 
     /**

@@ -11,12 +11,16 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-class FakeProcess implements ProcessInterface
+namespace Spike\Process;
+
+class FakeProcess extends AbstractProcess
 {
     /**
      * @var callable
      */
     protected $callback;
+
+    protected $running = false;
 
     public function __construct(callable $callback)
     {
@@ -28,7 +32,9 @@ class FakeProcess implements ProcessInterface
      */
     public function start(bool $blocking = true)
     {
+        $this->running = true;
         call_user_func($this->callback);
+        $this->running = false;
     }
 
     /**
@@ -36,35 +42,45 @@ class FakeProcess implements ProcessInterface
      */
     public function stop()
     {
+        $this->running = false;
     }
 
     /**
-     * {@inheritdoc }
+     * {@inheritdoc}
      */
     public function wait()
     {
     }
 
     /**
-     * {@inheritdoc }
+     * {@inheritdoc}
      */
     public function signal($signal)
     {
+        // ignore
     }
 
     /**
-     * {@inheritdoc }
+     * {@inheritdoc}
      */
-    public function onSignal($signal, callable $handler)
-    {
-
-    }
-
-    /**
-     * {@inheritdoc }
-     */
-    public function getPid()
+    public function getPid(): int
     {
         return getmygid();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isRunning(): bool
+    {
+        return $this->running;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function updateStatus(bool $blocking)
+    {
+
     }
 }

@@ -74,9 +74,14 @@ final class Server extends TcpServer
      */
     public function handleConnection(ConnectionInterface $connection)
     {
+        $this->logger->info(sprintf('Accept a connection, remote address "%s"', $connection->getRemoteAddress()));
         $connection = ConnectionFactory::wrapConnection($connection);
         $this->clients->add(new Client($connection));
         $connection->listen(function(Message $message, $connection){
+            $this->logger->info(sprintf('Accept a command [%s], connection "%s"',
+                $message->getRawPayload(),
+                $connection->getRemoteAddress()
+            ));
             $command = $this->commands->createCommand($message);
             $this->handler->handle($command, $connection);
         });

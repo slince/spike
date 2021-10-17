@@ -70,7 +70,7 @@ final class Client extends EventEmitter
 
     protected function tryConnect()
     {
-        $connector = new Connector();
+        $connector = new Connector(['timeout' => $this->configuration->getTimeout()]);
         $connector->connect($this->configuration->getServerAddress())
             ->then([$this, 'handleConnection'], function(\Exception $e){
                 $this->logger->error(sprintf('Cannot connect to the server %s; error message: %s', $this->configuration->getServerAddress(), $e->getMessage()));
@@ -127,8 +127,8 @@ final class Client extends EventEmitter
     protected function createCommandHandler(): HandlerInterface
     {
         return new DelegatingHandler(new HandlerResolver([
-            new Handler\RegisterBackHandler($this, $this->clients),
-            new Handler\RequestProxyHandler($this, $this->clients, $this->configuration),
+            new Handler\RegisterBackHandler($this),
+            new Handler\RequestProxyHandler($this),
         ]));
     }
 }

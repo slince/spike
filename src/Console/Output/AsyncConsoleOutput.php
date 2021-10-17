@@ -20,6 +20,13 @@ class AsyncConsoleOutput extends ConsoleOutput
     protected $writableStream;
 
     /**
+     * The value will be always true on ms window.
+     *
+     * @var bool
+     */
+    protected $fallback = false;
+
+    /**
      * Set loop for
      * @param LoopInterface $loop
      */
@@ -33,11 +40,22 @@ class AsyncConsoleOutput extends ConsoleOutput
      */
     protected function doWrite(string $message, bool $newline)
     {
+        if ($this->fallback) {
+            parent::doWrite($message, $newline);
+            return;
+        }
+
         if ($newline) {
             $message .= \PHP_EOL;
         }
 
-        $this->getAsyncStream()->write($message);
+        try {
+            $this->getAsyncStream()->write($message);
+        } catch (\RuntimeException $exception) {
+            //Polyfill
+            $this->fallback = true;
+            parent::doWrite($message, false);
+        }
     }
 
     protected function getAsyncStream()

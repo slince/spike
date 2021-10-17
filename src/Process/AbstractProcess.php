@@ -13,30 +13,32 @@ declare(strict_types=1);
 
 namespace Spike\Process;
 
-use React\Stream\ReadableStreamInterface;
-use React\Stream\WritableStreamInterface;
-
 abstract class AbstractProcess implements ProcessInterface
 {
     /**
-     * @var WritableStreamInterface
+     * @var string
+     */
+    protected $status = self::STATUS_READY;
+
+    /**
+     * @var resource
      */
     public $stdin;
 
     /**
-     * @var ReadableStreamInterface
+     * @var resource
      */
     public $stdout;
 
     /**
-     * @var ReadableStreamInterface
+     * @var resource
      */
     public $stderr;
 
     /**
      * {@inheritdoc}
      */
-    public function getStdin(): WritableStreamInterface
+    public function getStdin()
     {
         return $this->stdin;
     }
@@ -44,7 +46,7 @@ abstract class AbstractProcess implements ProcessInterface
     /**
      * {@inheritdoc}
      */
-    public function getStdout(): ReadableStreamInterface
+    public function getStdout()
     {
         return $this->stdout;
     }
@@ -52,8 +54,42 @@ abstract class AbstractProcess implements ProcessInterface
     /**
      * {@inheritdoc}
      */
-    public function getStderr(): ReadableStreamInterface
+    public function getStderr()
     {
         return $this->stderr;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isStarted(): bool
+    {
+        return self::STATUS_READY != $this->status;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isTerminated(): bool
+    {
+        $this->updateStatus(false);
+
+        return self::STATUS_TERMINATED == $this->status;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getStatus(): string
+    {
+        $this->updateStatus(false);
+
+        return $this->status;
+    }
+
+    /**
+     * Updates the status of the process
+     * @param bool $blocking
+     */
+    abstract protected function updateStatus(bool $blocking);
 }

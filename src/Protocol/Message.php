@@ -35,10 +35,16 @@ class Message
      */
     protected $payload = [];
 
-    public function __construct(int $flags, array $payload = [])
+    /**
+     * @var string
+     */
+    protected $rawPayload;
+
+    public function __construct(int $flags, array $payload = [], string $rawPayload = '')
     {
         $this->flags = $flags;
         $this->payload = $payload;
+        $this->rawPayload = $rawPayload;
     }
 
     /**
@@ -57,9 +63,18 @@ class Message
         return $this->payload;
     }
 
+
     public function getArgument(string $name, $defaults = null)
     {
         return $this->payload[$name] ?? $defaults;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRawPayload(): string
+    {
+        return $this->rawPayload;
     }
 
     /**
