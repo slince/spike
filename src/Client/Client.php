@@ -125,6 +125,10 @@ final class Client extends EventEmitter
                 $this->logger->warning($exception->getMessage());
             }
         });
+        $connection->on('close', function(){
+            $this->logger->warning(sprintf('Disconnect from server %s, you can restart spike if need.', $this->configuration->getServerAddress()));
+            $this->loop->stop();
+        });
         (new MessageParser($connection))->parse();
     }
 
@@ -140,7 +144,7 @@ final class Client extends EventEmitter
                 'server_port' => $tunnel->getServerPort(),
                 'max_workers' => $tunnel->getMaxWorkers()
             ];
-        }, $this->configuration->getTunnels());
+        }, iterator_to_array($this->configuration->getTunnels()));
         $this->connection->executeCommand(new REGISTER(
             $user['username'], $user['password'], $tunnels
         ));
@@ -168,7 +172,7 @@ final class Client extends EventEmitter
     {
         return new DelegatingHandler(new HandlerResolver([
             new Handler\RegisterBackHandler($this),
-            new Handler\RequestProxyHandler($this),
+            new Handler\RequestProxyHandler($this, $this->configuration),
         ], $this->logger));
     }
 }

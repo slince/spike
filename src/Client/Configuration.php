@@ -189,11 +189,11 @@ class Configuration
         $tunnelsMap = [];
         foreach ($tunnels as $info) {
             $tunnel = new Tunnel($info['dsn'], $info['server_port']);
-            if (isset($tunnel['proxy_pool_size'])) {
-                $tunnel->setProxyPoolSize($tunnel['proxy_pool_size']);
+            if (isset($info['proxy_pool_size'])) {
+                $tunnel->setProxyPoolSize($info['proxy_pool_size']);
             }
-            if (isset($tunnel['max_workers'])) {
-                $tunnel->setMaxWorkers($tunnel['max_workers']);
+            if (isset($info['max_workers'])) {
+                $tunnel->setMaxWorkers($info['max_workers']);
             }
             $tunnelsMap[$info['server_port']] = $tunnel;
         }
@@ -201,9 +201,9 @@ class Configuration
     }
 
     /**
-     * @return Tunnel[]
+     * @return TunnelCollection
      */
-    public function getTunnels(): array
+    public function getTunnels()
     {
         return $this->tunnels;
     }
