@@ -183,12 +183,11 @@ class Configuration
         $this->user = $user;
     }
 
-    /**
-     * @param Tunnel[] $tunnels
-     */
     public function setTunnels(array $tunnels): void
     {
-        $this->tunnels = $tunnels;
+        $this->tunnels = array_map(function($info){
+            return new Tunnel($info['dsn'], $info['server_port']);
+        }, $tunnels);
     }
 
     /**

@@ -51,4 +51,9 @@ interface ServerInterface
      * {@internal}
      */
     public function handleConnection(ConnectionInterface $connection);
+
+    /**
+     * {@internal}
+     */
+    public function handleError(\Exception $e);
 }

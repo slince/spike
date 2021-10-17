@@ -15,6 +15,7 @@ use Spike\Handler\DelegatingHandler;
 use Spike\Handler\HandlerInterface;
 use Spike\Handler\HandlerResolver;
 use Spike\Protocol\Message;
+use Spike\Protocol\MessageParser;
 use Spike\Server\Command as ServerCommand;
 
 final class Client extends EventEmitter
@@ -82,14 +83,11 @@ final class Client extends EventEmitter
      */
     public function handleConnection(RawConnection $connection)
     {
-        $connection->on('error', function($error){
-            var_dump($error);
-        });
         $this->logger->info(sprintf('Connect to the server %s', $this->configuration->getServerAddress()));
         $connection = ConnectionFactory::wrapConnection($connection);
         $this->connection = $connection;
         $this->registerClient();
-        $connection->listen(function(Message $message, $connection){
+        $connection->on('message', function(Message $message, $connection){
             $this->logger->info(sprintf('Accept a command [%s], connection "%s"',
                 $message->getRawPayload(),
                 $connection->getRemoteAddress()
@@ -97,6 +95,7 @@ final class Client extends EventEmitter
             $command = $this->commands->createCommand($message);
             $this->handler->handle($command, $connection);
         });
+        (new MessageParser($connection))->parse();
     }
 
     /**

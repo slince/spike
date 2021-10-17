@@ -45,7 +45,6 @@ class ConnectCommand extends ClientCommand
                 Configuration::class,
                 pathinfo($configFile, PATHINFO_EXTENSION)
             );
-            var_dump($configuration->getTunnels());exit;
         } elseif ($serverAddress = $input->getArgument('serverAddress')) {
             $configuration = new Configuration($serverAddress);
         } else {

@@ -53,6 +53,7 @@ final class Tunnel
      */
     public function setDsn(string $dsn)
     {
+        $parsedDsn = parse_url($dsn);
         if (!isset($parsedDsn['scheme'])) {
             throw new InvalidArgumentException(sprintf('The "%s" DSN must contain a scheme.', $dsn));
         }

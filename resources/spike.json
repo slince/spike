@@ -5,7 +5,7 @@
     "tunnels": [
         {
             "dsn": "tcp://127.0.0.1:3306",
-            "server_port": "8086"
+            "server_port": 8086
         }
     ],
     "console": {
@@ -17,7 +17,7 @@
         "level": "info"
     },
     "user": {
-        "username": "spike",
-        "password": "spike"
+        "username": "admin",
+        "password": "admin"
     }
 }

@@ -23,6 +23,7 @@ use Spike\Handler\DelegatingHandler;
 use Spike\Handler\HandlerResolver;
 use Spike\Handler\HandlerInterface;
 use Spike\Protocol\Message;
+use Spike\Protocol\MessageParser;
 use Spike\Socket\TcpServer;
 
 final class Server extends TcpServer
@@ -67,6 +68,9 @@ final class Server extends TcpServer
         $this->clients = new ClientRegistry();
         $this->handler = $this->createCommandHandler();
         $this->commands = $this->createCommandFactory();
+        $this->on('worker_pool_start', function(){
+            $this->logger->info(sprintf('The server is listening on address "%s"', $this->options['address']));
+        });
     }
 
     /**
@@ -77,7 +81,7 @@ final class Server extends TcpServer
         $this->logger->info(sprintf('Accept a connection, remote address "%s"', $connection->getRemoteAddress()));
         $connection = ConnectionFactory::wrapConnection($connection);
         $this->clients->add(new Client($connection));
-        $connection->listen(function(Message $message, $connection){
+        $connection->on('message', function(Message $message, $connection){
             $this->logger->info(sprintf('Accept a command [%s], connection "%s"',
                 $message->getRawPayload(),
                 $connection->getRemoteAddress()
@@ -85,6 +89,15 @@ final class Server extends TcpServer
             $command = $this->commands->createCommand($message);
             $this->handler->handle($command, $connection);
         });
+        (new MessageParser($connection))->parse();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function handleError(\Exception $e)
+    {
+        $this->logger->error(sprintf('Error create socket server for "%s"', $this->options['address']));
     }
 
     /**

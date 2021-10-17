@@ -14,10 +14,9 @@ declare(strict_types=1);
 
 namespace Spike\Protocol;
 
-use Evenement\EventEmitter;
 use Spike\Connection\ConnectionInterface;
 
-final class MessageParser extends EventEmitter
+final class MessageParser
 {
     /**
      * @var ConnectionInterface
@@ -34,12 +33,12 @@ final class MessageParser extends EventEmitter
         $buffer = '';
         $readSize = 0;
         $meta = null;
-        $this->connection->listenRaw(function($data) use(&$buffer, &$readSize, &$meta){
+        $this->connection->on('data', function($data) use(&$buffer, &$readSize, &$meta){
             $buffer .= $data;
             $readSize += strlen($data);
             if (null === $meta && $readSize >= 17) {
                 $meta = Message::parseHeader(substr($buffer, 0, 17));
-                $this->emit('meta', $meta);
+                $this->connection->emit('meta', $meta);
                 $buffer = substr($buffer, 17); // reset buffer
                 $readSize = strlen($buffer);
             }
@@ -47,7 +46,7 @@ final class MessageParser extends EventEmitter
                 $body = substr($buffer, 0, $meta['size']);
                 $payload = Message::parsePayload($body);
                 $message = new Message($meta['flags'], $payload, $body);
-                $this->emit('message', [$message, $this->connection, $meta]);
+                $this->connection->emit('message', [$message, $this->connection, $meta]);
                 $buffer = substr($buffer, $meta['size']); // reset buffer
                 $readSize = strlen($buffer);
                 $meta = null;

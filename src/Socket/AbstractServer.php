@@ -97,6 +97,14 @@ abstract class AbstractServer extends EventEmitter implements ServerInterface
     }
 
     /**
+     * @internal
+     */
+    public function handleError(\Exception $e)
+    {
+        $this->emit('error', [$e]);
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function pause()
@@ -118,6 +126,7 @@ abstract class AbstractServer extends EventEmitter implements ServerInterface
     public function serve()
     {
         $this->boot();
+        $this->emit('start', [$this]);
         $this->pool->run();
         $this->emit('worker_pool_start', [$this]);
     }
@@ -128,7 +137,6 @@ abstract class AbstractServer extends EventEmitter implements ServerInterface
         $this->pool = $this->createWorkers($socket);
         $this->socket = $socket;
         $this->initialize();
-        $this->emit('start', [$this]);
     }
 
     /**

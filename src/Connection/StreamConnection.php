@@ -13,13 +13,14 @@ declare(strict_types=1);
 
 namespace Spike\Connection;
 
-use React\Promise\PromiseInterface;
+use Evenement\EventEmitter;
 use React\Socket\ConnectionInterface as RawConnection;
+use React\Stream\Util;
 use Spike\Command\CommandInterface;
 use Spike\Protocol\Message;
 use Spike\Protocol\MessageParser;
 
-class StreamConnection implements ConnectionInterface
+class StreamConnection extends EventEmitter implements ConnectionInterface
 {
     /**
      * @var RawConnection
@@ -29,6 +30,7 @@ class StreamConnection implements ConnectionInterface
     public function __construct(RawConnection $stream)
     {
         $this->stream = $stream;
+        Util::forwardEvents($this->stream, $this, ['data', 'end', 'error', 'close', 'drain']);
     }
 
     /**
@@ -60,36 +62,10 @@ class StreamConnection implements ConnectionInterface
      */
     public function executeCommand(CommandInterface $command)
     {
-        $this->writeRequest($command);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function writeRequest(CommandInterface $command)
-    {
         $message = $command->createMessage();
         $message->addArgument('_cid_', $command->getCommandId());
         $message = Message::pack($message);
         $this->stream->write($message);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function listenRaw(callable $callback)
-    {
-        $this->stream->on('data', $callback);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function listen(callable $callback)
-    {
-        $parser = new MessageParser($this);
-        $parser->on('message', $callback);
-        $parser->parse();
     }
 
     /**

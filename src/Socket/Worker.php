@@ -131,7 +131,8 @@ final class Worker
          foreach ($this->signals as $signal => $handler) {
              $this->loop->addSignal($signal, $handler);
          }
-        $this->socket->on('connection', [$this->server, 'handleConnection']);
-        $this->loop->run();
+         $this->socket->on('connection', [$this->server, 'handleConnection']);
+         $this->socket->on('error', [$this->server, 'handleError']);
+         $this->loop->run();
      }
 }
