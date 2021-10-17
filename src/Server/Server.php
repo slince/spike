@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Spike\Server;
 
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use React\EventLoop\LoopInterface;
 use React\Socket\ConnectionInterface;
 use Spike\Command\CommandFactory;
@@ -56,7 +57,7 @@ final class Server extends TcpServer
     public function __construct(Configuration $configuration, ?LoggerInterface $logger = null, ?LoopInterface $loop = null)
     {
         $this->configuration = $configuration;
-        $this->logger = $logger;
+        $this->logger = $logger ?: new NullLogger();
         parent::__construct($loop);
     }
 
@@ -125,6 +126,6 @@ final class Server extends TcpServer
             new Handler\PingHandler($this, $this->clients),
             new Handler\RegisterHandler($this, $this->clients, $this->configuration),
             new Handler\RegisterProxyHandler($this, $this->clients),
-        ]));
+        ], $this->logger));
     }
 }

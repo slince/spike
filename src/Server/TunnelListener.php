@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Spike\Server;
 
+use Psr\Log\LoggerInterface;
 use React\EventLoop\Loop;
 use React\EventLoop\LoopInterface;
 use React\Socket\ConnectionInterface;
@@ -54,10 +55,16 @@ final class TunnelListener
      */
     protected $publicConnections;
 
-    public function __construct(Client $client, Tunnel $tunnel, ?LoopInterface $loop = null)
+    /**
+     * @var LoggerInterface
+     */
+    protected $logger;
+
+    public function __construct(Client $client, Tunnel $tunnel, LoggerInterface $logger, ?LoopInterface $loop = null)
     {
         $this->client = $client;
         $this->tunnel = $tunnel;
+        $this->logger = $logger;
         $this->loop = $loop ?: Loop::get();
         $this->proxyConnections = new ProxyConnectionPool();
         $this->publicConnections = new PublicConnectionPool();
@@ -80,6 +87,7 @@ final class TunnelListener
             'max_workers' => 4
         ]);
         $this->server->on('connection', [$this, 'handleConnection']);
+        $this->logger->info(sprintf('The tunnel listener on server port "%d" is created.', $this->tunnel->getPort()));
         $this->server->serve();
     }
 
@@ -109,6 +117,7 @@ final class TunnelListener
             $proxyConnection = $this->proxyConnections->tryGet();
             if (null === $proxyConnection) {
                 // proxy connection pool is exhaust.
+                $this->logger->info(sprintf('The tunnel listener on server port "%d" is busy.', $this->tunnel->getPort()));
                 break;
             }
             $publicConnection = $this->publicConnections->consume();

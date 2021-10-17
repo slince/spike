@@ -35,7 +35,7 @@ final class DelegatingHandler implements HandlerInterface
      */
     public function handle(CommandInterface $command, ConnectionInterface $connection)
     {
-        if (false === $loader = $this->resolver->resolve($command)) {
+        if (null === $loader = $this->resolver->resolve($command)) {
             throw new InvalidArgumentException(sprintf('Cannot find handler for command type: "%s"',
                 get_class($command)
             ));
@@ -49,6 +49,6 @@ final class DelegatingHandler implements HandlerInterface
      */
     public function supports(CommandInterface $command): bool
     {
-        return false !== $this->resolve($command);
+        return null !== $this->resolver->resolve($command);
     }
 }

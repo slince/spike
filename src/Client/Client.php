@@ -4,6 +4,8 @@ namespace Spike\Client;
 
 use Evenement\EventEmitter;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
+use React\EventLoop\Loop;
 use React\EventLoop\LoopInterface;
 use React\Socket\Connector;
 use React\Socket\ConnectionInterface as RawConnection;
@@ -53,8 +55,8 @@ final class Client extends EventEmitter
     public function __construct(Configuration $configuration, ?LoggerInterface $logger = null, ?LoopInterface $loop = null)
     {
         $this->configuration = $configuration;
-        $this->logger = $logger;
-        $this->loop = $loop;
+        $this->logger = $logger ?: new NullLogger();
+        $this->loop = $loop ?: Loop::get();
     }
 
     public function run()
@@ -135,6 +137,6 @@ final class Client extends EventEmitter
         return new DelegatingHandler(new HandlerResolver([
             new Handler\RegisterBackHandler($this),
             new Handler\RequestProxyHandler($this),
-        ]));
+        ], $this->logger));
     }
 }

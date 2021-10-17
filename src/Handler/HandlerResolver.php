@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Spike\Handler;
 
+use Psr\Log\LoggerInterface;
 use Spike\Command\CommandInterface;
 
 final class HandlerResolver
@@ -22,18 +23,26 @@ final class HandlerResolver
      */
     private $handlers;
 
-    public function __construct(array $handlers)
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    public function __construct(array $handlers, LoggerInterface $logger)
     {
-        $this->handlers = $handlers;
+        $this->logger = $logger;
+        foreach ($handlers as $handler) {
+            $this->addHandler($handler);
+        }
     }
 
     /**
      * Returns a handler able to handle the command.
      *
      * @param CommandInterface $command
-     * @return bool
+     * @return HandlerInterface|null
      */
-    public function resolve(CommandInterface $command)
+    public function resolve(CommandInterface $command): ?HandlerInterface
     {
         foreach ($this->handlers as $handler) {
             if ($handler->supports($command)) {
@@ -41,7 +50,7 @@ final class HandlerResolver
             }
         }
 
-        return false;
+        return null;
     }
 
     /**
@@ -51,6 +60,9 @@ final class HandlerResolver
      */
     public function addHandler(HandlerInterface $handler)
     {
+        if ($handler instanceof LoggerAwareInterface) {
+            $handler->setLogger($this->logger);
+        }
         $this->handlers[] = $handler;
     }
 }

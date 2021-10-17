@@ -17,6 +17,8 @@ use Spike\Client\Command\REGISTER;
 use Spike\Command\CommandInterface;
 use Spike\Command\ERROR;
 use Spike\Connection\ConnectionInterface;
+use Spike\Handler\LoggerAwareInterface;
+use Spike\Handler\LoggerAwareTrait;
 use Spike\Server\Client;
 use Spike\Server\ClientRegistry;
 use Spike\Server\Command\REGISTERBACK;
@@ -27,8 +29,10 @@ use Spike\Server\Tunnel;
 use Spike\Server\TunnelListener;
 use Spike\Server\TunnelListenerCollection;
 
-class RegisterHandler extends ServerCommandHandler
+class RegisterHandler extends ServerCommandHandler implements LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     /**
      * @var Configuration
      */
@@ -39,6 +43,7 @@ class RegisterHandler extends ServerCommandHandler
         parent::__construct($server, $clients);
         $this->configuration = $configuration;
     }
+
 
     /**
      * {@inheritdoc}
@@ -84,7 +89,7 @@ class RegisterHandler extends ServerCommandHandler
         $tunnels = $this->discoverTunnels($command);
         $listeners = [];
         foreach ($tunnels as $tunnel) {
-            $listener = new TunnelListener($client, $tunnel);
+            $listener = new TunnelListener($client, $tunnel, $this->logger);
             $listeners[$tunnel->getPort()]  = $listener;
         }
         return new TunnelListenerCollection($listeners);
