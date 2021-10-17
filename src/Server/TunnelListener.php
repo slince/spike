@@ -16,7 +16,6 @@ namespace Spike\Server;
 use React\EventLoop\Loop;
 use React\EventLoop\LoopInterface;
 use React\Socket\ConnectionInterface;
-use Spike\Server\Command\REQUESTPROXY;
 use Spike\Server\Connection\ProxyConnectionPool;
 use Spike\Server\Connection\PublicConnection;
 use Spike\Server\Connection\PublicConnectionPool;
@@ -90,20 +89,28 @@ final class TunnelListener
     public function handleConnection(ConnectionInterface $connection)
     {
         $publicConnection = new PublicConnection($connection);
+        $publicConnection->pause();
         $this->publicConnections->add($publicConnection);
-        $proxyConnection = $this->proxyConnections->tryGet();
-        if (null === $proxyConnection) {
-            // request to spike client.
-            $publicConnection->pause();
-            $this->client->getConnection()->executeCommand(new REQUESTPROXY($this->tunnel->getPort()));
-        } else {
-            $proxyConnection->pipe($publicConnection);
-        }
+        $this->consumePublicConnections();
     }
 
-    public function handle()
+    /**
+     * Consume public connections.
+     */
+    public function consumePublicConnections()
     {
-
+        while (!$this->publicConnections->isEmpty()) {
+            $proxyConnection = $this->proxyConnections->tryGet();
+            if (null === $proxyConnection) {
+                // proxy connection pool is exhaust.
+                break;
+            }
+            $publicConnection = $this->publicConnections->consume();
+            $publicConnection->resume();
+            $publicConnection->work();
+            $proxyConnection->pipe($publicConnection);
+            $proxyConnection->occupy();
+        }
     }
 
     protected function createPublicServer(Tunnel $tunnel)

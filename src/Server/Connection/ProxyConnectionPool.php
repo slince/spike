@@ -47,7 +47,6 @@ final class ProxyConnectionPool implements \Countable, \IteratorAggregate
         });
         if (count($connections) > 0) {
             $connection = $connections[0];
-            $connection->occupy();
         }
         return null;
     }

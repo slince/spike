@@ -16,13 +16,16 @@ namespace Spike\Server\Connection;
 final class PublicConnectionPool implements \Countable, \IteratorAggregate
 {
     /**
-     * @var PublicConnection[]
+     * @var PublicConnection[]|\SplQueue
      */
     protected $connections;
 
     public function __construct(array $connections = [])
     {
-        $this->connections = $connections;
+        $this->connections = new \SplQueue();
+        foreach ($connections as $connection) {
+            $this->add($connection);
+        }
     }
 
     /**
@@ -32,24 +35,30 @@ final class PublicConnectionPool implements \Countable, \IteratorAggregate
      */
     public function add(PublicConnection $connection)
     {
-        $this->connections[] = $connection;
+        $this->connections->enqueue($connection);
     }
 
     /**
-     * Try get a ready connection.
+     * Consumes a public connection.
      *
      * @return PublicConnection|null
      */
-    public function tryGet(): ?PublicConnection
+    public function consume(): ?PublicConnection
     {
-        $connections = array_filter($this->connections, function (PublicConnection $connection) {
-            return $connection->isReady();
-        });
-        if (count($connections) > 0) {
-            $connection = $connections[0];
-            $connection->occupy();
+        if ($this->connections->isEmpty()) {
+            return null;
         }
-        return null;
+        return $this->connections->dequeue();
+    }
+
+    /**
+     * Checks whether the pool is empty.
+     *
+     * @return bool
+     */
+    public function isEmpty(): bool
+    {
+        return $this->connections->isEmpty();
     }
 
     /**

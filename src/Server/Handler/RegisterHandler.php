@@ -15,10 +15,12 @@ namespace Spike\Server\Handler;
 
 use Spike\Client\Command\REGISTER;
 use Spike\Command\CommandInterface;
+use Spike\Command\ERROR;
 use Spike\Connection\ConnectionInterface;
 use Spike\Server\Client;
 use Spike\Server\ClientRegistry;
 use Spike\Server\Command\REGISTERBACK;
+use Spike\Server\Command\REQUESTPROXY;
 use Spike\Server\Configuration;
 use Spike\Server\Server;
 use Spike\Server\Tunnel;
@@ -50,7 +52,7 @@ class RegisterHandler extends ServerCommandHandler
             $connection->executeCommand($response);
             $listeners = $this->createTunnelListeners($client, $command);
             $client->setTunnelListeners($listeners);
-            $this->runTunnelListeners($listeners);
+            $this->runTunnelListeners($connection, $listeners);
         } else {
             $response = new REGISTERBACK(REGISTERBACK::STATUS_FAIL);
             $connection->executeCommand($response);
@@ -59,12 +61,21 @@ class RegisterHandler extends ServerCommandHandler
     }
 
     /**
+     * @param ConnectionInterface $connection
      * @param TunnelListenerCollection $listeners
      */
-    protected function runTunnelListeners(TunnelListenerCollection $listeners)
+    protected function runTunnelListeners(ConnectionInterface $connection, TunnelListenerCollection $listeners)
     {
-        foreach ($listeners as $listener) {
-            $listener->listen();
+        foreach ($listeners as $port => $listener) {
+            try {
+                $listener->listen();
+                $connection->executeCommand(new REQUESTPROXY($port));
+            } catch (\Exception $exception) {
+                $connection->executeCommand(new ERROR(
+                    sprintf('Cannot create tunnel listener for port "%s"; error: %s',
+                    $port, $exception->getMessage())
+                ));
+            }
         }
     }
 

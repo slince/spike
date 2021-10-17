@@ -6,8 +6,8 @@ use React\Socket\ConnectionInterface;
 
 class PublicConnection
 {
-    const WORKING = 1;
-    const WAITING = 2;
+    const WAITING = 1;
+    const WORKING = 2;
     const PAUSED = 3;
 
     /**
@@ -35,8 +35,17 @@ class PublicConnection
 
     public function resume()
     {
-        $this->status = static::WORKING;
+        $this->status = static::WAITING;
         $this->connection->resume();
+    }
+
+    public function work()
+    {
+        if ($this->status !== self::WAITING) {
+            throw new \LogicException('Cannot work a connection that is not in waiting state');
+        }
+
+        $this->status = static::WORKING;
     }
 
     /**
