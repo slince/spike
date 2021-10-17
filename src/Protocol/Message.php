@@ -63,10 +63,27 @@ class Message
         return $this->payload;
     }
 
-
+    /**
+     * Return the given argument from payload.
+     *
+     * @param string $name
+     * @param null $defaults
+     * @return mixed|null
+     */
     public function getArgument(string $name, $defaults = null)
     {
         return $this->payload[$name] ?? $defaults;
+    }
+
+    /**
+     * Add an argument to payload.
+     *
+     * @param string $name
+     * @param mixed $value
+     */
+    public function addArgument(string $name, $value)
+    {
+        $this->payload[$name] = $value;
     }
 
     /**

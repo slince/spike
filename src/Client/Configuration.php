@@ -40,7 +40,7 @@ class Configuration
     /**
      * @var Tunnel[]
      */
-    protected $tunnels;
+    protected $tunnels = [];
 
     /**
      * @var array

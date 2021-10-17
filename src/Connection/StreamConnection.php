@@ -34,6 +34,22 @@ class StreamConnection implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
+    public function getRemoteAddress(): string
+    {
+        return $this->stream->getRemoteAddress();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getLocalAddress(): string
+    {
+        return $this->stream->getLocalAddress();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function disconnect(bool $force = false)
     {
         $force ? $this->stream->close() : $this->stream->end();
@@ -42,14 +58,19 @@ class StreamConnection implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function executeCommand(CommandInterface $command): PromiseInterface
+    public function executeCommand(CommandInterface $command)
     {
         $this->writeRequest($command);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function writeRequest(CommandInterface $command)
     {
-        $message = Message::pack($command->createMessage());
+        $message = $command->createMessage();
+        $message->addArgument('_cid_', $command->getCommandId());
+        $message = Message::pack($message);
         $this->stream->write($message);
     }
 

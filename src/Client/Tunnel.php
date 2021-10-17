@@ -23,6 +23,11 @@ final class Tunnel
     protected $scheme;
 
     /**
+     * @var int
+     */
+    protected $serverPort;
+
+    /**
      * @var string
      */
     protected $host;
@@ -33,18 +38,21 @@ final class Tunnel
     protected $localPort;
 
     /**
-     * @var int
-     */
-    protected $serverPort;
-
-    /**
      * @var string
      */
-    protected $originalDsn;
+    protected $dsn;
 
     public function __construct(string $dsn, int $serverPort)
     {
-        $this->originalDsn = $dsn;
+        $this->setDsn($dsn);
+        $this->serverPort = $serverPort;
+    }
+
+    /**
+     * @param string $dsn
+     */
+    public function setDsn(string $dsn)
+    {
         if (!isset($parsedDsn['scheme'])) {
             throw new InvalidArgumentException(sprintf('The "%s" DSN must contain a scheme.', $dsn));
         }
@@ -59,6 +67,14 @@ final class Tunnel
             throw new InvalidArgumentException(sprintf('The "%s" DSN must contain a port.', $dsn));
         }
         $this->localPort = $parsedDsn['port'];
+        $this->dsn = $dsn;
+    }
+
+    /**
+     * @param int $serverPort
+     */
+    public function setServerPort(int $serverPort)
+    {
         $this->serverPort = $serverPort;
     }
 

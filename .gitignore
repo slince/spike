@@ -8,5 +8,7 @@ tmp/
 *.log
 ./spike.json
 ./spiked.json
+./spike.yaml
+./spiked.yaml
 .php_cs.cache
 resources/workerman

@@ -17,6 +17,21 @@ use Spike\Command\CommandInterface;
 
 interface ConnectionInterface
 {
+
+    /**
+     * Returns the full remote address (URI) where this connection has been established with.
+     *
+     * @return string
+     */
+    public function getRemoteAddress(): string;
+
+    /**
+     * Returns the full local address (full URI with scheme, IP and port) where this connection has been established with.
+     *
+     * @return string
+     */
+    public function getLocalAddress(): string;
+
     /**
      * Closes the connection to Spiked.
      *
