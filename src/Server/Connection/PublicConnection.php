@@ -35,6 +35,11 @@ class PublicConnection extends EventEmitter
         Util::forwardEvents($connection, $this, ['close']);
     }
 
+    public function close()
+    {
+        $this->connection->close();
+    }
+
     public function pause()
     {
         $this->status = static::PAUSED;

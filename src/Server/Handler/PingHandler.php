@@ -22,15 +22,29 @@ declare(strict_types=1);
 
 namespace Spike\Server\Handler;
 
-use Spike\Protocol\Message;
+use Spike\Client\Command\PING;
+use Spike\Command\CommandInterface;
+use Spike\Connection\ConnectionInterface;
 
-class PingHandler extends AuthenticationAwareHandlerServer
+class PingHandler extends ServerCommandHandler
 {
+    use AuthenticationAwareTrait;
+
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
-    public function supports(Message $message)
+    public function handle(CommandInterface $command, ConnectionInterface $connection)
     {
-        return 'ping' === $message->getAction();
+        $this->ensureClientConnectionValid($connection);
+        $client = $this->clients->search($connection);
+        $client->refresh();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getSubscribedCommands(): array
+    {
+        return [PING::class];
     }
 }

@@ -124,7 +124,7 @@ abstract class AbstractServer extends EventEmitter implements ServerInterface
 
     protected function boot()
     {
-        $socket = $this->createSocket($this->options['address'], $this->loop);
+        $socket = $this->createSocketServer($this->options['address'], $this->loop);
         $this->pool = $this->createWorkers($socket);
         $this->socket = $socket;
         $this->initialize();
@@ -138,7 +138,7 @@ abstract class AbstractServer extends EventEmitter implements ServerInterface
      * @param LoopInterface $loop
      * @return SocketServer
      */
-    abstract protected function createSocket(string $address, LoopInterface $loop);
+    abstract protected function createSocketServer(string $address, LoopInterface $loop);
 
     /**
      * Create worker pools.

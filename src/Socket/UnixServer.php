@@ -33,7 +33,7 @@ class UnixServer extends AbstractServer
     /**
      * {@inheritdoc}
      */
-    protected function createSocket(string $address, LoopInterface $loop)
+    protected function createSocketServer(string $address, LoopInterface $loop)
     {
         return new SocketServer($address, $loop, $this->options['unix_context']);
     }

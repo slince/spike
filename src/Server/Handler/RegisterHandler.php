@@ -100,7 +100,7 @@ class RegisterHandler extends ServerCommandHandler
     {
         $tunnels = [];
         foreach ($command->getTunnels() as $detail) {
-            $tunnels[] = new Tunnel($detail['scheme'], $detail['port']);
+            $tunnels[] = new Tunnel($detail['scheme'], $detail['server_port']);
         }
         return $tunnels;
     }

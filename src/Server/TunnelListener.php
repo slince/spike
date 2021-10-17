@@ -119,7 +119,7 @@ final class TunnelListener
         }
     }
 
-    protected function createPublicServer(Tunnel $tunnel)
+    protected function createPublicServer(Tunnel $tunnel): ?TcpServer
     {
         if ('tcp' === ($scheme = $tunnel->getScheme())) {
             $server = new TcpServer($this->loop);

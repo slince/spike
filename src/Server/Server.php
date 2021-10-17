@@ -18,20 +18,15 @@ use React\EventLoop\LoopInterface;
 use React\Socket\ConnectionInterface;
 use Spike\Command\CommandFactory;
 use Spike\Connection\ConnectionFactory;
+use Spike\Client\Command as ClientCommand;
 use Spike\Handler\DelegatingHandler;
 use Spike\Handler\HandlerResolver;
 use Spike\Handler\HandlerInterface;
-use Spike\Server\Handler as ServerHandler;
 use Spike\Protocol\Message;
 use Spike\Socket\TcpServer;
 
 final class Server extends TcpServer
 {
-    /**
-     * @var HandlerInterface
-     */
-    protected $handler;
-
     /**
      * @var Configuration
      */
@@ -46,6 +41,11 @@ final class Server extends TcpServer
      * @var ClientRegistry
      */
     protected $clients;
+
+    /**
+     * @var HandlerInterface
+     */
+    protected $handler;
 
     /**
      * @var CommandFactory
@@ -90,7 +90,9 @@ final class Server extends TcpServer
     protected function createCommandFactory(): CommandFactory
     {
         return new CommandFactory([
-            'REGISTERBACK' => Command\REGISTERBACK::class
+            'PING' => ClientCommand\PING::class,
+            'REGISTER' => ClientCommand\REGISTER::class,
+            'REGISTERPROXY' => ClientCommand\REGISTERPROXY::class,
         ]);
     }
 
@@ -102,9 +104,9 @@ final class Server extends TcpServer
     protected function createCommandHandler(): HandlerInterface
     {
         return new DelegatingHandler(new HandlerResolver([
-            new ServerHandler\PingHandler($this, $this->clients),
-            new ServerHandler\RegisterHandler($this, $this->clients, $this->configuration),
-            new ServerHandler\RegisterProxyHandler($this, $this->clients),
+            new Handler\PingHandler($this, $this->clients),
+            new Handler\RegisterHandler($this, $this->clients, $this->configuration),
+            new Handler\RegisterProxyHandler($this, $this->clients),
         ]));
     }
 }

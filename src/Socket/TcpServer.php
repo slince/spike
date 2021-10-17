@@ -36,7 +36,7 @@ class TcpServer extends AbstractServer
     /**
      * {@inheritdoc}
      */
-    protected function createSocket(string $address, LoopInterface $loop)
+    protected function createSocketServer(string $address, LoopInterface $loop)
     {
         $server = new SocketServer($address, $loop, $this->options['tcp_context']);
         if ($this->options['tls']) {
