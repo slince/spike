@@ -92,6 +92,12 @@ final class TunnelListener
         $publicConnection->pause();
         $this->publicConnections->add($publicConnection);
         $this->consumePublicConnections();
+        $publicConnection->once('close', function () use($publicConnection){
+            if ($proxyConnection = $publicConnection->getProxyConnection()) {
+                $proxyConnection->release();
+                $this->consumePublicConnections();
+            }
+        });
     }
 
     /**

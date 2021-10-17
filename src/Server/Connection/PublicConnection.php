@@ -2,9 +2,11 @@
 
 namespace Spike\Server\Connection;
 
+use Evenement\EventEmitter;
 use React\Socket\ConnectionInterface;
+use React\Stream\Util;
 
-class PublicConnection
+class PublicConnection extends EventEmitter
 {
     const WAITING = 1;
     const WORKING = 2;
@@ -22,9 +24,15 @@ class PublicConnection
      */
     protected $connection;
 
+    /**
+     * @var ProxyConnection
+     */
+    protected $proxyConnection;
+
     public function __construct(ConnectionInterface $connection)
     {
         $this->connection = $connection;
+        Util::forwardEvents($connection, $this, ['close']);
     }
 
     public function pause()
@@ -46,6 +54,22 @@ class PublicConnection
         }
 
         $this->status = static::WORKING;
+    }
+
+    /**
+     * @param ProxyConnection $proxyConnection
+     */
+    public function setProxyConnection(ProxyConnection $proxyConnection)
+    {
+        $this->proxyConnection = $proxyConnection;
+    }
+
+    /**
+     * @return ProxyConnection
+     */
+    public function getProxyConnection(): ?ProxyConnection
+    {
+        return $this->proxyConnection;
     }
 
     /**

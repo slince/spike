@@ -16,7 +16,7 @@ namespace Spike\Server\Handler;
 use Spike\Client\Command\REGISTERPROXY;
 use Spike\Command\CommandInterface;
 use Spike\Connection\ConnectionInterface;
-use Spike\Server\ProxyConnection;
+use Spike\Server\Connection\ProxyConnection;
 
 class RegisterProxyHandler extends ServerCommandHandler
 {
@@ -33,6 +33,7 @@ class RegisterProxyHandler extends ServerCommandHandler
         $listeners = $client->getTunnelListeners();
         $listener = $listeners->get($command->getServerPort());
         $listener->getProxyConnections()->add(new ProxyConnection($connection));
+        $listener->consumePublicConnections();
     }
 
     /**

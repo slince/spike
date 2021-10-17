@@ -97,9 +97,9 @@ class ProxyConnection
 
     public function pipe(PublicConnection $dest)
     {
-        $this->connection->getStream()->pipe($dest->getRawConnection());
-        $dest->getRawConnection()->pipe($this->connection->getStream(), [
-            'end' => false
-        ]);
+        $src = $this->connection->getStream();
+        $dst = $dest->getRawConnection();
+        $src->pipe($dst);
+        $dst->pipe($src, ['end' => false]);
     }
 }
