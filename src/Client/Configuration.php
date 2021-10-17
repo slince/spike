@@ -38,7 +38,7 @@ class Configuration
     protected $maxWorkers = 4;
 
     /**
-     * @var Tunnel[]
+     * @var TunnelCollection
      */
     protected $tunnels = [];
 
@@ -69,6 +69,7 @@ class Configuration
     public function __construct(string $serverAddress = '127.0.0.1:8090')
     {
         $this->serverAddress = $serverAddress;
+        $this->tunnels = new TunnelCollection();
     }
 
     /**
@@ -98,7 +99,7 @@ class Configuration
     /**
      * @param int $timeout
      */
-    public function setTimeout(int $timeout): void
+    public function setTimeout(int $timeout)
     {
         $this->timeout = $timeout;
     }
@@ -114,7 +115,7 @@ class Configuration
     /**
      * @param int $readTimeout
      */
-    public function setReadTimeout(int $readTimeout): void
+    public function setReadTimeout(int $readTimeout)
     {
         $this->readTimeout = $readTimeout;
     }
@@ -130,7 +131,7 @@ class Configuration
     /**
      * @param int $maxWorkers
      */
-    public function setMaxWorkers(int $maxWorkers): void
+    public function setMaxWorkers(int $maxWorkers)
     {
         $this->maxWorkers = $maxWorkers;
     }
@@ -138,7 +139,7 @@ class Configuration
     /**
      * @param array $console
      */
-    public function setConsole(array $console): void
+    public function setConsole(array $console)
     {
         $this->console = $console;
     }
@@ -162,7 +163,7 @@ class Configuration
     /**
      * @param array $log
      */
-    public function setLog(array $log): void
+    public function setLog(array $log)
     {
         $this->log = $log;
     }
@@ -183,11 +184,20 @@ class Configuration
         $this->user = $user;
     }
 
-    public function setTunnels(array $tunnels): void
+    public function setTunnels(array $tunnels)
     {
-        $this->tunnels = array_map(function($info){
-            return new Tunnel($info['dsn'], $info['server_port']);
-        }, $tunnels);
+        $tunnelsMap = [];
+        foreach ($tunnels as $info) {
+            $tunnel = new Tunnel($info['dsn'], $info['server_port']);
+            if (isset($tunnel['proxy_pool_size'])) {
+                $tunnel->setProxyPoolSize($tunnel['proxy_pool_size']);
+            }
+            if (isset($tunnel['max_workers'])) {
+                $tunnel->setMaxWorkers($tunnel['max_workers']);
+            }
+            $tunnelsMap[$info['server_port']] = $tunnel;
+        }
+        $this->tunnels = new TunnelCollection($tunnelsMap);
     }
 
     /**

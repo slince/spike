@@ -25,10 +25,16 @@ final class Tunnel
      */
     protected $port;
 
-    public function __construct(string $scheme, int $port)
+    /**
+     * @var int
+     */
+    protected $maxWorkers = 4;
+
+    public function __construct(string $scheme, int $port, int $maxWorkers)
     {
         $this->scheme = $scheme;
         $this->port = $port;
+        $this->maxWorkers = $maxWorkers;
     }
 
     /**
@@ -45,5 +51,13 @@ final class Tunnel
     public function getPort(): int
     {
         return $this->port;
+    }
+
+    /**
+     * @return int
+     */
+    public function getMaxWorkers(): int
+    {
+        return $this->maxWorkers;
     }
 }

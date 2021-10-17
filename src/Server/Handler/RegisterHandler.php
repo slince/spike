@@ -13,12 +13,12 @@ declare(strict_types=1);
 
 namespace Spike\Server\Handler;
 
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 use Spike\Client\Command\REGISTER;
 use Spike\Command\CommandInterface;
 use Spike\Command\ERROR;
 use Spike\Connection\ConnectionInterface;
-use Spike\Handler\LoggerAwareInterface;
-use Spike\Handler\LoggerAwareTrait;
 use Spike\Server\Client;
 use Spike\Server\ClientRegistry;
 use Spike\Server\Command\REGISTERBACK;
@@ -105,7 +105,7 @@ class RegisterHandler extends ServerCommandHandler implements LoggerAwareInterfa
     {
         $tunnels = [];
         foreach ($command->getTunnels() as $detail) {
-            $tunnels[] = new Tunnel($detail['scheme'], $detail['server_port']);
+            $tunnels[] = new Tunnel($detail['scheme'], $detail['server_port'], $detail['max_workers']);
         }
         return $tunnels;
     }

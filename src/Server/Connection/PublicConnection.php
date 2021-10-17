@@ -3,7 +3,7 @@
 namespace Spike\Server\Connection;
 
 use Evenement\EventEmitter;
-use React\Socket\ConnectionInterface;
+use React\Socket\ConnectionInterface as RawConnection;
 use React\Stream\Util;
 
 class PublicConnection extends EventEmitter
@@ -20,7 +20,7 @@ class PublicConnection extends EventEmitter
     protected $status = self::WAITING;
 
     /**
-     * @var ConnectionInterface
+     * @var RawConnection
      */
     protected $connection;
 
@@ -29,7 +29,7 @@ class PublicConnection extends EventEmitter
      */
     protected $proxyConnection;
 
-    public function __construct(ConnectionInterface $connection)
+    public function __construct(RawConnection $connection)
     {
         $this->connection = $connection;
         Util::forwardEvents($connection, $this, ['close']);
@@ -78,9 +78,9 @@ class PublicConnection extends EventEmitter
     }
 
     /**
-     * @return ConnectionInterface
+     * @return RawConnection
      */
-    public function getRawConnection(): ConnectionInterface
+    public function getRawConnection(): RawConnection
     {
         return $this->connection;
     }

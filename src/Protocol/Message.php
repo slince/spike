@@ -17,6 +17,7 @@ use Spike\Exception\MetaException;
 
 class Message
 {
+    public const HEADER_SIZE = 17;
     public const BUFFER_SIZE = 65536;
 
     /** Payload flags.*/

@@ -133,6 +133,5 @@ final class Worker
          }
          $this->socket->on('connection', [$this->server, 'handleConnection']);
          $this->socket->on('error', [$this->server, 'handleError']);
-         $this->loop->run();
      }
 }

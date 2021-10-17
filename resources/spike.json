@@ -5,7 +5,9 @@
     "tunnels": [
         {
             "dsn": "tcp://127.0.0.1:3306",
-            "server_port": 8086
+            "server_port": 8086,
+            "proxy_pool_size": 10,
+            "max_workers":  4
         }
     ],
     "console": {

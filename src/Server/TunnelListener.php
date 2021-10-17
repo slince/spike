@@ -84,7 +84,7 @@ final class TunnelListener
         $address = "0.0.0.0:{$this->tunnel->getPort()}";
         $this->server->configure([
             'address' => $address,
-            'max_workers' => 4
+            'max_workers' => $this->tunnel->getMaxWorkers()
         ]);
         $this->server->on('connection', [$this, 'handleConnection']);
         $this->logger->info(sprintf('The tunnel listener on server port "%d" is created.', $this->tunnel->getPort()));

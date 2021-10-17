@@ -42,6 +42,16 @@ final class Tunnel
      */
     protected $dsn;
 
+    /**
+     * @var int
+     */
+    protected $maxWorkers = 4;
+
+    /**
+     * @var int
+     */
+    protected $proxyPoolSize = 10;
+
     public function __construct(string $dsn, int $serverPort)
     {
         $this->setDsn($dsn);
@@ -71,14 +81,6 @@ final class Tunnel
         $this->dsn = $dsn;
     }
 
-    /**
-     * @param int $serverPort
-     */
-    public function setServerPort(int $serverPort)
-    {
-        $this->serverPort = $serverPort;
-    }
-
     public function getScheme(): string
     {
         return $this->scheme;
@@ -97,5 +99,45 @@ final class Tunnel
     public function getServerPort(): int
     {
         return $this->serverPort;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDsn(): string
+    {
+        return $this->dsn;
+    }
+
+    /**
+     * @param int $maxWorkers
+     */
+    public function setMaxWorkers(int $maxWorkers)
+    {
+        $this->maxWorkers = $maxWorkers;
+    }
+
+    /**
+     * @return int
+     */
+    public function getMaxWorkers(): int
+    {
+        return $this->maxWorkers;
+    }
+
+    /**
+     * @param int $proxyPoolSize
+     */
+    public function setProxyPoolSize(int $proxyPoolSize)
+    {
+        $this->proxyPoolSize = $proxyPoolSize;
+    }
+
+    /**
+     * @return int
+     */
+    public function getProxyPoolSize(): int
+    {
+        return $this->proxyPoolSize;
     }
 }

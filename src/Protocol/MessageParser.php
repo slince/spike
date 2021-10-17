@@ -36,10 +36,10 @@ final class MessageParser
         $this->connection->on('data', function($data) use(&$buffer, &$readSize, &$meta){
             $buffer .= $data;
             $readSize += strlen($data);
-            if (null === $meta && $readSize >= 17) {
-                $meta = Message::parseHeader(substr($buffer, 0, 17));
+            if (null === $meta && $readSize >= Message::HEADER_SIZE) {
+                $meta = Message::parseHeader(substr($buffer, 0, Message::HEADER_SIZE));
                 $this->connection->emit('meta', $meta);
-                $buffer = substr($buffer, 17); // reset buffer
+                $buffer = substr($buffer, Message::HEADER_SIZE); // reset buffer
                 $readSize = strlen($buffer);
             }
             if (null !== $meta && $readSize >= $meta['size']) {
@@ -50,6 +50,11 @@ final class MessageParser
                 $buffer = substr($buffer, $meta['size']); // reset buffer
                 $readSize = strlen($buffer);
                 $meta = null;
+
+                // maybe buffer contains 2+ message.
+                if ($readSize >= Message::HEADER_SIZE) {
+                    $this->connection->emit('data', ['']);
+                }
             }
         });
     }

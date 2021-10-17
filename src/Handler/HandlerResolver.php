@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Spike\Handler;
 
+use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Spike\Command\CommandInterface;
 
