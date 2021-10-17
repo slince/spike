@@ -35,6 +35,14 @@ class Configuration
     /**
      * @var array
      */
+    protected $console = [
+        'enabled' => true,
+        'level' => 'info'
+    ];
+
+    /**
+     * @var array
+     */
     protected $log = [
         'file' => './client.log',
         'level' => 'info'
@@ -83,6 +91,22 @@ class Configuration
     public function setMaxWorkers(int $maxWorkers): void
     {
         $this->maxWorkers = $maxWorkers;
+    }
+
+    /**
+     * @param array $console
+     */
+    public function setConsole(array $console): void
+    {
+        $this->console = $console;
+    }
+
+    /**
+     * @return array
+     */
+    public function getConsole(): array
+    {
+        return $this->console;
     }
 
     /**

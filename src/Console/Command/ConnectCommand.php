@@ -2,30 +2,54 @@
 
 namespace Spike\Console\Command;
 
-use Monolog\Logger;
-use Spike\Client\Client;
+use React\EventLoop\LoopInterface;
 use Spike\Client\Configuration;
-use Spike\Console\Utils;
-use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
 
-class ConnectCommand extends Command
+class ConnectCommand extends ClientCommand
 {
     /**
-     * @var Client
+     * {@inheritdoc}
      */
-    protected $client;
-
-    public function getClient(Configuration $configuration)
+    protected function configure()
     {
-        if (null === $this->client) {
-            $this->client = new Client($configuration);
-        }
+        $this->setName('connect')
+            ->setDescription('Connect to a spike server.')
+            ->addArgument('serverAddress', InputArgument::OPTIONAL)
+            ->addOption('config', 'c', InputOption::VALUE_REQUIRED, 'The configuration file, support json,ini,xml and yaml format.')
+            ->addOption('daemon', 'd', InputOption::VALUE_NONE, 'Daemon');
     }
 
-    protected function createLogger(Configuration $configuration)
+    /**
+     * {@inheritdoc}
+     */
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $fileLog = $configuration->getLog();
-        $logger = new Logger('spike');
-        $logger->pushHandler(Utils::createLogFileHandler($fileLog['file'], $fileLog['level']));
+        $configuration = $this->createConfiguration($input);
+        $client = $this->createClient($configuration, $input, $output);
+        $client->run();
+        return 0;
+    }
+
+    protected function createConfiguration(InputInterface $input): Configuration
+    {
+        if ($configFile = $input->getOption('config')) {
+            if (!file_exists($configFile)) {
+                throw new \RuntimeException(sprintf('The config file "%s" is not exists', $configFile));
+            }
+            $configuration = $this->getApplication()->getSerializer()->deserialize(
+                file_get_contents($configFile),
+                Configuration::class,
+                pathinfo($configFile, PATHINFO_EXTENSION)
+            );
+        } elseif ($serverAddress = $input->getArgument('serverAddress')) {
+            $configuration = new Configuration($serverAddress);
+        } else {
+            throw new \RuntimeException('Either --config or --address must be provided');
+        }
+        return $configuration;
     }
 }

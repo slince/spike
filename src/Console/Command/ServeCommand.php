@@ -22,10 +22,6 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 class ServeCommand extends ServerCommand
 {
-    /**
-     * @var SerializerInterface
-     */
-    protected $serializer;
 
     /**
      * {@inheritdoc}

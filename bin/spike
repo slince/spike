@@ -1,7 +1,9 @@
 #!/usr/bin/env php
 <?php
+use React\EventLoop\Loop;
 use Symfony\Component\Console\Input\ArgvInput;
 use Spike\Application;
+use Spike\Console\Output\AsyncConsoleOutput;
 
 foreach ([__DIR__ . '/../../../autoload.php',
              __DIR__ . '/../vendor/autoload.php'] as $autoloadFile) {
@@ -11,5 +13,10 @@ foreach ([__DIR__ . '/../../../autoload.php',
     }
 }
 
-$app = new Application();
-$app->run();
+$loop = Loop::get();
+
+$app = new Application($loop);
+
+$output = new AsyncConsoleOutput();
+$output->setLoop($loop);
+$app->run(new ArgvInput(), $output);

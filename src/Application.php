@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Spike;
 
 use Monolog\Logger;
+use React\EventLoop\LoopInterface;
 use Symfony\Component\Console\Application as BaseApplication;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
@@ -46,8 +47,14 @@ EOT;
      */
     protected $serializer;
 
-    public function __construct()
+    /**
+     * @var LoopInterface
+     */
+    protected $loop;
+
+    public function __construct(LoopInterface $loop)
     {
+        $this->loop = $loop;
         parent::__construct(static::NAME, static::VERSION);
     }
 
@@ -91,7 +98,8 @@ EOT;
     {
         return array_merge([
             new Console\Command\InitCommand(),
-            new Console\Command\ServeCommand()
+            new Console\Command\ConnectCommand($this->loop),
+            new Console\Command\ServeCommand($this->loop)
         ], parent::getDefaultCommands());
     }
 }
