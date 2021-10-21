@@ -51,7 +51,7 @@ interface ProcessInterface
     /**
      * Closes the process.
      */
-    public function stop();
+    public function close();
 
     /**
      * Sends a POSIX signal to the process.
@@ -69,7 +69,7 @@ interface ProcessInterface
      *
      * @return int
      */
-    public function getPid(): int;
+    public function getPid(): ?int;
 
     /**
      * Gets the std iny stream for the process.
