@@ -121,4 +121,11 @@ interface ProcessInterface
      * @return string The current process status
      */
     public function getStatus(): string;
+
+    /**
+     * Returns the exit code returned by the process.
+     *
+     * @return int|null The exit status code, null if the Process is not terminated
+     */
+    public function getExitCode(): ?int;
 }
