@@ -64,7 +64,7 @@ abstract class AbstractProcess implements ProcessInterface
      */
     public function isStarted(): bool
     {
-        return self::STATUS_READY != $this->status;
+        return self::STATUS_STARTED === $this->status;
     }
 
     /**
@@ -74,7 +74,7 @@ abstract class AbstractProcess implements ProcessInterface
     {
         $this->updateStatus(false);
 
-        return self::STATUS_TERMINATED == $this->status;
+        return self::STATUS_TERMINATED === $this->status;
     }
 
     /**

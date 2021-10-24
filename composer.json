@@ -13,6 +13,8 @@
     "require": {
         "php": "^7.2||^8.0",
         "ext-json": "*",
+        "ext-pcntl": "*",
+        "ext-posix": "*",
         "react/socket": "^1.9",
         "react/promise": "^2.8",
         "react/stream": "^1.2",

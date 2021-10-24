@@ -96,20 +96,18 @@ final class ProcProcess extends AbstractProcess
     }
 
     /**
-     * Sends a POSIX signal to the process.
-     *
-     * @param int  $signal         A valid POSIX signal (see https://php.net/pcntl.constants)
-     * @param bool $throwException Whether to throw exception in case signal failed
-     *
-     * @return bool True if the signal was sent successfully, false otherwise
-     *
-     * @throws LogicException   In case the process is not running
-     * @throws RuntimeException In case --enable-sigchild is activated and the process can't be killed
-     * @throws RuntimeException In case of failure
+     * {@inheritdoc}
      */
+    public function signal(int $signal)
+    {
+        $this->doSignal($signal, true);
+
+        return $this;
+    }
+
     private function doSignal(int $signal, bool $throwException): bool
     {
-        if (null === $pid = $this->getPid()) {
+        if (null === $this->getPid()) {
             if ($throwException) {
                 throw new LogicException('Can not send signal on a non running process.');
             }
@@ -117,36 +115,14 @@ final class ProcProcess extends AbstractProcess
             return false;
         }
 
-        if ('\\' === \DIRECTORY_SEPARATOR) {
-            exec(sprintf('taskkill /F /T /PID %d 2>&1', $pid), $output, $exitCode);
-            if ($exitCode && $this->isRunning()) {
-                if ($throwException) {
-                    throw new RuntimeException(sprintf('Unable to kill the process (%s).', implode(' ', $output)));
-                }
+        $ok = @proc_terminate($this->process, $signal);
+        if (!$ok) {
+            if ($throwException) {
+                throw new RuntimeException(sprintf('Error while sending signal "%s".', $signal));
+            }
 
-                return false;
-            }
-        } else {
-            if (!$this->isSigchildEnabled()) {
-                $ok = @proc_terminate($this->process, $signal);
-            } elseif (\function_exists('posix_kill')) {
-                $ok = @posix_kill($pid, $signal);
-            } elseif ($ok = proc_open(sprintf('kill -%d %d', $signal, $pid), [2 => ['pipe', 'w']], $pipes)) {
-                $ok = false === fgets($pipes[2]);
-            }
-            if (!$ok) {
-                if ($throwException) {
-                    throw new RuntimeException(sprintf('Error while sending signal "%s".', $signal));
-                }
-
-                return false;
-            }
+            return false;
         }
-
-        $this->latestSignal = $signal;
-        $this->fallbackStatus['signaled'] = true;
-        $this->fallbackStatus['exitcode'] = -1;
-        $this->fallbackStatus['termsig'] = $this->latestSignal;
 
         return true;
     }
@@ -177,7 +153,7 @@ final class ProcProcess extends AbstractProcess
     public function start(bool $blocking = true)
     {
         if ($this->isRunning()) {
-            throw new \RuntimeException('Process is already running');
+            throw new RuntimeException('Process is already running');
         }
         $cmd = $this->cmd;
         $descriptors = $this->getDescriptors();
@@ -188,13 +164,15 @@ final class ProcProcess extends AbstractProcess
             $error = \error_get_last();
             throw new RuntimeException(sprintf('Unable to launch a new process: %s.', $error));
         }
+        $this->status = self::STATUS_STARTED;
+        $this->stdin = $pipes[0];
+        $this->stdout = $pipes[1];
+        $this->stderr = $pipes[2];
+        $this->updateStatus($blocking);
     }
 
     protected function getDescriptors(): array
     {
-        if ('\\' === DIRECTORY_SEPARATOR) {
-
-        }
         return [
             ['pipe', 'r'],
             ['pipe', 'w'],
@@ -209,6 +187,23 @@ final class ProcProcess extends AbstractProcess
     {
         $this->requireProcessIsStarted(__FUNCTION__);
         $this->updateStatus(false);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function terminate(int $signal = null): bool
+    {
+        if ($this->process === null) {
+            return false;
+        }
+        $this->status = self::STATUS_TERMINATED;
+
+        if ($signal !== null) {
+            return \proc_terminate($this->process, $signal);
+        }
+
+        return \proc_terminate($this->process);
     }
 
     /**

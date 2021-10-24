@@ -54,6 +54,13 @@ interface ProcessInterface
     public function close();
 
     /**
+     * Terminate the process with an optional signal.
+     * @param int|null $signal
+     * @return bool
+     */
+    public function terminate(int $signal = null): bool;
+
+    /**
      * Sends a POSIX signal to the process.
      *
      * @param int $signal A valid POSIX signal (see https://php.net/pcntl.constants)
