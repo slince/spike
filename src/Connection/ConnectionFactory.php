@@ -25,6 +25,6 @@ final class ConnectionFactory
      */
     public static function wrapConnection(DuplexStreamInterface $stream): ConnectionInterface
     {
-        return new StreamConnection($stream);
+        return new WrapperConnection($stream);
     }
 }

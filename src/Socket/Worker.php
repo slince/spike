@@ -19,7 +19,7 @@ use Spike\Process\ProcessInterface;
 use React\EventLoop\LoopInterface;
 use React\Socket\ServerInterface as Socket;
 
-final class Worker
+class Worker
 {
     /**
      * @var ServerInterface
@@ -30,11 +30,6 @@ final class Worker
      * @var Socket
      */
     protected $socket;
-
-    /**
-     * @var ProcessInterface
-     */
-    protected $process;
 
     /**
      * @var LoopInterface
@@ -58,23 +53,19 @@ final class Worker
      */
     public function start()
     {
-        $this->process = Worker::createProcess([$this, 'work']);
-        $this->initialize();
-        $this->process->start(false);
     }
 
     /**
-     * Stop the worker.
+     * Close the worker.
+     *
+     * {@internal}
      */
-    public function stop()
+    public function close()
     {
-        $this->process->stop();
     }
 
     public function restart()
     {
-        $this->process->stop();
-        $this->start();;
     }
 
     /**
@@ -88,49 +79,10 @@ final class Worker
     }
 
     /**
-     * Gets the worker pid.
-     *
-     * @return int
-     */
-    public function getPid(): int
-    {
-        return $this->process->getPid();
-    }
-
-    /**
-     * Close the worker.
-     *
-     * {@internal }
-     */
-    public function close()
-    {
-        $this->loop->stop();
-    }
-
-    protected function initialize()
-    {
-        if (function_exists('pcntl_signal')) {
-            $this->onSignal(SIGTERM, [$this, 'close']);
-            $this->onSignal(SIGUSR1, [$this, 'retry']);
-        }
-    }
-
-    protected static function createProcess(callable $callback)
-    {
-        if (function_exists('pcntl_fork')) {
-            return new Process($callback);
-        }
-        return new FakeProcess($callback);
-    }
-
-    /**
      * @internal
      */
      public function work()
      {
-         foreach ($this->signals as $signal => $handler) {
-             $this->loop->addSignal($signal, $handler);
-         }
          $this->socket->on('connection', [$this->server, 'handleConnection']);
          $this->socket->on('error', [$this->server, 'handleError']);
      }

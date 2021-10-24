@@ -16,6 +16,7 @@ namespace Spike\Process;
 use Spike\Exception\InvalidArgumentException;
 use Spike\Exception\LogicException;
 use Spike\Exception\RuntimeException;
+use Spike\Process\Fifo\Fifo;
 
 class Process extends AbstractProcess
 {
@@ -47,12 +48,33 @@ class Process extends AbstractProcess
 
     protected $isChildProcess = false;
 
+    protected $stdinFifo;
+    protected $stdoutFifo;
+    protected $stderrFifo;
+
     public function __construct(callable $callback)
     {
         if (!function_exists('pcntl_fork')) {
             throw new RuntimeException(sprintf('The Process class relies on ext-pcntl, which is not available on your PHP installation.'));
         }
         $this->callback = $callback;
+        $this->stdinFifo = $this->createFifo();
+        $this->stdoutFifo = $this->createFifo();
+        $this->stderrFifo = $this->createFifo();
+    }
+
+    /**
+     * Checks whether support signal.
+     * @return bool
+     */
+    public static function isSupportPosixSignal(): bool
+    {
+        return function_exists('pcntl_signal');
+    }
+
+    protected function createFifo(): string
+    {
+        return sys_get_temp_dir() . '/' . 'sl_' . mt_rand(0, 999) . '.pipe';
     }
 
     /**
@@ -70,13 +92,19 @@ class Process extends AbstractProcess
             $this->pid = $pid;
             $this->running = true;
             $this->status = self::STATUS_STARTED;
+            $this->stdin = (new Fifo($this->stdinFifo, 'w'))->getStream();
+            $this->stdout = (new Fifo($this->stdoutFifo, 'r'))->getStream();
+            $this->stderr = (new Fifo($this->stderr, 'r'))->getStream();
             $this->updateStatus($blocking);
         } else {
             $this->isChildProcess = true;
             $this->pid = posix_getpid();
             $this->installSignalHandlers();
+            $stdin = (new Fifo($this->stdinFifo, 'r'))->getStream();
+            $stdout = (new Fifo($this->stdoutFifo, 'w'))->getStream();
+            $stderr = (new Fifo($this->stderr, 'w'))->getStream();
             try {
-                $exitCode = call_user_func($this->callback);
+                $exitCode = call_user_func($this->callback, $stdin, $stdout, $stderr);
             } catch (\Exception $e) {
                 $exitCode  = 255;
             }

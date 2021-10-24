@@ -62,6 +62,14 @@ abstract class AbstractServer extends EventEmitter implements ServerInterface
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function getOption(string $name)
+    {
+        return $this->options[$name] ?? null;
+    }
+
+    /**
      * Configure options resolver for the server.
      *
      * @param OptionsResolver $resolver

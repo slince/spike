@@ -128,14 +128,6 @@ final class Client
         return $this->activeAt;
     }
 
-    /**
-     * Close the client.
-     */
-    public function close()
-    {
-        $this->connection->disconnect();
-    }
-
     public function setTunnelListeners(TunnelListenerCollection $tunnelListeners)
     {
         $this->tunnelListeners = $tunnelListeners;

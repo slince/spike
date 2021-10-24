@@ -33,6 +33,14 @@ interface ServerInterface
     public function configure(array $options);
 
     /**
+     * Gets the specific option.
+     *
+     * @param string $name
+     * @return mixed
+     */
+    public function getOption(string $name);
+
+    /**
      * Start the server.
      */
     public function serve();
