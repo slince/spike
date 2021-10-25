@@ -72,9 +72,9 @@ class Process extends AbstractProcess
         return function_exists('pcntl_signal');
     }
 
-    protected function createFifo(): string
+    protected function createFifo(string $suffix = null): string
     {
-        return sys_get_temp_dir() . '/' . 'sl_' . mt_rand(0, 999) . '.pipe';
+        return sys_get_temp_dir() . '/' . 'sl_' . mt_rand(0, 999) . $suffix . '.pipe';
     }
 
     /**
