@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Spike\Socket;
 
 use React\Socket\ConnectionInterface;
+use React\Socket\ServerInterface as Socket;
 
 interface ServerInterface
 {
@@ -64,4 +65,9 @@ interface ServerInterface
      * {@internal}
      */
     public function handleError(\Exception $e);
+
+    /**
+     * {@internal}
+     */
+    public function getSocket(): Socket;
 }

@@ -40,9 +40,9 @@ class ProcWorker extends Worker
 
     protected $inChildProcess = false;
 
-    public function __construct(LoopInterface $loop, ServerInterface $server, Socket $socket)
+    public function __construct(LoopInterface $loop, ServerInterface $server)
     {
-        parent::__construct($loop, $server, $socket);
+        parent::__construct($loop, $server);
         $this->commands = $this->createCommandFactory();
         $this->isSupportSignal = Process::isSupportPosixSignal();
     }

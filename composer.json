@@ -15,6 +15,7 @@
         "ext-json": "*",
         "ext-pcntl": "*",
         "ext-posix": "*",
+        "ext-parallel": "*",
         "react/socket": "^1.9",
         "react/promise": "^2.8",
         "react/stream": "^1.2",

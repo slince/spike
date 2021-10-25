@@ -13,8 +13,15 @@ declare(strict_types=1);
 
 namespace Spike\Socket;
 
-class WorkerPool implements \IteratorAggregate, \Countable
+use React\EventLoop\LoopInterface;
+
+abstract class WorkerPool implements \IteratorAggregate, \Countable
 {
+    const TYPE_FORK = 'fork';
+    const TYPE_PROC = 'proc';
+    const TYPE_THREAD = 'parallel';
+    protected $type;
+
     /**
      * @var Worker[]
      */
@@ -25,11 +32,21 @@ class WorkerPool implements \IteratorAggregate, \Countable
         $this->workers = $workers;
     }
 
+    /**
+     * Add a worker to this pool.
+     *
+     * @param Worker $worker
+     */
     public function add(Worker $worker)
     {
         $this->workers[] = $worker;
     }
 
+    /**
+     * Remove the given worker.
+     *
+     * @param Worker $worker
+     */
     public function remove(Worker $worker)
     {
         if ($index = array_search($worker, $this->workers) !== false) {
@@ -62,4 +79,6 @@ class WorkerPool implements \IteratorAggregate, \Countable
             $worker->start();
         }
     }
+
+    abstract public function createWorker(LoopInterface $loop, ServerInterface $server);
 }

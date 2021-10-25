@@ -13,9 +13,6 @@ declare(strict_types=1);
 
 namespace Spike\Socket;
 
-use Spike\Process\FakeProcess;
-use Spike\Process\Process;
-use Spike\Process\ProcessInterface;
 use React\EventLoop\LoopInterface;
 use React\Socket\ServerInterface as Socket;
 
@@ -41,11 +38,11 @@ class Worker
      */
     protected $signals = [];
 
-    public function __construct(LoopInterface $loop, ServerInterface $server, Socket $socket)
+    public function __construct(LoopInterface $loop, ServerInterface $server)
     {
         $this->loop = $loop;
         $this->server = $server;
-        $this->socket = $socket;
+        $this->socket = $server->getSocket();
     }
 
     /**
